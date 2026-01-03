@@ -1,36 +1,94 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Dreamscape Website
+
+A production website for Dreamscape, a creation center in Pai, Northern Thailand that combines Technology + Circus + Wellness.
+
+## Tech Stack
+
+- **Framework**: Next.js 14+ (App Router)
+- **Database**: Neon Postgres
+- **ORM**: Prisma
+- **Authentication**: Clerk
+- **Payments**: Stripe
+- **Styling**: Tailwind CSS
+- **Deployment**: Vercel
+
+## Features
+
+### Public Features
+- Home page with brand messaging
+- Venue-wide and per-space schedules (day/week views)
+- Spaces browser with individual schedules
+- Membership plans with Stripe subscriptions
+- Event browsing and ticket purchases
+- Cafe menu and contact pages
+
+### Admin Features
+- Spaces CRUD with publish/unpublish
+- Events CRUD with multi-space assignment
+- Products and memberships management
+- Admin-only access protection
+
+### Integrations
+- Stripe for payments (one-off & subscriptions)
+- Clerk for authentication
+- Schedule image export API for social media
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
+- Node.js 20.9.0+
+- PostgreSQL (Neon recommended)
+- Clerk account
+- Stripe account
 
+### Setup
+
+1. Install dependencies:
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+2. Copy `.env.example` to `.env` and fill in your credentials
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+3. Set up database:
+```bash
+npx prisma migrate dev
+npm run db:seed
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+4. Run development server:
+```bash
+npm run dev
+```
 
-## Learn More
+Visit [http://localhost:3000](http://localhost:3000)
 
-To learn more about Next.js, take a look at the following resources:
+## Admin Access
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+1. Sign up via the website
+2. Update user role in database:
+```sql
+UPDATE "User" SET role = 'ADMIN' WHERE email = 'your@email.com';
+```
+3. Access admin at `/admin`
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Key Routes
 
-## Deploy on Vercel
+- `/` - Home
+- `/schedule` - Venue-wide schedule
+- `/spaces/[slug]` - Space detail with schedule
+- `/memberships` - Membership plans
+- `/admin` - Admin dashboard
+- `/api/schedule-image?weekStart=YYYY-MM-DD` - Schedule image export
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Deployment
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Deploy to Vercel:
+1. Push to GitHub
+2. Import in Vercel
+3. Add environment variables
+4. Deploy
+
+## Documentation
+
+See `/docs` for detailed project documentation including vision, features, and technical decisions.

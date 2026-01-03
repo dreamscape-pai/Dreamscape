@@ -1,0 +1,136 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  PUBLIC
+  MEMBER
+  ADMIN
+}
+
+enum EventType {
+  WORKSHOP
+  SHOW
+  JAM
+  RETREAT
+  FESTIVAL
+  OTHER
+}
+
+enum ProductType {
+  TICKET
+  WORKSHOP
+  MEMBERSHIP
+}
+
+enum OrderStatus {
+  PENDING
+  COMPLETED
+  FAILED
+  CANCELLED
+}
+
+model User {
+  id        String   @id // Clerk user ID
+  email     String   @unique
+  role      UserRole @default(PUBLIC)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  orders    Order[]
+}
+
+model Space {
+  id          String       @id @default(cuid())
+  name        String
+  slug        String       @unique
+  description String?      @db.Text
+  capacity    Int?
+  images      String[]     // JSON array of image URLs
+  published   Boolean      @default(false)
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  events      EventSpace[]
+}
+
+model Event {
+  id          String       @id @default(cuid())
+  title       String
+  slug        String       @unique
+  description String?      @db.Text
+  startTime   DateTime
+  endTime     DateTime
+  type        EventType    @default(OTHER)
+  published   Boolean      @default(false)
+  capacity    Int?
+  productId   String?
+  product     Product?     @relation(fields: [productId], references: [id])
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  spaces      EventSpace[]
+}
+
+model EventSpace {
+  id        String   @id @default(cuid())
+  eventId   String
+  spaceId   String
+  event     Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  space     Space    @relation(fields: [spaceId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@unique([eventId, spaceId])
+  @@index([eventId])
+  @@index([spaceId])
+}
+
+model Product {
+  id              String      @id @default(cuid())
+  name            String
+  description     String?     @db.Text
+  type            ProductType
+  stripeProductId String?     @unique
+  stripePriceId   String?
+  price           Int // cents
+  active          Boolean     @default(true)
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+  events          Event[]
+  orders          Order[]
+}
+
+model MembershipPlan {
+  id              String   @id @default(cuid())
+  name            String
+  description     String?  @db.Text
+  stripeProductId String?  @unique
+  stripePriceId   String?
+  price           Int // cents per month
+  interval        String   @default("month")
+  active          Boolean  @default(true)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model Order {
+  id                    String      @id @default(cuid())
+  userId                String?
+  user                  User?       @relation(fields: [userId], references: [id])
+  productId             String?
+  product               Product?    @relation(fields: [productId], references: [id])
+  stripeSessionId       String?     @unique
+  stripePaymentIntentId String?
+  amount                Int // cents
+  status                OrderStatus @default(PENDING)
+  createdAt             DateTime    @default(now())
+  updatedAt             DateTime    @updatedAt
+
+  @@index([userId])
+  @@index([stripeSessionId])
+}
