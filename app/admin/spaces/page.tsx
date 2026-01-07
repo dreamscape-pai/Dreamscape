@@ -9,38 +9,38 @@ export default async function SpacesPage() {
   return (
     <div>
       <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold">Spaces</h1>
+        <h1 className="text-3xl font-bold text-sand" style={{ fontFamily: 'var(--font-decorative)' }}>Spaces</h1>
         <Link
           href="/admin/spaces/new"
-          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+          className="bg-sunset text-sand px-4 py-2 rounded hover:bg-sunset/80 transition"
         >
           Add Space
         </Link>
       </div>
 
-      <div className="bg-white shadow overflow-hidden sm:rounded-md">
-        <ul className="divide-y divide-gray-200">
+      <div className="bg-gradient-to-br from-lavender/20 to-forest/20 backdrop-blur-md border border-sand/20 overflow-hidden rounded-lg">
+        <ul className="divide-y divide-sand/10">
           {spaces.length === 0 ? (
-            <li className="px-6 py-4 text-gray-500">No spaces yet. Create your first space!</li>
+            <li className="px-6 py-4 text-sand/60">No spaces yet. Create your first space!</li>
           ) : (
             spaces.map((space) => (
               <li key={space.id}>
-                <Link href={`/admin/spaces/${space.id}/edit`} className="block hover:bg-gray-50">
+                <Link href={`/admin/spaces/${space.id}/edit`} className="block hover:bg-lavender/10 transition">
                   <div className="px-6 py-4">
                     <div className="flex items-center justify-between">
                       <div className="flex-1">
-                        <p className="text-sm font-medium text-gray-900">{space.name}</p>
-                        <p className="text-sm text-gray-500">/{space.slug}</p>
+                        <p className="text-sm font-medium text-sand">{space.name}</p>
+                        <p className="text-sm text-sand/60">/{space.slug}</p>
                       </div>
                       <div className="flex items-center space-x-4">
                         {space.capacity && (
-                          <span className="text-sm text-gray-500">Capacity: {space.capacity}</span>
+                          <span className="text-sm text-sand/60">Capacity: {space.capacity}</span>
                         )}
                         <span
                           className={`px-2 py-1 text-xs font-semibold rounded ${
                             space.published
-                              ? 'bg-green-100 text-green-800'
-                              : 'bg-gray-100 text-gray-800'
+                              ? 'bg-forest/30 text-sand border border-sand/20'
+                              : 'bg-lavender/20 text-sand/80 border border-sand/20'
                           }`}
                         >
                           {space.published ? 'Published' : 'Draft'}

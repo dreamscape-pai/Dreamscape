@@ -17,11 +17,15 @@ enum UserRole {
 }
 
 enum EventType {
+  EVERYDAY
+  FULL_SPACE_EVERYDAY
   WORKSHOP
-  SHOW
+  DANCE_EVENT
   JAM
   RETREAT
   FESTIVAL
+  SHOW
+  MEMBERSHIP_TRAINING
   OTHER
 }
 
@@ -39,16 +43,77 @@ enum OrderStatus {
 }
 
 model User {
-  id        String   @id // Clerk user ID
-  email     String   @unique
-  role      UserRole @default(PUBLIC)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  orders    Order[]
+  id                      Int                   @id @default(autoincrement())
+  name                    String?
+  email                   String?               @unique
+  emailVerified           DateTime?
+  image                   String?
+  password                String?               // Hashed password for email/password auth
+  role                    UserRole              @default(PUBLIC)
+  createdAt               DateTime              @default(now())
+  updatedAt               DateTime              @updatedAt
+  accounts                Account[]
+  sessions                Session[]
+  orders                  Order[]
+  googleCalendarCredential GoogleCalendarCredential?
+}
+
+model Account {
+  id                Int     @id @default(autoincrement())
+  userId            Int
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@index([userId])
+}
+
+model Session {
+  id           Int      @id @default(autoincrement())
+  sessionToken String   @unique
+  userId       Int
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+model GoogleCalendarCredential {
+  id                Int      @id @default(autoincrement())
+  userId            Int      @unique
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  encryptedRefreshToken String   @db.Text // Encrypted refresh token
+  googleAccountEmail String
+  googleAccountId   String
+  selectedCalendarIds String[] @default(["primary"]) // Array of calendar IDs to sync
+  syncToken         String?  // For incremental syncs
+  lastSyncAt        DateTime?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  @@index([userId])
 }
 
 model Space {
-  id          String       @id @default(cuid())
+  id          Int          @id @default(autoincrement())
   name        String
   slug        String       @unique
   description String?      @db.Text
@@ -61,26 +126,50 @@ model Space {
 }
 
 model Event {
-  id          String       @id @default(cuid())
-  title       String
-  slug        String       @unique
-  description String?      @db.Text
-  startTime   DateTime
-  endTime     DateTime
-  type        EventType    @default(OTHER)
-  published   Boolean      @default(false)
-  capacity    Int?
-  productId   String?
-  product     Product?     @relation(fields: [productId], references: [id])
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @updatedAt
-  spaces      EventSpace[]
+  id               Int                 @id @default(autoincrement())
+  title            String
+  slug             String              @unique
+  description      String?             @db.Text
+  startTime        DateTime
+  endTime          DateTime
+  type             EventType           @default(OTHER)
+  published        Boolean             @default(false)
+  capacity         Int?
+  productId        Int?
+  product          Product?            @relation(fields: [productId], references: [id])
+  isRecurring      Boolean             @default(false)
+  recurrenceRule   String? // RRULE format (e.g., "FREQ=WEEKLY;BYDAY=MO,WE,FR")
+  recurrenceEnd    DateTime?
+  googleEventId    String?             // Google Calendar event ID
+  googleCalendarId String?             // Which calendar this came from
+  googleColorId    String?             // Color from Google Calendar
+  createdAt        DateTime            @default(now())
+  updatedAt        DateTime            @updatedAt
+  spaces           EventSpace[]
+  cancellations    EventCancellation[]
+
+  @@unique([googleEventId, googleCalendarId])
+  @@index([published, startTime])
+  @@index([published, isRecurring])
+  @@index([startTime])
+  @@index([googleEventId])
+}
+
+model EventCancellation {
+  id              Int      @id @default(autoincrement())
+  eventId         Int
+  event           Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  cancelledDate   DateTime // The specific date/time this recurring event instance is cancelled
+  createdAt       DateTime @default(now())
+
+  @@unique([eventId, cancelledDate])
+  @@index([eventId])
 }
 
 model EventSpace {
-  id        String   @id @default(cuid())
-  eventId   String
-  spaceId   String
+  id        Int      @id @default(autoincrement())
+  eventId   Int
+  spaceId   Int
   event     Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
   space     Space    @relation(fields: [spaceId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
@@ -91,7 +180,7 @@ model EventSpace {
 }
 
 model Product {
-  id              String      @id @default(cuid())
+  id              Int         @id @default(autoincrement())
   name            String
   description     String?     @db.Text
   type            ProductType
@@ -106,7 +195,7 @@ model Product {
 }
 
 model MembershipPlan {
-  id              String   @id @default(cuid())
+  id              Int      @id @default(autoincrement())
   name            String
   description     String?  @db.Text
   stripeProductId String?  @unique
@@ -119,10 +208,10 @@ model MembershipPlan {
 }
 
 model Order {
-  id                    String      @id @default(cuid())
-  userId                String?
+  id                    Int         @id @default(autoincrement())
+  userId                Int?
   user                  User?       @relation(fields: [userId], references: [id])
-  productId             String?
+  productId             Int?
   product               Product?    @relation(fields: [productId], references: [id])
   stripeSessionId       String?     @unique
   stripePaymentIntentId String?

@@ -1,25 +1,49 @@
-import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server'
+import { NextResponse } from 'next/server'
+import type { NextRequest } from 'next/server'
+import { auth } from '@/auth'
 
-const isPublicRoute = createRouteMatcher([
+const publicRoutes = [
   '/',
   '/about',
-  '/schedule(.*)',
-  '/spaces(.*)',
+  '/schedule',
+  '/spaces',
   '/cafe',
   '/memberships',
   '/contact',
   '/past-events',
   '/interactive',
-  '/sign-in(.*)',
-  '/sign-up(.*)',
-  '/api/schedule-image(.*)',
-  '/api/stripe/webhook(.*)',
-])
+  '/auth/signin',
+  '/auth/signup',
+  '/auth/error',
+  '/api/schedule-image',
+  '/api/stripe/webhook',
+  '/api/auth',
+]
 
-export default clerkMiddleware(async (auth, req) => {
-  if (!isPublicRoute(req)) {
-    await auth.protect()
+const isPublicRoute = (pathname: string) => {
+  return publicRoutes.some(route =>
+    pathname === route || pathname.startsWith(`${route}/`)
+  )
+}
+
+export default auth((req) => {
+  const { pathname } = req.nextUrl
+
+  // Allow public routes
+  if (isPublicRoute(pathname)) {
+    return NextResponse.next()
   }
+
+  // Protect admin routes
+  if (pathname.startsWith('/admin')) {
+    if (!req.auth) {
+      const signInUrl = new URL('/auth/signin', req.url)
+      signInUrl.searchParams.set('callbackUrl', pathname)
+      return NextResponse.redirect(signInUrl)
+    }
+  }
+
+  return NextResponse.next()
 })
 
 export const config = {

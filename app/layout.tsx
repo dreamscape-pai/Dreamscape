@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Great_Vibes, Cinzel } from "next/font/google";
 import localFont from 'next/font/local';
-import { ClerkProvider } from '@clerk/nextjs'
+import { SessionProvider } from '@/components/session-provider'
+import { ProfileMenu } from '@/components/profile-menu'
 import "./globals.css";
 
 const geistSans = Geist({
@@ -58,14 +59,16 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <ClerkProvider>
-      <html lang="en" style={{ backgroundColor: '#000000' }}>
-        <body
-          className={`${geistSans.variable} ${geistMono.variable} ${greatVibes.variable} ${cinzel.variable} ${cinzelDecorative.variable} antialiased`}
-        >
+    <html lang="en" style={{ backgroundColor: '#000000' }}>
+      <body
+        className={`${geistSans.variable} ${geistMono.variable} ${greatVibes.variable} ${cinzel.variable} ${cinzelDecorative.variable} antialiased`}
+        suppressHydrationWarning
+      >
+        <SessionProvider>
           {children}
-        </body>
-      </html>
-    </ClerkProvider>
+          <ProfileMenu />
+        </SessionProvider>
+      </body>
+    </html>
   );
 }

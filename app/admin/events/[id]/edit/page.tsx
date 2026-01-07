@@ -33,8 +33,8 @@ export default async function EditEventPage({ params }: PageProps) {
 
   return (
     <div>
-      <h1 className="text-3xl font-bold mb-8">Edit Event</h1>
-      <div className="bg-white shadow sm:rounded-lg p-6">
+      <h1 className="text-3xl font-bold text-sand mb-8" style={{ fontFamily: 'var(--font-decorative)' }}>Edit Event</h1>
+      <div className="bg-gradient-to-br from-lavender/20 to-forest/20 backdrop-blur-md border border-sand/20 rounded-lg p-6">
         <EventForm event={event} spaces={spaces} products={products} />
       </div>
     </div>

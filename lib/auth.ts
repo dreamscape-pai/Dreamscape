@@ -1,12 +1,18 @@
-import { auth } from '@clerk/nextjs/server'
+import { auth } from '@/auth'
 import { db } from './db'
 
 export async function getCurrentUser() {
-  const { userId } = await auth()
-  if (!userId) return null
+  const session = await auth()
+  if (!session?.user?.id) return null
+
+  // Defensive check: if ID is not a number, session is stale
+  if (typeof session.user.id !== 'number') {
+    console.warn('Stale session detected with non-integer ID. User needs to re-authenticate.')
+    return null
+  }
 
   const user = await db.user.findUnique({
-    where: { id: userId },
+    where: { id: session.user.id },
   })
 
   return user

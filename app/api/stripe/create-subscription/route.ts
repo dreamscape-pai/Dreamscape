@@ -1,15 +1,17 @@
 import { NextResponse } from 'next/server'
-import { auth } from '@clerk/nextjs/server'
+import { auth } from '@/auth'
 import { stripe } from '@/lib/stripe'
 import { db } from '@/lib/db'
 
 export async function POST(request: Request) {
   try {
-    const { userId } = await auth()
+    const session = await auth()
 
-    if (!userId) {
+    if (!session?.user?.id) {
       return NextResponse.json({ error: 'Authentication required' }, { status: 401 })
     }
+
+    const userId = session.user.id
 
     const body = await request.json()
     const { membershipPlanId, successUrl, cancelUrl } = body

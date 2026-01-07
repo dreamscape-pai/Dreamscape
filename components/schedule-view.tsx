@@ -104,7 +104,7 @@ function DayView({ events, date }: { events: EventWithDetails[]; date: Date }) {
       ) : (
         <div className="space-y-4">
           {dayEvents.map((event) => (
-            <div key={event.id} className="border-l-4 border-blue-500 pl-4 py-2">
+            <div key={event.id} className="border-l-4 border-blue-500 pl-4 py-2 bg-black/20">
               <div className="flex justify-between items-start">
                 <div className="flex-1">
                   <h3 className="text-lg font-semibold">{event.title}</h3>
@@ -160,7 +160,7 @@ function WeekView({ events, weekStart }: { events: EventWithDetails[]; weekStart
                 {dayEvents.map((event) => (
                   <div
                     key={event.id}
-                    className="text-xs bg-blue-50 border-l-2 border-blue-500 p-1 rounded"
+                    className="text-xs bg-black/20 border-l-2 border-blue-500 p-1 rounded"
                   >
                     <div className="font-medium truncate">{event.title}</div>
                     <div className="text-gray-600">{format(new Date(event.startTime), 'h:mm a')}</div>

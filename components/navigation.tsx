@@ -1,10 +1,10 @@
 'use client'
 
 import Link from 'next/link'
-import { UserButton, useUser } from '@clerk/nextjs'
+import { useSession } from 'next-auth/react'
 
 export function Navigation() {
-  const { user } = useUser()
+  const { data: session } = useSession()
 
   return (
     <nav className="bg-gradient-to-r from-indigo-950 via-purple-900 to-indigo-950 text-white shadow-lg relative overflow-hidden">
@@ -44,12 +44,11 @@ export function Navigation() {
             </div>
           </div>
           <div className="flex items-center space-x-4">
-            {user && (
+            {session?.user?.role === 'ADMIN' && (
               <Link href="/admin" className="text-sm font-medium bg-sunset text-white px-4 py-2 rounded-full hover:bg-terracotta transition">
                 Admin
               </Link>
             )}
-            <UserButton afterSignOutUrl="/" />
           </div>
         </div>
       </div>

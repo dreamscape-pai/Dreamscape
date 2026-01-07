@@ -1,0 +1,21 @@
+# Project Preferences and Guidelines
+
+## Database Schema
+
+### ID Fields
+- **ALWAYS use serial integer IDs** (`Int @id @default(autoincrement())`) for all models
+- **Exception**: NextAuth-related tables (User, Account, Session, VerificationToken) require String IDs due to @auth/prisma-adapter constraints
+  - However, we customize these to use integers where possible
+  - User.id, Account.userId, Session.userId should all be Int to maintain consistency
+
+### General Rules
+- Use `Int @id @default(autoincrement())` for all primary keys
+- Use `Int` for all foreign key references
+- Avoid text-based IDs like cuid(), uuid(), or nanoid()
+- Keep database schema simple and performant with integer IDs
+
+## Authentication
+- Using NextAuth v5 (beta) with custom Prisma adapter
+- Supports email/password, Google, Facebook, and Instagram OAuth
+- User roles: PUBLIC, MEMBER, ADMIN
+- JWT-based sessions

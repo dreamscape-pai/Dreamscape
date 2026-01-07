@@ -2,9 +2,14 @@
 
 import { useEffect, useRef, useState } from 'react'
 import Image from 'next/image'
+import Header from '@/components/header'
 
 function clampNumber(value: number, minimum: number, maximum: number) {
   return Math.min(maximum, Math.max(minimum, value))
+}
+
+function lerpNumber(startValue: number, endValue: number, interpolationAmount: number) {
+  return startValue + (endValue - startValue) * interpolationAmount
 }
 
 interface LayeredImageProps {
@@ -96,7 +101,7 @@ function LayeredImage({
 export default function InteractivePage() {
   const containerRef = useRef<HTMLDivElement>(null)
 
-  // Keep your tuning controls (optional)
+  // Debug tuning controls (keep/remove)
   const [emptyScale, setEmptyScale] = useState(104.2)
   const [mainScale, setMainScale] = useState(100)
   const [emptyOffsetX, setEmptyOffsetX] = useState(-0.08)
@@ -107,41 +112,71 @@ export default function InteractivePage() {
   useEffect(() => {
     let latestScrollTop = 0
     let latestViewportHeight = 0
+
+    // Smooth scroll-following value to remove “jumps” on some devices.
+    let smoothedScrollTop = 0
+
     let animationFrameId: number | null = null
+    let isAnimating = false
 
     const updateCssVariables = () => {
       const containerElement = containerRef.current
       if (!containerElement) return
 
       const viewportHeight = Math.max(1, latestViewportHeight)
-      const scrollUnits = latestScrollTop / viewportHeight
 
-      // Phase timing (in viewport-heights):
-      // 0.00 -> 0.90 : reveal  (reveal goes 0..1)
-      // 0.90 -> 1.60 : lift    (hero moves to top)
-      // 1.60 -> 2.30 : compact (turn into header)
-      const reveal = clampNumber(scrollUnits / 0.9, 0, 1)
-      const lift = clampNumber((scrollUnits - 0.9) / 0.7, 0, 1)
-      const compact = clampNumber((scrollUnits - 1.6) / 0.7, 0, 1)
+      // Smoothly chase scroll position (small “transition-like” feel without CSS transition fights).
+      smoothedScrollTop = lerpNumber(smoothedScrollTop, latestScrollTop, 0.18)
 
-      containerElement.style.setProperty('--scroll-y', String(latestScrollTop))
+      const scrollUnits = smoothedScrollTop / viewportHeight
+
+      // Timeline (in viewport heights) - moved earlier:
+      // 0.00 -> 0.60 : reveal radial mask  (0..1)
+      // 0.60 -> 1.00 : hero moves up and offscreen + fades out
+      // 1.00 -> 1.12 : header fades in
+      const reveal = clampNumber(scrollUnits / 0.6, 0, 1)
+
+      const heroMove = clampNumber((scrollUnits - 0.6) / 0.4, 0, 1) // 0..1
+      const heroFade = 1 - clampNumber((scrollUnits - 0.82) / 0.18, 0, 1) // 1..0
+
+      const headerFade = clampNumber((scrollUnits - 1.0) / 0.12, 0, 1)
+
+      containerElement.style.setProperty('--scroll-y', String(smoothedScrollTop))
       containerElement.style.setProperty('--viewport-height', String(latestViewportHeight))
       containerElement.style.setProperty('--reveal', String(reveal))
-      containerElement.style.setProperty('--lift', String(lift))
-      containerElement.style.setProperty('--compact', String(compact))
+      containerElement.style.setProperty('--hero-move', String(heroMove))
+      containerElement.style.setProperty('--hero-opacity', String(heroFade))
+      containerElement.style.setProperty('--header-opacity', String(headerFade))
 
-      animationFrameId = null
+      // Keep animating briefly until we catch up (prevents “stair-step” feel).
+      const remainingDistance = Math.abs(latestScrollTop - smoothedScrollTop)
+      if (remainingDistance < 0.25) {
+        isAnimating = false
+        animationFrameId = null
+        return
+      }
+
+      animationFrameId = window.requestAnimationFrame(updateCssVariables)
+    }
+
+    const startAnimationLoop = () => {
+      if (isAnimating) return
+      isAnimating = true
+      animationFrameId = window.requestAnimationFrame(updateCssVariables)
     }
 
     const onScrollOrResize = () => {
       latestScrollTop = window.scrollY
       latestViewportHeight = window.innerHeight
-
-      if (animationFrameId !== null) return
-      animationFrameId = window.requestAnimationFrame(updateCssVariables)
+      startAnimationLoop()
     }
 
-    onScrollOrResize()
+    // Initialize
+    latestScrollTop = window.scrollY
+    latestViewportHeight = window.innerHeight
+    smoothedScrollTop = latestScrollTop
+    startAnimationLoop()
+
     window.addEventListener('scroll', onScrollOrResize, { passive: true })
     window.addEventListener('resize', onScrollOrResize, { passive: true })
 
@@ -152,15 +187,14 @@ export default function InteractivePage() {
     }
   }, [])
 
-  const headerTranslateY = 'calc(var(--lift) * -35vh)'
-  const headerPaddingTop = 'calc(var(--lift) * 18px)'
+  // Hero motion in pixels (avoids vh rounding jumpiness)
+  // Move at same rate as scroll: 0.4vh of scrolling = 0.4vh of movement (1:1 ratio)
+  const heroTranslateY = 'calc(var(--hero-move) * -0.4 * var(--viewport-height) * 1px)'
 
-  const cornerShiftX = 'clamp(140px, 38vw, 540px)'
-  const compactScale = 'calc(1 - (var(--compact) * 0.35))'
-  const compactTranslateY = 'calc(var(--compact) * -10px)'
+  // Fold much sooner (was ~195vh). This is a big jump up, per your note.
+  const foldSpacerClassName = 'h-[120vh]'
 
-  const titleTransform = `translate3d(calc(var(--compact) * -1 * ${cornerShiftX}), ${compactTranslateY}, 0) scale(${compactScale})`
-  const navTransform = `translate3d(calc(var(--compact) * ${cornerShiftX}), ${compactTranslateY}, 0) scale(${compactScale})`
+  const titleTextShadow = '0 0 40px rgba(255, 215, 0, 0.8), 0 0 80px rgba(189, 117, 44, 0.6)'
 
   return (
     <div
@@ -171,41 +205,60 @@ export default function InteractivePage() {
           '--scroll-y': '0',
           '--viewport-height': '0',
           '--reveal': '0',
-          '--lift': '0',
-          '--compact': '0'
+          '--hero-move': '0',
+          '--hero-opacity': '1',
+          '--header-opacity': '0'
         } as React.CSSProperties
       }
     >
       {/* Debug controls (keep/remove) */}
-      <div className="fixed top-4 right-4 z-[100] bg-black/80 p-4 rounded-lg text-white space-y-3 max-h-screen overflow-y-auto text-xs">
+      <div className="fixed top-4 right-4 z-[200] bg-black/80 p-4 rounded-lg text-white space-y-3 max-h-screen overflow-y-auto text-xs">
         <div>
           <p className="font-bold mb-2">Empty Ring</p>
           <p className="mb-1">Scale: {emptyScale.toFixed(1)}%</p>
           <div className="flex gap-1 mb-2">
-            <button onClick={() => setEmptyScale(value => value - 0.1)} className="px-2 py-1 bg-gray-700 rounded hover:bg-gray-600">
+            <button
+              onClick={() => setEmptyScale(currentValue => currentValue - 0.1)}
+              className="px-2 py-1 bg-gray-700 rounded hover:bg-gray-600"
+            >
               -0.1
             </button>
-            <button onClick={() => setEmptyScale(value => value + 0.1)} className="px-2 py-1 bg-gray-700 rounded hover:bg-gray-600">
+            <button
+              onClick={() => setEmptyScale(currentValue => currentValue + 0.1)}
+              className="px-2 py-1 bg-gray-700 rounded hover:bg-gray-600"
+            >
               +0.1
             </button>
           </div>
 
           <p className="mb-1">X Offset: {emptyOffsetX}px</p>
           <div className="flex gap-1 mb-2">
-            <button onClick={() => setEmptyOffsetX(value => value - 0.1)} className="px-2 py-1 bg-gray-700 rounded hover:bg-gray-600">
+            <button
+              onClick={() => setEmptyOffsetX(currentValue => currentValue - 0.1)}
+              className="px-2 py-1 bg-gray-700 rounded hover:bg-gray-600"
+            >
               -0.1
             </button>
-            <button onClick={() => setEmptyOffsetX(value => value + 0.1)} className="px-2 py-1 bg-gray-700 rounded hover:bg-gray-600">
+            <button
+              onClick={() => setEmptyOffsetX(currentValue => currentValue + 0.1)}
+              className="px-2 py-1 bg-gray-700 rounded hover:bg-gray-600"
+            >
               +0.1
             </button>
           </div>
 
           <p className="mb-1">Y Offset: {emptyOffsetY}px</p>
           <div className="flex gap-1">
-            <button onClick={() => setEmptyOffsetY(value => value - 0.1)} className="px-2 py-1 bg-gray-700 rounded hover:bg-gray-600">
+            <button
+              onClick={() => setEmptyOffsetY(currentValue => currentValue - 0.1)}
+              className="px-2 py-1 bg-gray-700 rounded hover:bg-gray-600"
+            >
               -0.1
             </button>
-            <button onClick={() => setEmptyOffsetY(value => value + 0.1)} className="px-2 py-1 bg-gray-700 rounded hover:bg-gray-600">
+            <button
+              onClick={() => setEmptyOffsetY(currentValue => currentValue + 0.1)}
+              className="px-2 py-1 bg-gray-700 rounded hover:bg-gray-600"
+            >
               +0.1
             </button>
           </div>
@@ -215,76 +268,78 @@ export default function InteractivePage() {
           <p className="font-bold mb-2">Main Image</p>
           <p className="mb-1">Scale: {mainScale}%</p>
           <div className="flex gap-1 mb-2">
-            <button onClick={() => setMainScale(value => value - 1)} className="px-2 py-1 bg-gray-700 rounded hover:bg-gray-600">
+            <button
+              onClick={() => setMainScale(currentValue => currentValue - 1)}
+              className="px-2 py-1 bg-gray-700 rounded hover:bg-gray-600"
+            >
               -1
             </button>
-            <button onClick={() => setMainScale(value => value + 1)} className="px-2 py-1 bg-gray-700 rounded hover:bg-gray-600">
+            <button
+              onClick={() => setMainScale(currentValue => currentValue + 1)}
+              className="px-2 py-1 bg-gray-700 rounded hover:bg-gray-600"
+            >
               +1
             </button>
           </div>
 
           <p className="mb-1">X Offset: {mainOffsetX}px</p>
           <div className="flex gap-1 mb-2">
-            <button onClick={() => setMainOffsetX(value => value - 1)} className="px-2 py-1 bg-gray-700 rounded hover:bg-gray-600">
+            <button
+              onClick={() => setMainOffsetX(currentValue => currentValue - 1)}
+              className="px-2 py-1 bg-gray-700 rounded hover:bg-gray-600"
+            >
               -1
             </button>
-            <button onClick={() => setMainOffsetX(value => value + 1)} className="px-2 py-1 bg-gray-700 rounded hover:bg-gray-600">
+            <button
+              onClick={() => setMainOffsetX(currentValue => currentValue + 1)}
+              className="px-2 py-1 bg-gray-700 rounded hover:bg-gray-600"
+            >
               +1
             </button>
           </div>
 
           <p className="mb-1">Y Offset: {mainOffsetY}px</p>
           <div className="flex gap-1">
-            <button onClick={() => setMainOffsetY(value => value - 1)} className="px-2 py-1 bg-gray-700 rounded hover:bg-gray-600">
+            <button
+              onClick={() => setMainOffsetY(currentValue => currentValue - 1)}
+              className="px-2 py-1 bg-gray-700 rounded hover:bg-gray-600"
+            >
               -1
             </button>
-            <button onClick={() => setMainOffsetY(value => value + 1)} className="px-2 py-1 bg-gray-700 rounded hover:bg-gray-600">
+            <button
+              onClick={() => setMainOffsetY(currentValue => currentValue + 1)}
+              className="px-2 py-1 bg-gray-700 rounded hover:bg-gray-600"
+            >
               +1
             </button>
           </div>
         </div>
       </div>
 
-      {/* Fixed header */}
-      <div className="fixed top-0 left-0 right-0 z-50">
-        <div className="flex items-center justify-center" style={{ height: '100vh', paddingTop: headerPaddingTop }}>
+      {/* HERO: scrolls off the page (smoothed) */}
+      <div className="fixed top-0 left-0 right-0 z-[80] pointer-events-none">
+        <div className="flex items-center justify-center" style={{ height: '100vh' }}>
           <div
             className="flex flex-col items-center gap-6"
             style={{
-              transform: `translate3d(0, ${headerTranslateY}, 0)`,
-              willChange: 'transform'
+              transform: `translate3d(0, ${heroTranslateY}, 0)`,
+              opacity: 'var(--hero-opacity)',
+              willChange: 'transform, opacity'
             }}
           >
-            <div
-              className="flex flex-col items-center gap-1"
-              style={{
-                transform: titleTransform,
-                transformOrigin: 'center',
-                willChange: 'transform'
-              }}
-            >
+            <div className="flex flex-col items-center gap-1">
               <h1
                 className="text-5xl md:text-6xl font-bold text-white tracking-wide uppercase px-3 py-2.5"
                 style={{
                   fontFamily: 'var(--font-decorative)',
-                  textShadow: '0 0 40px rgba(255, 215, 0, 0.8), 0 0 80px rgba(189, 117, 44, 0.6)'
+                  textShadow: titleTextShadow
                 }}
               >
                 Dreamscape
               </h1>
-              <p className="text-cream text-sm md:text-base tracking-wide" style={{ fontFamily: 'var(--font-decorative)' }}>
-                Circus, Embodiment, Creation Center in Pai, Thailand
-              </p>
             </div>
 
-            <nav
-              className="flex gap-6 text-cream pointer-events-auto"
-              style={{
-                transform: navTransform,
-                transformOrigin: 'center',
-                willChange: 'transform'
-              }}
-            >
+            <nav className="flex gap-6 text-cream pointer-events-auto">
               {[
                 { href: '/spaces', label: 'Spaces' },
                 { href: '/schedule', label: 'Schedule' },
@@ -293,13 +348,22 @@ export default function InteractivePage() {
                 <a
                   key={link.href}
                   href={link.href}
-                  className="text-xl md:text-2xl hover:text-white hover:scale-105 cursor-pointer px-6 py-3 rounded-lg transition-transform"
+                  className="text-xl md:text-2xl hover:scale-105 cursor-pointer px-6 py-3 rounded-lg transition-all"
                   style={{
                     fontFamily: 'var(--font-serif)',
                     backgroundColor: 'rgba(246, 216, 157, 0.1)',
                     backdropFilter: 'blur(10px)',
                     WebkitBackdropFilter: 'blur(10px)',
-                    border: '1px solid rgba(246, 216, 157, 0.2)'
+                    border: '1px solid rgba(246, 216, 157, 0.2)',
+                    color: '#F6D89D'
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = 'rgba(246, 216, 157, 0.25)'
+                    e.currentTarget.style.color = '#FAE1AF'
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = 'rgba(246, 216, 157, 0.1)'
+                    e.currentTarget.style.color = '#F6D89D'
                   }}
                 >
                   {link.label}
@@ -310,12 +374,17 @@ export default function InteractivePage() {
         </div>
       </div>
 
-      {/* Scroll spacer: shorter so the “fold” isn’t so far down */}
-      <div className="relative z-10">
-        <div className="h-[260vh]" />
+      {/* Header: fades in after hero scrolls away */}
+      <div style={{ opacity: 'var(--header-opacity)' }}>
+        <Header />
       </div>
 
-      {/* Fixed background */}
+      {/* Scroll spacer: fold much sooner */}
+      <div className="relative z-10">
+        <div className={foldSpacerClassName} />
+      </div>
+
+      {/* Fixed background stack */}
       <div className="fixed top-0 left-0 right-0 w-full h-screen z-0">
         <div className="absolute top-0 left-0 w-full h-full" style={{ opacity: 0.8 }}>
           <Image
@@ -341,7 +410,7 @@ export default function InteractivePage() {
       {/* Below the fold */}
       <div className="relative z-10">
         <div
-          className="h-[100px]"
+          className="h-[64px]"
           style={{
             background: 'linear-gradient(to bottom, #180A3300, #180A33FF)'
           }}
@@ -351,9 +420,7 @@ export default function InteractivePage() {
             <h2 className="text-3xl font-bold text-cream mb-6" style={{ fontFamily: 'var(--font-serif)' }}>
               Below the Fold
             </h2>
-            <p className="text-cream text-lg mb-4">
-              Replace this with your real page content.
-            </p>
+            <p className="text-cream text-lg mb-4">Replace this with your real page content.</p>
           </div>
         </div>
       </div>

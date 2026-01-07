@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import type { MembershipPlan } from '@prisma/client'
-import { useAuth } from '@clerk/nextjs'
+import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 
 type MembershipCardProps = {
@@ -10,13 +10,13 @@ type MembershipCardProps = {
 }
 
 export function MembershipCard({ plan }: MembershipCardProps) {
-  const { isSignedIn } = useAuth()
+  const { data: session } = useSession()
   const router = useRouter()
   const [loading, setLoading] = useState(false)
 
   async function handleSubscribe() {
-    if (!isSignedIn) {
-      router.push('/sign-in?redirect_url=/memberships')
+    if (!session) {
+      router.push('/auth/signin?callbackUrl=/memberships')
       return
     }
 

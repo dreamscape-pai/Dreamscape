@@ -24,7 +24,7 @@ export default function AboutPage() {
             an art and embodiment playground like no other.
           </p>
           <p className="text-gray-700 mb-4">
-            Our tagline says it all: <strong>Everything is Art</strong>. We believe in creating a
+            Our goal says it all: <strong>Everything is Art</strong>. We believe in creating a
             space that is visually rich, interactive, and feels like a place you want to explore
             and get lost in.
           </p>
