@@ -5,11 +5,7 @@ import { format } from 'date-fns'
 export default async function EventsPage() {
   const events = await db.event.findMany({
     include: {
-      spaces: {
-        include: {
-          space: true,
-        },
-      },
+      space: true,
     },
     orderBy: { startTime: 'desc' },
   })
@@ -41,13 +37,13 @@ export default async function EventsPage() {
                         <p className="text-sm text-sand/60">
                           {format(new Date(event.startTime), 'MMM d, yyyy h:mm a')} - {format(new Date(event.endTime), 'h:mm a')}
                         </p>
-                        <div className="mt-1 flex flex-wrap gap-2">
-                          {event.spaces.map((es) => (
-                            <span key={es.id} className="text-xs bg-sunset/20 text-sand border border-sand/20 px-2 py-1 rounded">
-                              {es.space.name}
+                        {event.space && (
+                          <div className="mt-1">
+                            <span className="text-xs bg-sunset/20 text-sand border border-sand/20 px-2 py-1 rounded">
+                              {event.space.name}
                             </span>
-                          ))}
-                        </div>
+                          </div>
+                        )}
                       </div>
                       <div className="flex items-center space-x-4">
                         <span className="text-xs bg-lavender/30 text-sand border border-sand/20 px-2 py-1 rounded">

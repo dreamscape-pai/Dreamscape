@@ -1,23 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { auth } from '@/auth'
 import crypto from 'crypto'
 
 export async function GET(request: NextRequest) {
   try {
-    const session = await auth()
+    // This is now always a server-wide calendar setup
+    // No user authentication required
 
-    if (!session?.user?.id) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
-
-    const userId = session.user.id
-
-    // Create state parameter with CSRF protection and user info
+    // Create state parameter with CSRF protection
     const state = Buffer.from(
       JSON.stringify({
-        userId,
         csrf: crypto.randomBytes(16).toString('hex'),
-        returnUrl: request.nextUrl.searchParams.get('returnUrl') || '/admin'
+        returnUrl: request.nextUrl.searchParams.get('returnUrl') || '/admin/schedule'
       })
     ).toString('base64')
 

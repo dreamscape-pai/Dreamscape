@@ -10,14 +10,9 @@ export async function GET(request: Request, context: RouteContext) {
   try {
     const { id } = await context.params
     const event = await db.event.findUnique({
-      where: { id },
+      where: { id: parseInt(id) },
       include: {
-        spaces: {
-          include: {
-            space: true,
-          },
-        },
-        product: true,
+        space: true,
       },
     })
 
@@ -37,36 +32,38 @@ export async function PUT(request: Request, context: RouteContext) {
     const { id } = await context.params
     const body = await request.json()
 
-    // Delete existing space associations
-    await db.eventSpace.deleteMany({
-      where: { eventId: id },
+    // Get existing event to preserve slug
+    const existingEvent = await db.event.findUnique({
+      where: { id: parseInt(id) }
     })
 
-    // Update event with new space associations
+    if (!existingEvent) {
+      return NextResponse.json({ error: 'Event not found' }, { status: 404 })
+    }
+
+    // Check if title or description changed (manual edit)
+    const titleChanged = body.title !== existingEvent.title
+    const descriptionChanged = body.description !== existingEvent.description
+    const manuallyEdited = titleChanged || descriptionChanged
+
+    // Update event (preserve existing slug unless somehow provided)
     const event = await db.event.update({
-      where: { id },
+      where: { id: parseInt(id) },
       data: {
         title: body.title,
-        slug: body.slug,
+        slug: body.slug || existingEvent.slug, // Keep existing slug
         description: body.description,
         startTime: new Date(body.startTime),
         endTime: new Date(body.endTime),
         type: body.type,
         published: body.published,
         capacity: body.capacity ? parseInt(body.capacity) : null,
-        productId: body.productId || null,
-        spaces: {
-          create: (body.spaceIds || []).map((spaceId: string) => ({
-            spaceId,
-          })),
-        },
+        spaceId: body.spaceId || null,
+        // Set preserveManualEdits to true if title or description was changed
+        preserveManualEdits: manuallyEdited ? true : existingEvent.preserveManualEdits,
       },
       include: {
-        spaces: {
-          include: {
-            space: true,
-          },
-        },
+        space: true,
       },
     })
 
@@ -83,7 +80,7 @@ export async function DELETE(request: Request, context: RouteContext) {
     const { id } = await context.params
 
     await db.event.delete({
-      where: { id },
+      where: { id: parseInt(id) },
     })
 
     return NextResponse.json({ success: true })

@@ -103,9 +103,10 @@ function LayeredImage({
 
 interface InteractiveHeroProps {
   children?: React.ReactNode
+  isHomePage?: boolean
 }
 
-export default function InteractiveHero({ children }: InteractiveHeroProps) {
+export default function InteractiveHero({ children, isHomePage = false }: InteractiveHeroProps) {
   const containerRef = useRef<HTMLDivElement>(null)
 
   // Image positioning values
@@ -151,10 +152,10 @@ export default function InteractiveHero({ children }: InteractiveHeroProps) {
       // 1.24 -> 1.54 : hero fades out while header fades in (crossfade when title hits top)
       const reveal = clampNumber(scrollUnits / 0.6, 0, 1)
 
-      const heroMove = clampNumber((scrollUnits - 0.84) / 0.4, 0, 1) // 0..1
-      const heroFade = 1 - clampNumber((scrollUnits - 1.24) / 0.3, 0, 1) // Fade out from 1.24 to 1.54
+      const heroMove = clampNumber((scrollUnits - 0.84) / 0.4, 0, 0.9) // 0..1
+      const heroFade = 1 - clampNumber((scrollUnits - 1.2) / 0.3, 0, 1) // Fade out from 1.24 to 1.54
 
-      const headerFade = clampNumber((scrollUnits - 1.24) / 0.3, 0, 1) // Fade in from 1.24 to 1.54
+      const headerFade = clampNumber((scrollUnits - 1.34) / 0.15, 0, 1) // Fade in from 1.24 to 1.54
 
       containerElement.style.setProperty('--scroll-y', String(smoothedScrollTop))
       containerElement.style.setProperty('--viewport-height', String(latestViewportHeight))
@@ -306,7 +307,7 @@ export default function InteractiveHero({ children }: InteractiveHeroProps) {
         className="fixed top-0 left-0 right-0 z-20"
         style={{ opacity: 'var(--header-opacity)' }}
       >
-        <Header />
+        <Header isHomePage={isHomePage} />
       </div>
 
       {/* Scroll spacer */}
@@ -340,9 +341,9 @@ export default function InteractiveHero({ children }: InteractiveHeroProps) {
       {/* Content sections */}
       <div className="relative z-10">
         <div
-          className="h-[64px]"
+          className="h-[74px]"
           style={{
-            background: 'linear-gradient(to bottom, #180A3300, #180A33FF)'
+            background: 'linear-gradient(rgba(24, 10, 51, 0), 30%, rgb(143 13 58), 72%, rgb(182 135 44), 80%, rgba(24, 10, 51, 0.8));'
           }}
         />
         <div style={{ backgroundColor: 'rgba(24, 10, 51, 0.8)' }}>

@@ -2,7 +2,7 @@ import { db } from '@/lib/db'
 import { notFound } from 'next/navigation'
 import { Navigation } from '@/components/navigation'
 import { ScheduleView } from '@/components/schedule-view'
-import { startOfWeek, endOfWeek } from 'date-fns'
+import { startOfWeek, endOfWeek, startOfDay, endOfDay } from 'date-fns'
 
 type PageProps = {
   params: Promise<{ slug: string }>
@@ -23,11 +23,13 @@ export default async function SpacePage(props: PageProps) {
     notFound()
   }
 
+  // Normalize date to avoid hydration mismatches
   const date = searchParams.date ? new Date(searchParams.date) : new Date()
+  date.setHours(12, 0, 0, 0) // Set to noon to avoid timezone issues
   const view = searchParams.view || 'week'
 
-  const start = view === 'day' ? new Date(date.setHours(0, 0, 0, 0)) : startOfWeek(date, { weekStartsOn: 1 })
-  const end = view === 'day' ? new Date(date.setHours(23, 59, 59, 999)) : endOfWeek(date, { weekStartsOn: 1 })
+  const start = view === 'day' ? startOfDay(date) : startOfWeek(date, { weekStartsOn: 1 })
+  const end = view === 'day' ? endOfDay(date) : endOfWeek(date, { weekStartsOn: 1 })
 
   const events = await db.event.findMany({
     where: {
@@ -36,18 +38,10 @@ export default async function SpacePage(props: PageProps) {
         gte: start,
         lte: end,
       },
-      spaces: {
-        some: {
-          spaceId: space.id,
-        },
-      },
+      spaceId: space.id,
     },
     include: {
-      spaces: {
-        include: {
-          space: true,
-        },
-      },
+      space: true,
       product: true,
     },
     orderBy: {

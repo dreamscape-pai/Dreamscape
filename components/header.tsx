@@ -1,8 +1,13 @@
 'use client'
 
 import Image from 'next/image'
+import Link from 'next/link'
 
-export default function Header() {
+interface HeaderProps {
+  isHomePage?: boolean
+}
+
+export default function Header({ isHomePage = false }: HeaderProps) {
   return (
     <header
       className="fixed top-0 left-0 right-0 z-[120]"
@@ -22,7 +27,7 @@ export default function Header() {
           src="/assets/stary-background.png"
           alt="Header background"
           fill
-          style={{ objectFit: 'cover', objectPosition: 'top' }}
+          style={{ objectPosition: 'top' }}
           priority
           unoptimized
         />
@@ -34,13 +39,14 @@ export default function Header() {
         <div
           className="absolute left-0 right-0 bottom-0 pointer-events-none"
           style={{
-            height: '28px',
-            background: 'linear-gradient(to bottom, rgba(0,0,0,0.40), rgba(0,0,0,0))'
+            height: '100%',
+            background: 'linear-gradient(to bottom, rgba(0,0,0,0.40), rgba(0,0,0,0.15))'
           }}
         />
 
         <div className="relative h-full max-w-6xl mx-auto px-4 flex items-center justify-between">
-          <div
+          <Link
+            href="/"
             className="font-bold uppercase tracking-wide"
             style={{
               fontFamily: 'var(--font-decorative)',
@@ -51,46 +57,76 @@ export default function Header() {
             }}
           >
             Dreamscape
-          </div>
+          </Link>
 
           <nav className="flex gap-3 md:gap-4">
             {[
-              { id: 'spaces', label: 'Spaces' },
-              { id: 'schedule', label: 'Schedule' },
-              { id: 'vision', label: 'Vision' }
+              { id: 'spaces', label: 'Spaces', href: '/spaces' },
+              { id: 'schedule', label: 'Schedule', href: '/schedule' },
+              { id: 'vision', label: 'Vision', href: '/vision' }
             ].map(link => (
-              <button
-                key={link.id}
-                onClick={() => {
-                  const element = document.getElementById(link.id)
-                  if (element) {
-                    element.scrollIntoView({ behavior: 'smooth' })
-                  }
-                }}
-                className="group text-sm md:text-base text-cream px-3 py-2 rounded-md transition-all"
-                style={{
-                  fontFamily: 'var(--font-serif)',
-                  backgroundColor: 'rgba(246, 216, 157, 0.10)',
-                  border: '1px solid rgba(246, 216, 157, 0.22)',
-                  willChange: 'transform'
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.backgroundColor = 'rgba(246, 216, 157, 0.25)'
-                  e.currentTarget.style.color = '#FAE1AF'
-                  e.currentTarget.style.transform = 'scale(1.05)'
-                  const span = e.currentTarget.querySelector('span')
-                  if (span) span.style.transform = 'scale(1.10)'
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.backgroundColor = 'rgba(246, 216, 157, 0.10)'
-                  e.currentTarget.style.color = '#F6D89D'
-                  e.currentTarget.style.transform = ''
-                  const span = e.currentTarget.querySelector('span')
-                  if (span) span.style.transform = ''
-                }}
-              >
-                <span className="inline-block transition-transform">{link.label}</span>
-              </button>
+              isHomePage ? (
+                <button
+                  key={link.id}
+                  onClick={() => {
+                    const element = document.getElementById(link.id)
+                    if (element) {
+                      element.scrollIntoView({ behavior: 'smooth' })
+                    }
+                  }}
+                  className="group text-sm md:text-base text-cream px-3 py-2 rounded-md transition-all"
+                  style={{
+                    fontFamily: 'var(--font-serif)',
+                    backgroundColor: 'rgba(246, 216, 157, 0.10)',
+                    border: '1px solid rgba(246, 216, 157, 0.22)',
+                    willChange: 'transform'
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = 'rgba(246, 216, 157, 0.25)'
+                    e.currentTarget.style.color = '#FAE1AF'
+                    e.currentTarget.style.transform = 'scale(1.05)'
+                    const span = e.currentTarget.querySelector('span')
+                    if (span) span.style.transform = 'scale(1.10)'
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = 'rgba(246, 216, 157, 0.10)'
+                    e.currentTarget.style.color = '#F6D89D'
+                    e.currentTarget.style.transform = ''
+                    const span = e.currentTarget.querySelector('span')
+                    if (span) span.style.transform = ''
+                  }}
+                >
+                  <span className="inline-block transition-transform">{link.label}</span>
+                </button>
+              ) : (
+                <Link
+                  key={link.id}
+                  href={link.href}
+                  className="group text-sm md:text-base text-cream px-3 py-2 rounded-md transition-all inline-block"
+                  style={{
+                    fontFamily: 'var(--font-serif)',
+                    backgroundColor: 'rgba(246, 216, 157, 0.10)',
+                    border: '1px solid rgba(246, 216, 157, 0.22)',
+                    willChange: 'transform'
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = 'rgba(246, 216, 157, 0.25)'
+                    e.currentTarget.style.color = '#FAE1AF'
+                    e.currentTarget.style.transform = 'scale(1.05)'
+                    const span = e.currentTarget.querySelector('span')
+                    if (span) span.style.transform = 'scale(1.10)'
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = 'rgba(246, 216, 157, 0.10)'
+                    e.currentTarget.style.color = '#F6D89D'
+                    e.currentTarget.style.transform = ''
+                    const span = e.currentTarget.querySelector('span')
+                    if (span) span.style.transform = ''
+                  }}
+                >
+                  <span className="inline-block transition-transform">{link.label}</span>
+                </Link>
+              )
             ))}
           </nav>
         </div>

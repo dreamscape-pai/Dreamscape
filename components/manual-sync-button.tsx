@@ -2,11 +2,7 @@
 
 import { useState } from 'react'
 
-interface ManualSyncButtonProps {
-  userId: string
-}
-
-export function ManualSyncButton({ userId }: ManualSyncButtonProps) {
+export function ManualSyncButton() {
   const [isSyncing, setIsSyncing] = useState(false)
   const [syncResult, setSyncResult] = useState<string | null>(null)
 
@@ -18,7 +14,7 @@ export function ManualSyncButton({ userId }: ManualSyncButtonProps) {
       const response = await fetch('/api/google/calendar/sync', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId })
+        body: JSON.stringify({})
       })
 
       const data = await response.json()

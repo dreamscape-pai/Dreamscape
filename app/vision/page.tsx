@@ -1,15 +1,8 @@
-import Link from 'next/link'
 import Image from 'next/image'
-import { db } from '@/lib/db'
 import Header from '@/components/header'
-import SpacesGrid from '@/components/spaces-grid'
+import VisionContent from '@/components/vision-content'
 
-export default async function SpacesPage() {
-  const spaces = await db.space.findMany({
-    where: { published: true },
-    orderBy: { name: 'asc' },
-  })
-
+export default function VisionPage() {
   return (
     <>
       <Header isHomePage={false} />
@@ -29,15 +22,15 @@ export default async function SpacesPage() {
 
         {/* Content */}
         <section className="relative z-10 min-h-screen pt-32 pb-16">
-          <div className="max-w-6xl mx-auto px-4">
+          <div className="max-w-4xl mx-auto px-4">
             <h2
               className="text-4xl md:text-5xl font-bold text-cream mb-8 text-center"
               style={{ fontFamily: 'var(--font-decorative)' }}
             >
-              Our Spaces
+              The Vision
             </h2>
 
-            <SpacesGrid spaces={spaces} showViewAll={false} />
+            <VisionContent />
           </div>
         </section>
       </div>

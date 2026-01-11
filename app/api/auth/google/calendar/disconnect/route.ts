@@ -10,12 +10,14 @@ export async function POST() {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const userId = session.user.id
+    // Find and delete the server credential
+    const credential = await db.googleCalendarCredential.findFirst()
 
-    // Delete the credential
-    await db.googleCalendarCredential.delete({
-      where: { userId }
-    })
+    if (credential) {
+      await db.googleCalendarCredential.delete({
+        where: { id: credential.id }
+      })
+    }
 
     return NextResponse.json({ success: true })
   } catch (error) {

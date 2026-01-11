@@ -12,12 +12,8 @@ export default async function AdminSchedulePage() {
     redirect('/auth/signin')
   }
 
-  const userId = session.user.id
-
-  // Get Google Calendar credential status
-  const credential = await db.googleCalendarCredential.findUnique({
-    where: { userId }
-  })
+  // Get server-wide Google Calendar credential status (we only have one)
+  const credential = await db.googleCalendarCredential.findFirst()
 
   // Get event stats
   const [totalEvents, googleEvents] = await Promise.all([
@@ -59,7 +55,7 @@ export default async function AdminSchedulePage() {
                   </p>
                 )}
               </div>
-              <ManualSyncButton userId={userId} />
+              <ManualSyncButton />
             </div>
 
             <div className="pt-4 border-t border-sand/20">

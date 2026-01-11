@@ -2,42 +2,34 @@
 
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
-import type { Event, EventSpace, Space, Product } from '@prisma/client'
+import type { Event, Space } from '@prisma/client'
 
-type EventWithSpaces = Event & {
-  spaces: (EventSpace & { space: Space })[]
-  product?: Product | null
+type EventWithDetails = Event & {
+  space?: Space | null
 }
 
 type EventFormProps = {
-  event?: EventWithSpaces
+  event?: EventWithDetails
   spaces: Space[]
-  products: Product[]
 }
 
-const EVENT_TYPES = ['WORKSHOP', 'SHOW', 'JAM', 'RETREAT', 'FESTIVAL', 'OTHER']
+const EVENT_TYPES = ['WORKSHOP', 'SHOW', 'JAM', 'RETREAT', 'FESTIVAL', 'MEMBERSHIP_TRAINING', 'DANCE_EVENT', 'OTHER']
 
-export function EventForm({ event, spaces, products }: EventFormProps) {
+export function EventForm({ event, spaces }: EventFormProps) {
   const router = useRouter()
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
-  const [selectedSpaces, setSelectedSpaces] = useState<string[]>(
-    event?.spaces.map((es) => es.spaceId) || []
+  const [selectedSpaceId, setSelectedSpaceId] = useState<string>(
+    event?.spaceId?.toString() || ''
   )
-
-  function toggleSpace(spaceId: string) {
-    setSelectedSpaces((prev) =>
-      prev.includes(spaceId) ? prev.filter((id) => id !== spaceId) : [...prev, spaceId]
-    )
-  }
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
     setLoading(true)
     setError('')
 
-    if (selectedSpaces.length === 0) {
-      setError('Please select at least one space')
+    if (!selectedSpaceId) {
+      setError('Please select a space')
       setLoading(false)
       return
     }
@@ -51,9 +43,8 @@ export function EventForm({ event, spaces, products }: EventFormProps) {
       endTime: formData.get('endTime'),
       type: formData.get('type'),
       capacity: formData.get('capacity'),
-      productId: formData.get('productId') || null,
       published: formData.get('published') === 'on',
-      spaceIds: selectedSpaces,
+      spaceId: parseInt(selectedSpaceId),
     }
 
     try {
@@ -120,7 +111,7 @@ export function EventForm({ event, spaces, products }: EventFormProps) {
       )}
 
       <div>
-        <label htmlFor="title" className="block text-sm font-medium text-gray-700">
+        <label htmlFor="title" className="block text-sm font-bold text-white">
           Title
         </label>
         <input
@@ -129,28 +120,32 @@ export function EventForm({ event, spaces, products }: EventFormProps) {
           id="title"
           required
           defaultValue={event?.title}
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+          onChange={(e) => {
+            // Auto-generate slug for new events
+            if (!event) {
+              const slugField = document.getElementById('slug') as HTMLInputElement
+              if (slugField) {
+                slugField.value = e.target.value
+                  .toLowerCase()
+                  .replace(/[^a-z0-9]+/g, '-')
+                  .replace(/(^-|-$)/g, '')
+              }
+            }
+          }}
+          className="mt-1 block w-full rounded-md bg-white/10 border-gray-600 text-white shadow-sm focus:border-blue-500 focus:ring-blue-500 px-4 py-3"
         />
       </div>
 
-      <div>
-        <label htmlFor="slug" className="block text-sm font-medium text-gray-700">
-          Slug
-        </label>
-        <input
-          type="text"
-          name="slug"
-          id="slug"
-          required
-          defaultValue={event?.slug}
-          pattern="[a-z0-9-]+"
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-        />
-        <p className="mt-1 text-sm text-gray-500">Lowercase letters, numbers, and hyphens only</p>
-      </div>
+      {/* Hidden slug field - auto-generated */}
+      <input
+        type="hidden"
+        name="slug"
+        id="slug"
+        defaultValue={event?.slug || ''}
+      />
 
       <div>
-        <label htmlFor="description" className="block text-sm font-medium text-gray-700">
+        <label htmlFor="description" className="block text-sm font-bold text-white">
           Description
         </label>
         <textarea
@@ -158,13 +153,13 @@ export function EventForm({ event, spaces, products }: EventFormProps) {
           id="description"
           rows={4}
           defaultValue={event?.description || ''}
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+          className="mt-1 block w-full rounded-md bg-white/10 border-gray-600 text-white shadow-sm focus:border-blue-500 focus:ring-blue-500 px-4 py-3"
         />
       </div>
 
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <label htmlFor="startTime" className="block text-sm font-medium text-gray-700">
+          <label htmlFor="startTime" className="block text-sm font-bold text-white">
             Start Time
           </label>
           <input
@@ -173,12 +168,12 @@ export function EventForm({ event, spaces, products }: EventFormProps) {
             id="startTime"
             required
             defaultValue={event ? formatDateTimeLocal(event.startTime) : ''}
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+            className="mt-1 block w-full rounded-md bg-white/10 border-gray-600 text-white shadow-sm focus:border-blue-500 focus:ring-blue-500 px-4 py-3"
           />
         </div>
 
         <div>
-          <label htmlFor="endTime" className="block text-sm font-medium text-gray-700">
+          <label htmlFor="endTime" className="block text-sm font-bold text-white">
             End Time
           </label>
           <input
@@ -187,23 +182,23 @@ export function EventForm({ event, spaces, products }: EventFormProps) {
             id="endTime"
             required
             defaultValue={event ? formatDateTimeLocal(event.endTime) : ''}
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+            className="mt-1 block w-full rounded-md bg-white/10 border-gray-600 text-white shadow-sm focus:border-blue-500 focus:ring-blue-500 px-4 py-3"
           />
         </div>
       </div>
 
       <div>
-        <label htmlFor="type" className="block text-sm font-medium text-gray-700">
+        <label htmlFor="type" className="block text-sm font-bold text-white">
           Event Type
         </label>
         <select
           name="type"
           id="type"
           defaultValue={event?.type || 'OTHER'}
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+          className="mt-1 block w-full rounded-md bg-white/10 border-gray-600 text-white shadow-sm focus:border-blue-500 focus:ring-blue-500 px-4 py-3"
         >
           {EVENT_TYPES.map((type) => (
-            <option key={type} value={type}>
+            <option key={type} value={type} className="bg-gray-800">
               {type}
             </option>
           ))}
@@ -211,26 +206,28 @@ export function EventForm({ event, spaces, products }: EventFormProps) {
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
-          Spaces (select at least one)
+        <label htmlFor="spaceId" className="block text-sm font-bold text-white">
+          Space
         </label>
-        <div className="space-y-2">
+        <select
+          name="spaceId"
+          id="spaceId"
+          value={selectedSpaceId}
+          onChange={(e) => setSelectedSpaceId(e.target.value)}
+          required
+          className="mt-1 block w-full rounded-md bg-white/10 border-gray-600 text-white shadow-sm focus:border-blue-500 focus:ring-blue-500 px-4 py-3"
+        >
+          <option value="" className="bg-gray-800">Select a space</option>
           {spaces.map((space) => (
-            <label key={space.id} className="flex items-center">
-              <input
-                type="checkbox"
-                checked={selectedSpaces.includes(space.id)}
-                onChange={() => toggleSpace(space.id)}
-                className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-              />
-              <span className="ml-2 text-sm text-gray-900">{space.name}</span>
-            </label>
+            <option key={space.id} value={space.id} className="bg-gray-800">
+              {space.name}
+            </option>
           ))}
-        </div>
+        </select>
       </div>
 
       <div>
-        <label htmlFor="capacity" className="block text-sm font-medium text-gray-700">
+        <label htmlFor="capacity" className="block text-sm font-bold text-white">
           Capacity (optional)
         </label>
         <input
@@ -239,27 +236,8 @@ export function EventForm({ event, spaces, products }: EventFormProps) {
           id="capacity"
           min="1"
           defaultValue={event?.capacity || ''}
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+          className="mt-1 block w-full rounded-md bg-white/10 border-gray-600 text-white shadow-sm focus:border-blue-500 focus:ring-blue-500 px-4 py-3"
         />
-      </div>
-
-      <div>
-        <label htmlFor="productId" className="block text-sm font-medium text-gray-700">
-          Linked Product (optional)
-        </label>
-        <select
-          name="productId"
-          id="productId"
-          defaultValue={event?.productId || ''}
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-        >
-          <option value="">No product</option>
-          {products.map((product) => (
-            <option key={product.id} value={product.id}>
-              {product.name} - ${(product.price / 100).toFixed(2)}
-            </option>
-          ))}
-        </select>
       </div>
 
       <div className="flex items-center">
@@ -268,9 +246,9 @@ export function EventForm({ event, spaces, products }: EventFormProps) {
           name="published"
           id="published"
           defaultChecked={event?.published}
-          className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+          className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-600 rounded bg-white/10"
         />
-        <label htmlFor="published" className="ml-2 block text-sm text-gray-900">
+        <label htmlFor="published" className="ml-2 block text-sm font-bold text-white">
           Published
         </label>
       </div>

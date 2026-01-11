@@ -12,12 +12,7 @@ export async function GET(request: NextRequest) {
     if (!startParam || !endParam) {
       const events = await db.event.findMany({
         include: {
-          spaces: {
-            include: {
-              space: true,
-            },
-          },
-          product: true,
+          space: true,
         },
         orderBy: { startTime: 'desc' },
       })
@@ -28,93 +23,83 @@ export async function GET(request: NextRequest) {
     const start = new Date(startParam)
     const end = new Date(endParam)
 
-    // Fetch all published events (both one-time and recurring)
+    // Fetch all published events including member events
+    // Frontend will handle filtering based on user preferences
     const allEvents = await db.event.findMany({
       where: {
         published: true,
+        canceled: false, // Exclude canceled events
       },
       include: {
-        spaces: {
-          include: {
-            space: true,
-          },
-        },
-        cancellations: true,
+        space: true,
       },
       orderBy: {
         startTime: 'asc',
       },
     })
 
-    // Filter events manually to handle complex recurring logic
+    // Filter events for the specified date range (all are now one-time events)
     const relevantEvents = allEvents.filter(event => {
-      if (!event.isRecurring) {
-        // One-time events: check if they're in the current week
-        return event.startTime >= start && event.startTime <= end
-      } else {
-        // Recurring events: check if they overlap with the current week
-        const eventStart = new Date(event.startTime)
-        const eventRecurrenceEnd = event.recurrenceEnd ? new Date(event.recurrenceEnd) : null
+      // One-time events: check if they're in the current week
+      return event.startTime >= start && event.startTime <= end
+    })
 
-        // Event must have started before or during this week
-        if (eventStart > end) return false
-
-        // Event must not have ended before this week
-        if (eventRecurrenceEnd && eventRecurrenceEnd < start) return false
-
-        return true
-      }
+    // Fetch daily events
+    const dailyEvents = await db.dailyEvent.findMany({
+      where: { published: true },
+      include: { space: true }
     })
 
     // Expand recurring events into individual instances for the week
-    const events: typeof allEvents = []
+    const events: any[] = []
     const eventKeys = new Set<string>() // Track unique events by id+date
 
-    for (const event of relevantEvents) {
-      if (!event.isRecurring) {
-        const eventKey = `${event.id}-${event.startTime.toISOString()}`
-        if (!eventKeys.has(eventKey)) {
-          eventKeys.add(eventKey)
-          events.push(event)
-        }
-      } else {
-        // Simple weekly recurrence expansion
-        const eventStart = new Date(event.startTime)
-        const eventEnd = event.endTime ? new Date(event.endTime) : null
-        const duration = eventEnd ? eventEnd.getTime() - eventStart.getTime() : 0
-        const dayOfWeek = eventStart.getDay()
+    // First, expand daily events for the date range
+    const currentDate = new Date(start)
+    while (currentDate <= end) {
+      const dayOfWeek = currentDate.getDay()
 
-        // Generate instances for each week day
-        const currentDate = new Date(start)
-        while (currentDate <= end) {
-          if (currentDate.getDay() === dayOfWeek) {
-            const instanceStart = new Date(currentDate)
-            instanceStart.setHours(eventStart.getHours(), eventStart.getMinutes(), 0, 0)
+      for (const dailyEvent of dailyEvents) {
+        if (dailyEvent.daysOfWeek.includes(dayOfWeek)) {
+          const [startHour, startMinute] = dailyEvent.startTime.split(':').map(Number)
+          const [endHour, endMinute] = dailyEvent.endTime.split(':').map(Number)
 
-            // Check if this instance is cancelled
-            const isCancelled = event.cancellations.some(cancellation => {
-              const cancelledDate = new Date(cancellation.cancelledDate)
-              return cancelledDate.toDateString() === instanceStart.toDateString()
+          const eventStart = new Date(currentDate)
+          eventStart.setHours(startHour, startMinute, 0, 0)
+
+          const eventEnd = new Date(currentDate)
+          eventEnd.setHours(endHour, endMinute, 0, 0)
+
+          const eventKey = `daily-${dailyEvent.id}-${eventStart.toISOString()}`
+          if (!eventKeys.has(eventKey)) {
+            eventKeys.add(eventKey)
+            events.push({
+              id: `daily-${dailyEvent.id}-${currentDate.getTime()}`, // Unique ID for daily events
+              title: dailyEvent.title,
+              startTime: eventStart,
+              endTime: eventEnd,
+              space: dailyEvent.space,
+              spaceId: dailyEvent.spaceId,
+              isDaily: true, // Flag to identify daily events in UI
+              showInCalendar: dailyEvent.showInCalendar, // Pass through the showInCalendar flag
+              daysOfWeek: dailyEvent.daysOfWeek, // Include days of week for display
+              type: 'OTHER',
+              published: true
             })
-
-            // Check if within recurrence end date
-            const isBeforeEnd = !event.recurrenceEnd || instanceStart <= new Date(event.recurrenceEnd)
-
-            if (!isCancelled && isBeforeEnd && instanceStart >= eventStart) {
-              const eventKey = `${event.id}-${instanceStart.toISOString()}`
-              if (!eventKeys.has(eventKey)) {
-                eventKeys.add(eventKey)
-                const instanceEnd = eventEnd ? new Date(instanceStart.getTime() + duration) : null
-                events.push({
-                  ...event,
-                  startTime: instanceStart,
-                  endTime: instanceEnd,
-                })
-              }
-            }
           }
-          currentDate.setDate(currentDate.getDate() + 1)
         }
+      }
+      currentDate.setDate(currentDate.getDate() + 1)
+    }
+
+    // Reset currentDate for regular events
+    const currentDateRegular = new Date(start)
+
+    for (const event of relevantEvents) {
+      const eventKey = `${event.id}-${event.startTime.toISOString()}`
+      if (!eventKeys.has(eventKey)) {
+        eventKeys.add(eventKey)
+        events.push(event)
       }
     }
 
@@ -130,29 +115,24 @@ export async function POST(request: Request) {
     await requireAdmin()
     const body = await request.json()
 
+    // Auto-generate slug if not provided
+    const slug = body.slug ||
+      `${body.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')}-${Date.now()}`
+
     const event = await db.event.create({
       data: {
         title: body.title,
-        slug: body.slug,
+        slug,
         description: body.description,
         startTime: new Date(body.startTime),
         endTime: new Date(body.endTime),
         type: body.type || 'OTHER',
         published: body.published || false,
         capacity: body.capacity ? parseInt(body.capacity) : null,
-        productId: body.productId || null,
-        spaces: {
-          create: (body.spaceIds || []).map((spaceId: string) => ({
-            spaceId,
-          })),
-        },
+        spaceId: body.spaceId || null,
       },
       include: {
-        spaces: {
-          include: {
-            space: true,
-          },
-        },
+        space: true,
       },
     })
 

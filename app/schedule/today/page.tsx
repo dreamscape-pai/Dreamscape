@@ -1,9 +1,8 @@
-import Link from 'next/link'
 import Image from 'next/image'
-import HomeSchedule from '@/components/home-schedule'
+import TodaySchedule from '@/components/today-schedule'
 import Header from '@/components/header'
 
-export default function SchedulePage() {
+export default function TodaySchedulePage() {
   return (
     <>
       <Header isHomePage={false} />
@@ -28,24 +27,13 @@ export default function SchedulePage() {
               className="text-4xl md:text-5xl font-bold text-cream mb-4 text-center"
               style={{ fontFamily: 'var(--font-decorative)' }}
             >
-              What's Happening
+              Today at Dreamscape
             </h2>
-            <h3 className="text-2xl md:text-3xl font-bold text-cream mb-8 text-center" style={{ fontFamily: 'var(--font-serif)' }}>
-              This Week's Schedule
-            </h3>
+            <p className="text-cream/80 text-center mb-8 text-lg" style={{ fontFamily: 'var(--font-serif)' }}>
+              See what's happening across all our spaces today
+            </p>
 
-            <HomeSchedule />
-
-            {/* Link to today view */}
-            <div className="text-center mt-8">
-              <Link
-                href="/schedule/today"
-                className="inline-block px-6 py-2 rounded-lg bg-white/10 border border-cream/20 text-cream hover:bg-white/20 hover:border-cream/30 transition-all"
-                style={{ fontFamily: 'var(--font-serif)' }}
-              >
-                View Today's Schedule →
-              </Link>
-            </div>
+            <TodaySchedule />
           </div>
         </section>
       </div>

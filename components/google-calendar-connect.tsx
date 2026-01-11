@@ -11,6 +11,7 @@ export function GoogleCalendarConnect({ isConnected, userEmail }: GoogleCalendar
   const [isDisconnecting, setIsDisconnecting] = useState(false)
 
   const handleConnect = () => {
+    // Always server setup now
     window.location.href = '/api/auth/google/calendar/start?returnUrl=/admin/schedule'
   }
 

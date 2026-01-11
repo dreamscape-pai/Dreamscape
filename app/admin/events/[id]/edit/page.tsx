@@ -8,23 +8,14 @@ type PageProps = {
 
 export default async function EditEventPage({ params }: PageProps) {
   const { id } = await params
-  const [event, spaces, products] = await Promise.all([
+  const [event, spaces] = await Promise.all([
     db.event.findUnique({
-      where: { id },
+      where: { id: parseInt(id) },
       include: {
-        spaces: {
-          include: {
-            space: true,
-          },
-        },
-        product: true,
+        space: true,
       },
     }),
     db.space.findMany({ orderBy: { name: 'asc' } }),
-    db.product.findMany({
-      where: { active: true, type: { in: ['TICKET', 'WORKSHOP'] } },
-      orderBy: { name: 'asc' }
-    }),
   ])
 
   if (!event) {
@@ -35,7 +26,7 @@ export default async function EditEventPage({ params }: PageProps) {
     <div>
       <h1 className="text-3xl font-bold text-sand mb-8" style={{ fontFamily: 'var(--font-decorative)' }}>Edit Event</h1>
       <div className="bg-gradient-to-br from-lavender/20 to-forest/20 backdrop-blur-md border border-sand/20 rounded-lg p-6">
-        <EventForm event={event} spaces={spaces} products={products} />
+        <EventForm event={event} spaces={spaces} />
       </div>
     </div>
   )

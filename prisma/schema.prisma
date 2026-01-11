@@ -20,12 +20,13 @@ enum EventType {
   EVERYDAY
   FULL_SPACE_EVERYDAY
   WORKSHOP
-  DANCE_EVENT
+  EVENT
   JAM
   RETREAT
   FESTIVAL
   SHOW
   MEMBERSHIP_TRAINING
+  MEMBERS_ONLY
   OTHER
 }
 
@@ -98,11 +99,11 @@ model VerificationToken {
 
 model GoogleCalendarCredential {
   id                Int      @id @default(autoincrement())
-  userId            Int      @unique
-  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId            Int?     @unique
+  user              User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
   encryptedRefreshToken String   @db.Text // Encrypted refresh token
-  googleAccountEmail String
-  googleAccountId   String
+  googleAccountEmail String?
+  googleAccountId   String?
   selectedCalendarIds String[] @default(["primary"]) // Array of calendar IDs to sync
   syncToken         String?  // For incremental syncs
   lastSyncAt        DateTime?
@@ -119,65 +120,43 @@ model Space {
   description String?      @db.Text
   capacity    Int?
   images      String[]     // JSON array of image URLs
+  color       String?      // Tailwind color class (e.g., "blue", "purple", "green")
   published   Boolean      @default(false)
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt
-  events      EventSpace[]
+  events      Event[]      // Direct relationship to events
+  dailyEvents DailyEvent[] // Daily events for this space
 }
 
 model Event {
   id               Int                 @id @default(autoincrement())
-  title            String
+  title            String              // Display title (cleaned, without hyphen parts)
+  originalTitle    String?             // Full original title from Google Calendar
   slug             String              @unique
   description      String?             @db.Text
   startTime        DateTime
   endTime          DateTime
   type             EventType           @default(OTHER)
   published        Boolean             @default(false)
+  canceled         Boolean             @default(false) // Simple boolean for cancellation
   capacity         Int?
-  productId        Int?
-  product          Product?            @relation(fields: [productId], references: [id])
-  isRecurring      Boolean             @default(false)
-  recurrenceRule   String? // RRULE format (e.g., "FREQ=WEEKLY;BYDAY=MO,WE,FR")
-  recurrenceEnd    DateTime?
-  googleEventId    String?             // Google Calendar event ID
-  googleCalendarId String?             // Which calendar this came from
-  googleColorId    String?             // Color from Google Calendar
-  createdAt        DateTime            @default(now())
-  updatedAt        DateTime            @updatedAt
-  spaces           EventSpace[]
-  cancellations    EventCancellation[]
+  spaceId          Int?                // Direct space relationship - determined by Google Calendar color
+  space            Space?              @relation(fields: [spaceId], references: [id])
+  googleEventId      String?             // Google Calendar event ID
+  googleCalendarId   String?             // Which calendar this came from
+  googleColorId      String?             // Color from Google Calendar (determines space)
+  preserveManualEdits Boolean           @default(false) // Preserve manual title/description edits during sync
+  createdAt          DateTime            @default(now())
+  updatedAt          DateTime            @updatedAt
 
   @@unique([googleEventId, googleCalendarId])
   @@index([published, startTime])
-  @@index([published, isRecurring])
   @@index([startTime])
   @@index([googleEventId])
-}
-
-model EventCancellation {
-  id              Int      @id @default(autoincrement())
-  eventId         Int
-  event           Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
-  cancelledDate   DateTime // The specific date/time this recurring event instance is cancelled
-  createdAt       DateTime @default(now())
-
-  @@unique([eventId, cancelledDate])
-  @@index([eventId])
-}
-
-model EventSpace {
-  id        Int      @id @default(autoincrement())
-  eventId   Int
-  spaceId   Int
-  event     Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
-  space     Space    @relation(fields: [spaceId], references: [id], onDelete: Cascade)
-  createdAt DateTime @default(now())
-
-  @@unique([eventId, spaceId])
-  @@index([eventId])
   @@index([spaceId])
 }
+
+
 
 model Product {
   id              Int         @id @default(autoincrement())
@@ -190,7 +169,6 @@ model Product {
   active          Boolean     @default(true)
   createdAt       DateTime    @default(now())
   updatedAt       DateTime    @updatedAt
-  events          Event[]
   orders          Order[]
 }
 
@@ -222,4 +200,18 @@ model Order {
 
   @@index([userId])
   @@index([stripeSessionId])
+}
+
+model DailyEvent {
+  id             Int      @id @default(autoincrement())
+  title          String
+  startTime      String   // Format: "HH:MM" e.g., "12:00"
+  endTime        String   // Format: "HH:MM" e.g., "20:00"
+  daysOfWeek     Int[]    // Array of days: 0=Sunday, 1=Monday, etc.
+  spaceId        Int?
+  space          Space?   @relation(fields: [spaceId], references: [id])
+  published      Boolean  @default(true)
+  showInCalendar Boolean  @default(true) // Whether to show in the calendar grid or above
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
 }

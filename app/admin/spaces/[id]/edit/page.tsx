@@ -9,7 +9,7 @@ type PageProps = {
 export default async function EditSpacePage({ params }: PageProps) {
   const { id } = await params
   const space = await db.space.findUnique({
-    where: { id },
+    where: { id: parseInt(id) },
   })
 
   if (!space) {

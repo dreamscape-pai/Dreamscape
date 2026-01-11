@@ -84,7 +84,7 @@ export async function refreshAccessToken(refreshToken: string): Promise<{ access
 
 export interface GoogleCalendarEvent {
   id: string
-  summary: string
+  summary?: string
   description?: string
   location?: string
   start: {
@@ -103,8 +103,40 @@ export interface GoogleCalendarEvent {
   originalStartTime?: {
     dateTime?: string
     date?: string
+    timeZone?: string
   }
-  updated: string
+  updated?: string
+  created?: string
+  creator?: {
+    email?: string
+    displayName?: string
+    self?: boolean
+  }
+  organizer?: {
+    email?: string
+    displayName?: string
+    self?: boolean
+  }
+  attendees?: Array<{
+    email: string
+    displayName?: string
+    responseStatus?: string
+    self?: boolean
+    organizer?: boolean
+  }>
+  htmlLink?: string
+  visibility?: string
+  transparency?: string
+  reminders?: {
+    useDefault?: boolean
+    overrides?: Array<{
+      method: string
+      minutes: number
+    }>
+  }
+  recurrence?: string[]
+  // Allow any additional fields Google might send
+  [key: string]: any
 }
 
 export interface GoogleCalendarListResponse {
@@ -120,11 +152,14 @@ export async function fetchCalendarEvents(
     timeMin?: Date
     timeMax?: Date
     syncToken?: string
+    pageToken?: string
+    maxResults?: number
   } = {}
 ): Promise<GoogleCalendarListResponse> {
   const params = new URLSearchParams({
     singleEvents: 'true',
-    orderBy: 'startTime'
+    orderBy: 'startTime',
+    maxResults: (options.maxResults || 250).toString() // Max allowed by Google is 250
   })
 
   if (options.syncToken) {
@@ -136,6 +171,10 @@ export async function fetchCalendarEvents(
     if (options.timeMax) {
       params.set('timeMax', options.timeMax.toISOString())
     }
+  }
+
+  if (options.pageToken) {
+    params.set('pageToken', options.pageToken)
   }
 
   const response = await fetch(
