@@ -11868,3 +11868,29 @@ prisma:error Error in PostgreSQL connection: Error { kind: Closed, cause: None }
  GET /api/auth/session 200 in 22ms (compile: 4ms, proxy.ts: 10ms, render: 8ms)
  GET /api/auth/session 200 in 16ms (compile: 3ms, proxy.ts: 6ms, render: 7ms)
  GET /api/auth/session 200 in 22ms (compile: 3ms, proxy.ts: 6ms, render: 14ms)
+ GET /api/auth/session 200 in 51ms (compile: 12ms, proxy.ts: 20ms, render: 19ms)
+ GET /api/auth/session 200 in 23ms (compile: 4ms, proxy.ts: 11ms, render: 8ms)
+ GET /api/auth/session 200 in 17ms (compile: 3ms, proxy.ts: 7ms, render: 7ms)
+ GET /api/auth/session 200 in 21ms (compile: 7ms, proxy.ts: 6ms, render: 7ms)
+ GET /api/auth/session 200 in 26ms (compile: 3ms, proxy.ts: 15ms, render: 7ms)
+ GET /api/auth/session 200 in 24ms (compile: 4ms, proxy.ts: 12ms, render: 9ms)
+ GET /api/auth/session 200 in 19ms (compile: 3ms, proxy.ts: 7ms, render: 8ms)
+ GET /schedule 200 in 127ms (compile: 3ms, proxy.ts: 10ms, render: 113ms)
+ GET /api/auth/session 200 in 56ms (compile: 35ms, proxy.ts: 14ms, render: 7ms)
+ GET /api/auth/session 200 in 18ms (compile: 4ms, proxy.ts: 7ms, render: 7ms)
+ GET /api/auth/session 200 in 19ms (compile: 7ms, proxy.ts: 6ms, render: 6ms)
+ GET /api/auth/session 200 in 15ms (compile: 3ms, proxy.ts: 6ms, render: 7ms)
+ GET /api/auth/session 200 in 16ms (compile: 3ms, proxy.ts: 6ms, render: 7ms)
+ GET /api/auth/session 200 in 21ms (compile: 3ms, proxy.ts: 11ms, render: 6ms)
+ GET /api/auth/session 200 in 17ms (compile: 4ms, proxy.ts: 7ms, render: 6ms)
+prisma:query BEGIN
+prisma:query DEALLOCATE ALL
+prisma:query SELECT "public"."Event"."id", "public"."Event"."title", "public"."Event"."originalTitle", "public"."Event"."slug", "public"."Event"."description", "public"."Event"."startTime", "public"."Event"."endTime", "public"."Event"."type"::text, "public"."Event"."published", "public"."Event"."canceled", "public"."Event"."capacity", "public"."Event"."spaceId", "public"."Event"."googleEventId", "public"."Event"."googleCalendarId", "public"."Event"."googleColorId", "public"."Event"."preserveManualEdits", "public"."Event"."createdAt", "public"."Event"."updatedAt" FROM "public"."Event" WHERE ("public"."Event"."published" = $1 AND "public"."Event"."canceled" = $2) ORDER BY "public"."Event"."startTime" ASC OFFSET $3
+prisma:query SELECT "public"."Space"."id", "public"."Space"."name", "public"."Space"."slug", "public"."Space"."description", "public"."Space"."capacity", "public"."Space"."images", "public"."Space"."color", "public"."Space"."published", "public"."Space"."createdAt", "public"."Space"."updatedAt" FROM "public"."Space" WHERE "public"."Space"."id" IN ($1,$2,$3,$4,$5) OFFSET $6
+prisma:query COMMIT
+prisma:query BEGIN
+prisma:query DEALLOCATE ALL
+prisma:query SELECT "public"."DailyEvent"."id", "public"."DailyEvent"."title", "public"."DailyEvent"."startTime", "public"."DailyEvent"."endTime", "public"."DailyEvent"."daysOfWeek", "public"."DailyEvent"."spaceId", "public"."DailyEvent"."published", "public"."DailyEvent"."showInCalendar", "public"."DailyEvent"."createdAt", "public"."DailyEvent"."updatedAt" FROM "public"."DailyEvent" WHERE "public"."DailyEvent"."published" = $1 OFFSET $2
+prisma:query SELECT "public"."Space"."id", "public"."Space"."name", "public"."Space"."slug", "public"."Space"."description", "public"."Space"."capacity", "public"."Space"."images", "public"."Space"."color", "public"."Space"."published", "public"."Space"."createdAt", "public"."Space"."updatedAt" FROM "public"."Space" WHERE "public"."Space"."id" IN ($1,$2) OFFSET $3
+prisma:query COMMIT
+ GET /api/events?start=2025-12-28T17:00:00.000Z&end=2026-01-18T16:59:59.999Z 200 in 7.9s (compile: 26ms, proxy.ts: 14ms, render: 7.9s)

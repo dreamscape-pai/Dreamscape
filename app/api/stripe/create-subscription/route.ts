@@ -28,7 +28,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Membership plan not found or not configured' }, { status: 404 })
     }
 
-    const session = await stripe.checkout.sessions.create({
+    const checkoutSession = await stripe.checkout.sessions.create({
       mode: 'subscription',
       line_items: [
         {
@@ -45,7 +45,7 @@ export async function POST(request: Request) {
       allow_promotion_codes: true,
     })
 
-    return NextResponse.json({ sessionId: session.id, url: session.url })
+    return NextResponse.json({ sessionId: checkoutSession.id, url: checkoutSession.url })
   } catch (error) {
     console.error('Error creating subscription session:', error)
     return NextResponse.json({ error: 'Failed to create subscription session' }, { status: 500 })
