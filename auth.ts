@@ -92,12 +92,14 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       return token
     },
     async session({ session, token }) {
-      if (session.user) {
-        // ID should already be a number from jwt callback
-        session.user.id = token.id as number
-        session.user.role = token.role as UserRole
+      return {
+        ...session,
+        user: {
+          ...session.user,
+          id: token.id as number,
+          role: token.role as UserRole,
+        },
       }
-      return session
     },
   },
   events: {
