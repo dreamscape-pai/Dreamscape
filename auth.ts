@@ -65,27 +65,23 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         }
 
         return {
-          id: String(user.id), // NextAuth expects string ID, will be converted to number in JWT callback
+          id: user.id, // Return as number to match our User type definition
           email: user.email,
           name: user.name,
           image: user.image,
-        }
+          role: user.role,
+        } as any
       }
     })
   ],
   callbacks: {
     async jwt({ token, user, trigger, session }) {
       if (user) {
-        // Parse ID to number - NextAuth may pass it as string
-        const userId = typeof user.id === 'string' ? parseInt(user.id) : user.id
-        token.id = userId
+        // ID is already a number from our authorize function
+        token.id = user.id
+        token.role = user.role
 
-        // Fetch role from database
-        const dbUser = await db.user.findUnique({
-          where: { id: userId },
-          select: { role: true }
-        })
-        token.role = dbUser?.role
+        // No need to fetch role again - it's already included
       }
 
       // Handle session updates
@@ -97,8 +93,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     },
     async session({ session, token }) {
       if (session.user) {
-        // Ensure ID is number
-        session.user.id = typeof token.id === 'string' ? parseInt(token.id as string) : (token.id as number)
+        // ID should already be a number from jwt callback
+        session.user.id = token.id as number
         session.user.role = token.role as UserRole
       }
       return session
