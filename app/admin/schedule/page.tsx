@@ -68,7 +68,7 @@ export default async function AdminSchedulePage() {
             <div className="pt-4 border-t border-sand/20">
               <GoogleCalendarConnect
                 isConnected={true}
-                userEmail={credential.googleAccountEmail}
+                userEmail={credential.googleAccountEmail || undefined}
               />
             </div>
           </div>
