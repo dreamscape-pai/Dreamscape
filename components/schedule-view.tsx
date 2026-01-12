@@ -159,7 +159,8 @@ function DayView({ events, date }: { events: EventWithDetails[]; date: Date }) {
         <div className="space-y-4">
           {dayEvents.map((event) => {
             // Check if it's a daily event
-            const isDaily = (event as any).isDaily || (typeof event.id === 'string' && event.id.startsWith('daily-'))
+            const eventAny = event as any
+            const isDaily = eventAny.isDaily || (typeof eventAny.id === 'string' && eventAny.id.startsWith('daily-'))
 
             // Get the space color (don't apply background for daily events)
             const colorClasses = getSpaceColorClasses(event.space?.color)
@@ -231,7 +232,8 @@ function WeekView({ events, weekStart }: { events: EventWithDetails[]; weekStart
               <div className="space-y-1">
                 {dayEvents.map((event) => {
                   // Check if it's a daily event
-                  const isDaily = (event as any).isDaily || (typeof event.id === 'string' && event.id.startsWith('daily-'))
+                  const eventAny = event as any
+                  const isDaily = eventAny.isDaily || (typeof eventAny.id === 'string' && eventAny.id.startsWith('daily-'))
 
                   // Get the space color
                   const colorClasses = getSpaceColorClasses(event.space?.color)
