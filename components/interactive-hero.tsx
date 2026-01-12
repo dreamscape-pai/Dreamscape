@@ -261,7 +261,7 @@ export default function InteractiveHero({ children, isHomePage = false }: Intera
               </p>
             </div>
 
-            <nav className="flex gap-6 text-cream" style={{ pointerEvents: 'var(--hero-pointer-events)' }}>
+            <nav className="flex gap-6 text-cream" style={{ pointerEvents: 'var(--hero-pointer-events)' as any }}>
               {[
                 { id: 'spaces', label: 'Spaces' },
                 { id: 'schedule', label: 'Schedule' },
