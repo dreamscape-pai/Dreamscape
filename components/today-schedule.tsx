@@ -347,7 +347,7 @@ export default function TodaySchedule() {
   })
 
   // Generate time labels
-  const timeLabels = []
+  const timeLabels: { hour: number; label: string }[] = []
   for (let hour = GRID_START_HOUR; hour <= GRID_END_HOUR; hour++) {
     const time = new Date()
     time.setHours(hour, 0, 0, 0)
