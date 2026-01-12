@@ -4,6 +4,10 @@ import { stripe } from '@/lib/stripe'
 import { db } from '@/lib/db'
 
 export async function POST(request: Request) {
+  // Temporarily disabled for MVP without Stripe
+  return NextResponse.json({ error: 'Payment processing temporarily disabled' }, { status: 503 })
+
+  /* Original code - uncomment when Stripe is configured
   try {
     const session = await auth()
     const userId = session?.user?.id || null
@@ -55,4 +59,5 @@ export async function POST(request: Request) {
     console.error('Error creating checkout session:', error)
     return NextResponse.json({ error: 'Failed to create checkout session' }, { status: 500 })
   }
+  */
 }

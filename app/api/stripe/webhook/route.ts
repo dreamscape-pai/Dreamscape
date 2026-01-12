@@ -5,6 +5,10 @@ import { db } from '@/lib/db'
 import Stripe from 'stripe'
 
 export async function POST(request: Request) {
+  // Temporarily disabled for MVP without Stripe
+  return NextResponse.json({ received: true })
+
+  /* Original code - uncomment when Stripe is configured
   const body = await request.text()
   const headersList = await headers()
   const signature = headersList.get('stripe-signature')
@@ -61,4 +65,5 @@ export async function POST(request: Request) {
     console.error('Error processing webhook:', error)
     return NextResponse.json({ error: 'Webhook processing failed' }, { status: 500 })
   }
+  */
 }

@@ -4,6 +4,10 @@ import { stripe } from '@/lib/stripe'
 import { db } from '@/lib/db'
 
 export async function POST(request: Request) {
+  // Temporarily disabled for MVP without Stripe
+  return NextResponse.json({ error: 'Subscriptions temporarily disabled' }, { status: 503 })
+
+  /* Original code - uncomment when Stripe is configured
   try {
     const session = await auth()
 
@@ -50,4 +54,5 @@ export async function POST(request: Request) {
     console.error('Error creating subscription session:', error)
     return NextResponse.json({ error: 'Failed to create subscription session' }, { status: 500 })
   }
+  */
 }
