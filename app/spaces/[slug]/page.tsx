@@ -42,7 +42,6 @@ export default async function SpacePage(props: PageProps) {
     },
     include: {
       space: true,
-      product: true,
     },
     orderBy: {
       startTime: 'asc',
@@ -64,7 +63,7 @@ export default async function SpacePage(props: PageProps) {
         </div>
 
         <h2 className="text-2xl font-bold mb-4">Schedule</h2>
-        <ScheduleView events={events} initialDate={date} initialView={view} spaceFilter={space.id} />
+        <ScheduleView events={events} initialDate={date} initialView={view} spaceFilter={space.id.toString()} />
       </div>
     </div>
   )

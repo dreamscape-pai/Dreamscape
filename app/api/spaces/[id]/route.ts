@@ -10,13 +10,9 @@ export async function GET(request: Request, context: RouteContext) {
   try {
     const { id } = await context.params
     const space = await db.space.findUnique({
-      where: { id },
+      where: { id: parseInt(id) },
       include: {
-        events: {
-          include: {
-            event: true,
-          },
-        },
+        events: true,
       },
     })
 
@@ -37,7 +33,7 @@ export async function PUT(request: Request, context: RouteContext) {
     const body = await request.json()
 
     const space = await db.space.update({
-      where: { id },
+      where: { id: parseInt(id) },
       data: {
         name: body.name,
         slug: body.slug,
@@ -60,7 +56,7 @@ export async function DELETE(request: Request, context: RouteContext) {
     const { id } = await context.params
 
     await db.space.delete({
-      where: { id },
+      where: { id: parseInt(id) },
     })
 
     return NextResponse.json({ success: true })
