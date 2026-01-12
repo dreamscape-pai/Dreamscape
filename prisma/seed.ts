@@ -127,9 +127,7 @@ async function main() {
         type: 'WORKSHOP',
         published: true,
         capacity: 12,
-        spaces: {
-          create: [{ spaceId: spaces[0].id }], // Aerial Shala
-        },
+        spaceId: spaces[0].id, // Aerial Shala
       },
     }),
     // Monday - Yoga
@@ -143,9 +141,7 @@ async function main() {
         type: 'OTHER',
         published: true,
         capacity: 20,
-        spaces: {
-          create: [{ spaceId: spaces[9].id }], // Bamboo Shala
-        },
+        spaceId: spaces[9].id, // Bamboo Shala
       },
     }),
     // Tuesday - Circus Jam
@@ -159,12 +155,7 @@ async function main() {
         type: 'JAM',
         published: true,
         capacity: 25,
-        spaces: {
-          create: [
-            { spaceId: spaces[0].id }, // Aerial Shala
-            { spaceId: spaces[1].id }, // Dance Studio
-          ],
-        },
+        spaceId: spaces[0].id, // Aerial Shala
       },
     }),
     // Wednesday - Cyr Wheel Workshop
@@ -178,9 +169,7 @@ async function main() {
         type: 'WORKSHOP',
         published: true,
         capacity: 8,
-        spaces: {
-          create: [{ spaceId: spaces[4].id }], // Bamboo Circle
-        },
+        spaceId: spaces[4].id, // Bamboo Circle
       },
     }),
     // Thursday - Dance Party
@@ -194,9 +183,7 @@ async function main() {
         type: 'OTHER',
         published: true,
         capacity: 50,
-        spaces: {
-          create: [{ spaceId: spaces[1].id }], // Dance Studio
-        },
+        spaceId: spaces[1].id, // Dance Studio
       },
     }),
     // Friday - Circus Show
@@ -210,9 +197,7 @@ async function main() {
         type: 'SHOW',
         published: true,
         capacity: 100,
-        spaces: {
-          create: [{ spaceId: spaces[3].id }], // Amphitheater
-        },
+        spaceId: spaces[3].id, // Amphitheater
       },
     }),
     // Saturday - Handstand Workshop
@@ -226,9 +211,7 @@ async function main() {
         type: 'WORKSHOP',
         published: true,
         capacity: 15,
-        spaces: {
-          create: [{ spaceId: spaces[7].id }], // Micro Gym
-        },
+        spaceId: spaces[7].id, // Micro Gym
       },
     }),
     // Sunday - Community Brunch
@@ -242,9 +225,7 @@ async function main() {
         type: 'OTHER',
         published: true,
         capacity: 40,
-        spaces: {
-          create: [{ spaceId: spaces[5].id }], // Cafe
-        },
+        spaceId: spaces[5].id, // Cafe
       },
     }),
   ])
