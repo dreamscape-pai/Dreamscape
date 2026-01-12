@@ -24,11 +24,7 @@ export async function GET(request: Request) {
         },
       },
       include: {
-        spaces: {
-          include: {
-            space: true,
-          },
-        },
+        space: true,
       },
       orderBy: {
         startTime: 'asc',
