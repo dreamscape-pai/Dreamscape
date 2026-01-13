@@ -83,7 +83,10 @@ export async function GET(request: NextRequest) {
               isDaily: true, // Flag to identify daily events in UI
               showInCalendar: dailyEvent.showInCalendar, // Pass through the showInCalendar flag
               daysOfWeek: dailyEvent.daysOfWeek, // Include days of week for display
-              type: 'OTHER',
+              type: dailyEvent.type === 'CLOSED' ? 'CLOSED' : 'OTHER', // Use the daily event's type
+              displayStyle: dailyEvent.displayStyle, // Include display style for vertical text
+              overridesOthers: dailyEvent.overridesOthers, // Include override flag
+              isAllDay: dailyEvent.type === 'CLOSED', // CLOSED events are all-day
               published: true
             })
           }

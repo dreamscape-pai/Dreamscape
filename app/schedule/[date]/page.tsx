@@ -3,16 +3,22 @@ import TodaySchedule from '@/components/today-schedule'
 import Header from '@/components/header'
 import { redirect } from 'next/navigation'
 
-export default function ScheduleDatePage({ params }: { params: { date: string } }) {
+type PageProps = {
+  params: Promise<{ date: string }>
+}
+
+export default async function ScheduleDatePage({ params }: PageProps) {
+  const { date } = await params
+
   // Handle "today" route - redirect to actual date
-  if (params.date === 'today') {
+  if (date === 'today') {
     const today = new Date()
     const dateStr = `${today.getMonth() + 1}-${today.getDate()}-${today.getFullYear()}`
     redirect(`/schedule/${dateStr}`)
   }
 
   // Parse the date from the URL (format: M-D-YYYY)
-  const dateParts = params.date.split('-')
+  const dateParts = date.split('-')
   if (dateParts.length !== 3) {
     redirect('/schedule/today')
   }

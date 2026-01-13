@@ -1,9 +1,9 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
+import Link from 'next/link'
 import { startOfWeek, endOfWeek, addWeeks, subWeeks, format } from 'date-fns'
 import Image from 'next/image'
-import Link from 'next/link'
 import { useSession } from 'next-auth/react'
 
 type Event = {
@@ -314,13 +314,21 @@ export default function HomeSchedule() {
   events.forEach(event => {
     const eventDate = new Date(event.startTime)
     const dayName = eventDate.toLocaleDateString('en-US', { weekday: 'long' })
-    const hour = eventDate.getHours()
-    const period = getTimePeriod(hour)
 
     if (!eventsByDayAndPeriod[dayName]) {
       eventsByDayAndPeriod[dayName] = { morning: [], midday: [], evening: [] }
     }
-    eventsByDayAndPeriod[dayName][period].push(event)
+
+    // For CLOSED events, add to all periods so it appears as full-day
+    if (event.type === 'CLOSED') {
+      eventsByDayAndPeriod[dayName].morning.push(event)
+      eventsByDayAndPeriod[dayName].midday.push(event)
+      eventsByDayAndPeriod[dayName].evening.push(event)
+    } else {
+      const hour = eventDate.getHours()
+      const period = getTimePeriod(hour)
+      eventsByDayAndPeriod[dayName][period].push(event)
+    }
   })
 
   const maxEventsByPeriod = {
@@ -617,21 +625,25 @@ export default function HomeSchedule() {
             // Check for CLOSED events on this day (including daily recurring CLOSED)
             const allDayEvents = [...dayEvents.morning, ...dayEvents.midday, ...dayEvents.evening]
 
-            // Also check for daily CLOSED events for this day of week
-            const dayOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'].indexOf(day)
-            const dailyClosedEvent = allEvents.find(e =>
-              typeof e.id === 'string' &&
-              e.id.startsWith('daily-closed-') &&
-              e.displayStyle === 'VERTICAL'
+            // Check for both regular CLOSED events and daily CLOSED events
+            const closedEvent = allDayEvents.find(e =>
+              e.type === 'CLOSED' && e.displayStyle === 'VERTICAL'
             )
-
-            const closedEvent = allDayEvents.find(e => e.type === 'CLOSED' && e.displayStyle === 'VERTICAL') || dailyClosedEvent
             const shouldHideOthers = closedEvent?.overridesOthers
 
+            // Calculate the date for this day
+            const dayIndex = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'].indexOf(day)
+            const weekStart = startOfWeek(currentDate, { weekStartsOn: 1 })
+            const adjustedDayIndex = dayIndex === 0 ? 6 : dayIndex - 1 // Adjust for Monday start
+            const dayDate = new Date(weekStart)
+            dayDate.setDate(weekStart.getDate() + adjustedDayIndex)
+            const dateStr = `${dayDate.getMonth() + 1}-${dayDate.getDate()}-${dayDate.getFullYear()}`
+
             return (
-              <div
+              <Link
                 key={day}
-                className="rounded-lg relative"
+                href={`/schedule/${dateStr}`}
+                className="rounded-lg relative block hover:ring-2 hover:ring-cream/30 transition-all"
                 style={{
                   backgroundColor: closedEvent ? 'rgba(220, 38, 38, 0.15)' : 'color-mix(in oklab, #000000 70%, transparent)',
                   boxShadow: 'inset 0 0 20px rgba(0, 0, 0, 0.3), 0 0 15px rgba(0, 0, 0, 0.2)',
@@ -676,7 +688,7 @@ export default function HomeSchedule() {
                     )
                   })}
                 </div>
-              </div>
+              </Link>
             )
           })}
         </div>
@@ -686,37 +698,70 @@ export default function HomeSchedule() {
           {mobileDaysToShow.map((day) => {
             const dayEvents = eventsByDayAndPeriod[day] || { morning: [], midday: [], evening: [] }
 
+            // Check for CLOSED events
+            const allDayEvents = [...dayEvents.morning, ...dayEvents.midday, ...dayEvents.evening]
+            const closedEvent = allDayEvents.find(e =>
+              e.type === 'CLOSED' && e.displayStyle === 'VERTICAL'
+            )
+            const shouldHideOthers = closedEvent?.overridesOthers
+
+            // Calculate the date for this day in mobile view
+            const dayIndex = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'].indexOf(day)
+            const mobileDayOffset = mobileDaysToShow.indexOf(day)
+            const dayDate = new Date(currentDate)
+            dayDate.setDate(currentDate.getDate() + mobileDayOffset)
+            const dateStr = `${dayDate.getMonth() + 1}-${dayDate.getDate()}-${dayDate.getFullYear()}`
+
             return (
-              <div
+              <Link
                 key={day}
-                className="rounded-lg"
+                href={`/schedule/${dateStr}`}
+                className="rounded-lg block hover:ring-2 hover:ring-cream/30 transition-all relative"
                 style={{
-                  backgroundColor: 'color-mix(in oklab, #000000 70%, transparent)',
+                  backgroundColor: closedEvent ? 'rgba(220, 38, 38, 0.15)' : 'color-mix(in oklab, #000000 70%, transparent)',
                   boxShadow: 'inset 0 0 20px rgba(0, 0, 0, 0.3), 0 0 15px rgba(0, 0, 0, 0.2)',
                   minHeight: '55vh'
                 }}
               >
-                {(['morning', 'midday', 'evening'] as const).map((period) => {
-                  const periodEvents = dayEvents[period]
-                  const maxSlots = maxEventsByPeriod[period]
-
-                  return (
-                    <div key={`${day}-${period}`} className="p-2">
-                      {Array.from({ length: maxSlots }).map((_, slotIndex) => {
-                        const event = periodEvents[slotIndex]
-
-                        if (!event) {
-                          return <div key={slotIndex} className="min-h-[30px]" />
-                        }
-
-                        return <div key={`${event.id}-${new Date(event.startTime).toISOString()}-${slotIndex}`}>
-                          {renderEventItem(event)}
-                        </div>
-                      })}
+                {closedEvent && closedEvent.displayStyle === 'VERTICAL' ? (
+                  // Render vertical CLOSED text for mobile
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="text-red-500 font-bold text-xl tracking-[0.4em] rotate-0"
+                         style={{
+                           writingMode: 'vertical-lr',
+                           textOrientation: 'upright',
+                           letterSpacing: '0.25em',
+                           textShadow: '0 2px 8px rgba(220, 38, 38, 0.5)'
+                         }}>
+                      {closedEvent.title}
                     </div>
-                  )
-                })}
-              </div>
+                  </div>
+                ) : !shouldHideOthers ? (
+                  // Only show other events if not overridden by CLOSED
+                  <>
+                    {(['morning', 'midday', 'evening'] as const).map((period) => {
+                      const periodEvents = dayEvents[period]
+                      const maxSlots = maxEventsByPeriod[period]
+
+                      return (
+                        <div key={`${day}-${period}`} className="p-2">
+                          {Array.from({ length: maxSlots }).map((_, slotIndex) => {
+                            const event = periodEvents[slotIndex]
+
+                            if (!event) {
+                              return <div key={slotIndex} className="min-h-[30px]" />
+                            }
+
+                            return <div key={`${event.id}-${new Date(event.startTime).toISOString()}-${slotIndex}`}>
+                              {renderEventItem(event)}
+                            </div>
+                          })}
+                        </div>
+                      )
+                    })}
+                  </>
+                ) : null}
+              </Link>
             )
           })}
         </div>
