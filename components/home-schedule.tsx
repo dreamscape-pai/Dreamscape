@@ -20,6 +20,9 @@ type Event = {
   showInCalendar?: boolean
   daysOfWeek?: number[]
   isDaily?: boolean
+  isAllDay?: boolean
+  displayStyle?: 'NORMAL' | 'VERTICAL'
+  overridesOthers?: boolean
 }
 
 type EventTypeInfo = {
@@ -38,6 +41,7 @@ const eventTypes: EventTypeInfo[] = [
   { type: 'SHOW', label: 'Shows', color: 'text-cyan-400', bgColor: 'rgba(34, 211, 238, 0.1)' },
   { type: 'RETREAT', label: 'Retreats', color: 'text-orange-400', bgColor: 'rgba(251, 146, 60, 0.1)' },
   { type: 'FESTIVAL', label: 'Festivals', color: 'text-yellow-400', bgColor: 'rgba(250, 204, 21, 0.1)' },
+  { type: 'CLOSED', label: 'Closed', color: 'text-red-500', bgColor: 'rgba(220, 38, 38, 0.2)' },
 ]
 
 // Helper to format days of week
@@ -610,36 +614,59 @@ export default function HomeSchedule() {
           {allDaysOfWeek.map((day) => {
             const dayEvents = eventsByDayAndPeriod[day] || { morning: [], midday: [], evening: [] }
 
+            // Check for CLOSED events on this day
+            const allDayEvents = [...dayEvents.morning, ...dayEvents.midday, ...dayEvents.evening]
+            const closedEvent = allDayEvents.find(e => e.type === 'CLOSED' && e.displayStyle === 'VERTICAL')
+            const shouldHideOthers = closedEvent?.overridesOthers
+
             return (
               <div
                 key={day}
-                className="rounded-lg"
+                className="rounded-lg relative"
                 style={{
-                  backgroundColor: 'color-mix(in oklab, #000000 70%, transparent)',
+                  backgroundColor: closedEvent ? 'rgba(220, 38, 38, 0.15)' : 'color-mix(in oklab, #000000 70%, transparent)',
                   boxShadow: 'inset 0 0 20px rgba(0, 0, 0, 0.3), 0 0 15px rgba(0, 0, 0, 0.2)',
                   minHeight: '55vh'
                 }}
               >
-                {(['morning', 'midday', 'evening'] as const).map((period) => {
-                  const periodEvents = dayEvents[period]
-                  const maxSlots = maxEventsByPeriod[period]
-
-                  return (
-                    <div key={`${day}-${period}`} className="p-2">
-                      {Array.from({ length: maxSlots }).map((_, slotIndex) => {
-                        const event = periodEvents[slotIndex]
-
-                        if (!event) {
-                          return <div key={slotIndex} className="min-h-[30px]" />
-                        }
-
-                        return <div key={`${event.id}-${new Date(event.startTime).toISOString()}-${slotIndex}`}>
-                          {renderEventItem(event)}
-                        </div>
-                      })}
+                {closedEvent && closedEvent.displayStyle === 'VERTICAL' ? (
+                  // Render vertical CLOSED text
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="text-red-500 font-bold text-2xl tracking-[0.5em] rotate-0"
+                         style={{
+                           writingMode: 'vertical-lr',
+                           textOrientation: 'upright',
+                           letterSpacing: '0.3em',
+                           textShadow: '0 2px 8px rgba(220, 38, 38, 0.5)'
+                         }}>
+                      {closedEvent.title}
                     </div>
-                  )
-                })}
+                  </div>
+                ) : null}
+
+                {/* Regular events (hidden if CLOSED overrides) */}
+                <div className={shouldHideOthers ? 'opacity-20' : ''}>
+                  {(['morning', 'midday', 'evening'] as const).map((period) => {
+                    const periodEvents = dayEvents[period].filter(e => e.type !== 'CLOSED')
+                    const maxSlots = maxEventsByPeriod[period]
+
+                    return (
+                      <div key={`${day}-${period}`} className="p-2">
+                        {Array.from({ length: maxSlots }).map((_, slotIndex) => {
+                          const event = periodEvents[slotIndex]
+
+                          if (!event) {
+                            return <div key={slotIndex} className="min-h-[30px]" />
+                          }
+
+                          return <div key={`${event.id}-${new Date(event.startTime).toISOString()}-${slotIndex}`}>
+                            {renderEventItem(event)}
+                          </div>
+                        })}
+                      </div>
+                    )
+                  })}
+                </div>
               </div>
             )
           })}

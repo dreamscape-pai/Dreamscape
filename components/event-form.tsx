@@ -2,7 +2,7 @@
 
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
-import type { Event, Space } from '@prisma/client'
+import type { Event, Space, EventDisplayStyle } from '@prisma/client'
 
 type EventWithDetails = Event & {
   space?: Space | null
@@ -13,7 +13,7 @@ type EventFormProps = {
   spaces: Space[]
 }
 
-const EVENT_TYPES = ['WORKSHOP', 'SHOW', 'JAM', 'RETREAT', 'FESTIVAL', 'MEMBERSHIP_TRAINING', 'DANCE_EVENT', 'OTHER']
+const EVENT_TYPES = ['CLOSED', 'WORKSHOP', 'SHOW', 'JAM', 'EVENT', 'RETREAT', 'FESTIVAL', 'MEMBERSHIP_TRAINING', 'OTHER']
 
 export function EventForm({ event, spaces }: EventFormProps) {
   const router = useRouter()
@@ -22,29 +22,52 @@ export function EventForm({ event, spaces }: EventFormProps) {
   const [selectedSpaceId, setSelectedSpaceId] = useState<string>(
     event?.spaceId?.toString() || ''
   )
+  const [isAllDay, setIsAllDay] = useState(event?.isAllDay || false)
+  const [displayStyle, setDisplayStyle] = useState<EventDisplayStyle>(
+    event?.displayStyle || 'NORMAL'
+  )
+  const [overridesOthers, setOverridesOthers] = useState(event?.overridesOthers || false)
+  const [eventType, setEventType] = useState(event?.type || 'OTHER')
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
     setLoading(true)
     setError('')
 
-    if (!selectedSpaceId) {
+    // Only require space if not a CLOSED event
+    if (!selectedSpaceId && eventType !== 'CLOSED') {
       setError('Please select a space')
       setLoading(false)
       return
     }
 
     const formData = new FormData(e.currentTarget)
+
+    // For all-day events, set times to start and end of day
+    let startTime = formData.get('startTime') as string
+    let endTime = formData.get('endTime') as string
+
+    if (isAllDay) {
+      const date = formData.get('eventDate') as string
+      if (date) {
+        startTime = `${date}T00:00`
+        endTime = `${date}T23:59`
+      }
+    }
+
     const data = {
       title: formData.get('title'),
       slug: formData.get('slug'),
       description: formData.get('description'),
-      startTime: formData.get('startTime'),
-      endTime: formData.get('endTime'),
-      type: formData.get('type'),
+      startTime,
+      endTime,
+      type: eventType,
       capacity: formData.get('capacity'),
       published: formData.get('published') === 'on',
-      spaceId: parseInt(selectedSpaceId),
+      isAllDay,
+      displayStyle,
+      overridesOthers,
+      spaceId: selectedSpaceId ? parseInt(selectedSpaceId) : null,
     }
 
     try {
@@ -157,35 +180,100 @@ export function EventForm({ event, spaces }: EventFormProps) {
         />
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
-        <div>
-          <label htmlFor="startTime" className="block text-sm font-bold text-white">
-            Start Time
-          </label>
+      {/* Special Event Options */}
+      <div className="space-y-3 p-4 bg-white/5 rounded-lg">
+        <h3 className="text-sm font-bold text-white mb-2">Special Options</h3>
+
+        <div className="flex items-center">
           <input
-            type="datetime-local"
-            name="startTime"
-            id="startTime"
-            required
-            defaultValue={event ? formatDateTimeLocal(event.startTime) : ''}
-            className="mt-1 block w-full rounded-md bg-white/10 border-gray-600 text-white shadow-sm focus:border-blue-500 focus:ring-blue-500 px-4 py-3"
+            type="checkbox"
+            id="isAllDay"
+            checked={isAllDay}
+            onChange={(e) => setIsAllDay(e.target.checked)}
+            className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-600 rounded bg-white/10"
           />
+          <label htmlFor="isAllDay" className="ml-2 block text-sm text-white">
+            All-day event (e.g., CLOSED days)
+          </label>
         </div>
 
+        {eventType === 'CLOSED' && (
+          <>
+            <div className="flex items-center">
+              <input
+                type="checkbox"
+                id="verticalDisplay"
+                checked={displayStyle === 'VERTICAL'}
+                onChange={(e) => setDisplayStyle(e.target.checked ? 'VERTICAL' : 'NORMAL')}
+                className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-600 rounded bg-white/10"
+              />
+              <label htmlFor="verticalDisplay" className="ml-2 block text-sm text-white">
+                Display text vertically (C-L-O-S-E-D style)
+              </label>
+            </div>
+
+            <div className="flex items-center">
+              <input
+                type="checkbox"
+                id="overridesOthers"
+                checked={overridesOthers}
+                onChange={(e) => setOverridesOthers(e.target.checked)}
+                className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-600 rounded bg-white/10"
+              />
+              <label htmlFor="overridesOthers" className="ml-2 block text-sm text-white">
+                Hide other events on this day
+              </label>
+            </div>
+          </>
+        )}
+      </div>
+
+      {/* Date/Time Fields */}
+      {isAllDay ? (
         <div>
-          <label htmlFor="endTime" className="block text-sm font-bold text-white">
-            End Time
+          <label htmlFor="eventDate" className="block text-sm font-bold text-white">
+            Date
           </label>
           <input
-            type="datetime-local"
-            name="endTime"
-            id="endTime"
+            type="date"
+            name="eventDate"
+            id="eventDate"
             required
-            defaultValue={event ? formatDateTimeLocal(event.endTime) : ''}
+            defaultValue={event ? formatDateTimeLocal(event.startTime).split('T')[0] : ''}
             className="mt-1 block w-full rounded-md bg-white/10 border-gray-600 text-white shadow-sm focus:border-blue-500 focus:ring-blue-500 px-4 py-3"
           />
         </div>
-      </div>
+      ) : (
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <label htmlFor="startTime" className="block text-sm font-bold text-white">
+              Start Time
+            </label>
+            <input
+              type="datetime-local"
+              name="startTime"
+              id="startTime"
+              required
+              defaultValue={event ? formatDateTimeLocal(event.startTime) : ''}
+              className="mt-1 block w-full rounded-md bg-white/10 border-gray-600 text-white shadow-sm focus:border-blue-500 focus:ring-blue-500 px-4 py-3"
+            />
+          </div>
+
+          <div>
+            <label htmlFor="endTime" className="block text-sm font-bold text-white">
+              End Time
+            </label>
+            <input
+              type="datetime-local"
+              name="endTime"
+              id="endTime"
+              required
+              defaultValue={event ? formatDateTimeLocal(event.endTime) : ''}
+              className="mt-1 block w-full rounded-md bg-white/10 border-gray-600 text-white shadow-sm focus:border-blue-500 focus:ring-blue-500 px-4 py-3"
+            />
+          </div>
+        </div>
+      )}
 
       <div>
         <label htmlFor="type" className="block text-sm font-bold text-white">
@@ -194,7 +282,16 @@ export function EventForm({ event, spaces }: EventFormProps) {
         <select
           name="type"
           id="type"
-          defaultValue={event?.type || 'OTHER'}
+          value={eventType}
+          onChange={(e) => {
+            setEventType(e.target.value)
+            // Auto-enable all-day for CLOSED events
+            if (e.target.value === 'CLOSED') {
+              setIsAllDay(true)
+              setDisplayStyle('VERTICAL')
+              setOverridesOthers(true)
+            }
+          }}
           className="mt-1 block w-full rounded-md bg-white/10 border-gray-600 text-white shadow-sm focus:border-blue-500 focus:ring-blue-500 px-4 py-3"
         >
           {EVENT_TYPES.map((type) => (
@@ -207,17 +304,19 @@ export function EventForm({ event, spaces }: EventFormProps) {
 
       <div>
         <label htmlFor="spaceId" className="block text-sm font-bold text-white">
-          Space
+          Space {eventType === 'CLOSED' ? '(Optional for CLOSED events)' : ''}
         </label>
         <select
           name="spaceId"
           id="spaceId"
           value={selectedSpaceId}
           onChange={(e) => setSelectedSpaceId(e.target.value)}
-          required
+          required={eventType !== 'CLOSED'}
           className="mt-1 block w-full rounded-md bg-white/10 border-gray-600 text-white shadow-sm focus:border-blue-500 focus:ring-blue-500 px-4 py-3"
         >
-          <option value="" className="bg-gray-800">Select a space</option>
+          <option value="" className="bg-gray-800">
+            {eventType === 'CLOSED' ? 'No space (applies to all)' : 'Select a space'}
+          </option>
           {spaces.map((space) => (
             <option key={space.id} value={space.id} className="bg-gray-800">
               {space.name}

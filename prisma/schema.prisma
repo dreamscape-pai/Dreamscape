@@ -27,7 +27,13 @@ enum EventType {
   SHOW
   MEMBERSHIP_TRAINING
   MEMBERS_ONLY
+  CLOSED
   OTHER
+}
+
+enum EventDisplayStyle {
+  NORMAL
+  VERTICAL
 }
 
 enum ProductType {
@@ -140,6 +146,9 @@ model Event {
   published        Boolean             @default(false)
   canceled         Boolean             @default(false) // Simple boolean for cancellation
   capacity         Int?
+  isAllDay         Boolean             @default(false) // For all-day events like CLOSED
+  displayStyle     EventDisplayStyle   @default(NORMAL) // How to display the event (normal or vertical text)
+  overridesOthers  Boolean             @default(false) // If true, hides other events (for CLOSED days)
   spaceId          Int?                // Direct space relationship - determined by Google Calendar color
   space            Space?              @relation(fields: [spaceId], references: [id])
   googleEventId      String?             // Google Calendar event ID

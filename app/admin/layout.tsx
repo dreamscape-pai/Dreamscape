@@ -42,6 +42,9 @@ export default async function AdminLayout({
                 <Link href="/admin/events" className="inline-flex items-center px-3 pt-1 text-sm font-medium text-sand/80 hover:text-sunset border-b-2 border-transparent hover:border-sunset transition">
                   Events
                 </Link>
+                <Link href="/admin/daily-events" className="inline-flex items-center px-3 pt-1 text-sm font-medium text-sand/80 hover:text-sunset border-b-2 border-transparent hover:border-sunset transition">
+                  Daily
+                </Link>
                 <Link href="/admin/products" className="inline-flex items-center px-3 pt-1 text-sm font-medium text-sand/80 hover:text-sunset border-b-2 border-transparent hover:border-sunset transition">
                   Products
                 </Link>
