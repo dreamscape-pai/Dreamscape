@@ -1,10 +1,11 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { format, addDays, subDays, startOfWeek, endOfWeek, addWeeks } from 'date-fns'
+import { format, addDays, subDays, startOfWeek, endOfWeek, addWeeks, subWeeks, isSameDay } from 'date-fns'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useSession } from 'next-auth/react'
+import { useRouter, usePathname } from 'next/navigation'
 
 type Event = {
   id: string
@@ -17,6 +18,9 @@ type Event = {
     name: string
     slug: string
   } | null
+  showInCalendar?: boolean
+  daysOfWeek?: number[]
+  isDaily?: boolean
 }
 
 type Space = {
@@ -31,26 +35,39 @@ const GRID_END_HOUR = 23 // 11 PM
 const PIXELS_PER_HOUR = 60
 const GRID_HOURS = GRID_END_HOUR - GRID_START_HOUR
 
-export default function TodaySchedule() {
+export default function TodaySchedule({ initialDate }: { initialDate?: Date }) {
+  const router = useRouter()
+  const pathname = usePathname()
   const [currentDate, setCurrentDate] = useState(() => {
-    const date = new Date()
+    const date = initialDate || new Date()
     date.setHours(12, 0, 0, 0) // Normalize to noon
     return date
   })
-  const [allEvents, setAllEvents] = useState<Event[]>([])
+  const [allEvents, setAllEvents] = useState<Event[]>([]) // Cache all loaded events
+  const [loadedRange, setLoadedRange] = useState<{ start: Date; end: Date } | null>(null) // Track loaded date range
   const [spaces, setSpaces] = useState<Space[]>([])
   const [loading, setLoading] = useState(true)
   const { data: session } = useSession()
   const isAdmin = session?.user?.role === 'ADMIN'
   const isMember = session?.user?.role === 'MEMBER'
 
+  // Update URL when date changes
+  const updateURL = (date: Date) => {
+    const dateStr = format(date, 'M-d-yyyy')
+    router.push(`/schedule/${dateStr}`, { scroll: false })
+  }
+
   // Navigation functions
   const goToPreviousDay = () => {
-    setCurrentDate(prev => subDays(prev, 1))
+    const newDate = subDays(currentDate, 1)
+    setCurrentDate(newDate)
+    updateURL(newDate)
   }
 
   const goToNextDay = () => {
-    setCurrentDate(prev => addDays(prev, 1))
+    const newDate = addDays(currentDate, 1)
+    setCurrentDate(newDate)
+    updateURL(newDate)
   }
 
   // Check if next day navigation should be disabled for non-admins
@@ -79,15 +96,33 @@ export default function TodaySchedule() {
 
   useEffect(() => {
     async function fetchData() {
+      // Calculate the range we need: previous week, current week, next week
+      const currentWeekStart = startOfWeek(currentDate, { weekStartsOn: 1 })
+      const fetchStart = subWeeks(currentWeekStart, 1)
+      const fetchEnd = endOfWeek(addWeeks(currentWeekStart, 1), { weekStartsOn: 1 })
+
+      // Check if we need to fetch (if current date is outside loaded range)
+      if (loadedRange && currentDate >= loadedRange.start && currentDate <= loadedRange.end) {
+        // Data already loaded, no need to fetch
+        setLoading(false)
+        return
+      }
+
       setLoading(true)
 
       try {
-        // Fetch schedule data for the current date
-        const response = await fetch(`/api/schedule/today?date=${currentDate.toISOString()}`)
-        const data = await response.json()
+        // Fetch all events for the range (like main schedule does)
+        const [eventsResponse, spacesResponse] = await Promise.all([
+          fetch(`/api/events?start=${fetchStart.toISOString()}&end=${fetchEnd.toISOString()}`),
+          fetch('/api/spaces')
+        ])
 
-        setAllEvents(data.events || [])
-        setSpaces(data.spaces || [])
+        const eventsData = await eventsResponse.json()
+        const spacesData = await spacesResponse.json()
+
+        setAllEvents(eventsData.events || [])
+        setSpaces(spacesData || [])
+        setLoadedRange({ start: fetchStart, end: fetchEnd })
       } catch (error) {
         console.error('Error fetching schedule:', error)
       } finally {
@@ -96,14 +131,30 @@ export default function TodaySchedule() {
     }
 
     fetchData()
-  }, [currentDate])
+  }, [currentDate, loadedRange])
 
-  // Filter events based on user role - exclude member events for non-members/non-admins
-  const events = allEvents.filter(event => {
+  // Filter events for current day and based on user role
+  const dayEvents = allEvents.filter(event => {
+    // Check if event is on current day
+    if (!isSameDay(new Date(event.startTime), currentDate)) {
+      return false
+    }
+    // Exclude member events for non-members/non-admins
     if (event.type === 'MEMBERSHIP_TRAINING' && !isAdmin && !isMember) {
       return false
     }
     return true
+  })
+
+  // Separate daily events (cafe, sauna, etc) from regular events
+  const events = dayEvents.filter(event => {
+    const isDaily = typeof event.id === 'string' && event.id.startsWith('daily-')
+    return !isDaily || event.showInCalendar !== false
+  })
+
+  const dailyEvents = dayEvents.filter(event => {
+    const isDaily = typeof event.id === 'string' && event.id.startsWith('daily-')
+    return isDaily && event.showInCalendar === false
   })
 
   // Group events by space
@@ -143,12 +194,13 @@ export default function TodaySchedule() {
       'EVERYDAY': { bg: 'rgba(147, 197, 253, 0.1)', text: 'text-blue-300' },
       'FULL_SPACE_EVERYDAY': { bg: 'rgba(165, 180, 252, 0.1)', text: 'text-indigo-300' },
       'WORKSHOP': { bg: 'rgba(244, 114, 182, 0.1)', text: 'text-pink-400' },
-      'EVENT': { bg: 'rgba(192, 132, 252, 0.1)', text: 'text-purple-400' },
+      'EVENT': { bg: 'rgba(191, 53, 35, 0.15)', text: 'text-red-400' }, // Changed to red #bf3523
       'JAM': { bg: 'rgba(167, 139, 250, 0.1)', text: 'text-violet-400' },
       'RETREAT': { bg: 'rgba(251, 146, 60, 0.1)', text: 'text-orange-400' },
       'FESTIVAL': { bg: 'rgba(250, 204, 21, 0.1)', text: 'text-yellow-400' },
       'SHOW': { bg: 'rgba(34, 211, 238, 0.1)', text: 'text-cyan-400' },
       'MEMBERSHIP_TRAINING': { bg: 'rgba(74, 222, 128, 0.1)', text: 'text-green-400' },
+      'DAILY': { bg: 'rgba(107, 114, 128, 0.1)', text: 'text-gray-400' },
       'OTHER': { bg: 'rgba(246, 216, 157, 0.1)', text: 'text-cream/90' }
     }
     return colorMap[type] || colorMap['OTHER']
@@ -291,55 +343,26 @@ export default function TodaySchedule() {
   const dateTitle = format(currentDate, 'EEEE, MMMM do')
   const isToday = format(currentDate, 'yyyy-MM-dd') === format(new Date(), 'yyyy-MM-dd')
 
-  // Default spaces to always show (with proper names)
-  const defaultSpaces = [
-    { slug: 'dome', name: 'Dome' },
-    { slug: 'cafe', name: 'Cafe' },
-    { slug: 'sauna-lounge', name: 'Sauna Lounge' },
-    { slug: 'pole-studio', name: 'Pole Studio' },
-    { slug: 'bamboo-shala', name: 'Bamboo Shala' }
-  ]
-  const defaultSpaceSlugs = defaultSpaces.map(s => s.slug)
-
-  // Get spaces to display
+  // Get spaces that have events on this day
   const spacesWithEvents = spaces.filter(space =>
     eventsBySpace[space.slug] && eventsBySpace[space.slug].length > 0
   )
 
-  // Determine which spaces to display
-  let spacesToDisplay: Space[]
+  // Always show spaces with events, sorted by priority
+  const spaceOrder = [
+    'dome', 'stage', 'cafe', 'sauna-lounge', 'pole-studio',
+    'bamboo-shala', 'dance-studio', 'aerial-shala'
+  ]
 
-  if (spacesWithEvents.length <= 1) {
-    // Show default spaces that exist in the database
-    const availableDefaultSpaces = spaces.filter(space =>
-      defaultSpaceSlugs.includes(space.slug)
-    )
+  const sortedSpacesToDisplay = spacesWithEvents.sort((a, b) => {
+    const aIndex = spaceOrder.indexOf(a.slug)
+    const bIndex = spaceOrder.indexOf(b.slug)
 
-    // If we have enough default spaces, use them
-    if (availableDefaultSpaces.length >= 3) {
-      spacesToDisplay = availableDefaultSpaces
-    } else {
-      // Otherwise, show the spaces with events plus any other available spaces
-      const additionalSpaces = spaces
-        .filter(space => !spacesWithEvents.includes(space))
-        .slice(0, 5 - spacesWithEvents.length)
-      spacesToDisplay = [...spacesWithEvents, ...additionalSpaces]
-    }
-  } else {
-    // Show spaces with events
-    spacesToDisplay = spacesWithEvents
-  }
-
-  // Sort spaces to maintain consistent order (prioritize default spaces)
-  const sortedSpacesToDisplay = spacesToDisplay.sort((a, b) => {
-    const aIndex = defaultSpaceSlugs.indexOf(a.slug)
-    const bIndex = defaultSpaceSlugs.indexOf(b.slug)
-
-    // If both are default spaces, sort by their default order
+    // If both are in priority order, sort by their order
     if (aIndex !== -1 && bIndex !== -1) {
       return aIndex - bIndex
     }
-    // If only one is a default space, it comes first
+    // If only one is in priority order, it comes first
     if (aIndex !== -1) return -1
     if (bIndex !== -1) return 1
     // Otherwise sort alphabetically
@@ -568,6 +591,47 @@ export default function TodaySchedule() {
             )}
           </div>
         </div>
+
+        {/* Daily events section */}
+        {dailyEvents.length > 0 && (
+          <div className="mt-6">
+            <h3 className="text-cream font-semibold text-lg mb-3" style={{ fontFamily: 'var(--font-serif)' }}>
+              Daily Facilities
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+              {dailyEvents.map(event => {
+                const formatTime = (date: Date) => {
+                  const hour = date.getHours()
+                  const minute = date.getMinutes()
+                  const period = hour >= 12 ? 'pm' : 'am'
+                  const displayHour = hour === 0 ? 12 : hour > 12 ? hour - 12 : hour
+
+                  if (minute === 0) {
+                    return `${displayHour}${period}`
+                  } else {
+                    return `${displayHour}:${minute.toString().padStart(2, '0')}${period}`
+                  }
+                }
+
+                return (
+                  <div
+                    key={event.id}
+                    className="flex-1 text-center text-cream/80 px-4 py-3 rounded-lg border border-cream/30 bg-black/40 backdrop-blur-sm"
+                  >
+                    <div className="font-bold text-white">{event.title}</div>
+                    <div className="mt-1 text-sm">
+                      {event.startTime && formatTime(new Date(event.startTime))}
+                      {event.endTime && ` - ${formatTime(new Date(event.endTime))}`}
+                    </div>
+                    {event.space && (
+                      <div className="text-cream/60 text-sm mt-1">@{event.space.name.toLowerCase()}</div>
+                    )}
+                  </div>
+                )
+              })}
+            </div>
+          </div>
+        )}
 
         {/* Link to weekly view */}
         <div className="text-center mt-8">

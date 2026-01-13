@@ -33,7 +33,7 @@ const eventTypes: EventTypeInfo[] = [
   { type: 'DAILY', label: 'Daily', color: 'text-gray-400', bgColor: 'rgba(107, 114, 128, 0.1)' },
   { type: 'MEMBERSHIP_TRAINING', label: 'Members', color: 'text-green-400', bgColor: 'rgba(74, 222, 128, 0.1)' },
   { type: 'WORKSHOP', label: 'Workshops', color: 'text-pink-400', bgColor: 'rgba(244, 114, 182, 0.1)' },
-  { type: 'EVENT', label: 'Event', color: 'text-purple-400', bgColor: 'rgba(192, 132, 252, 0.1)' },
+  { type: 'EVENT', label: 'Event', color: 'text-red-400', bgColor: 'rgba(191, 53, 35, 0.15)' }, // Changed to red #bf3523
   { type: 'JAM', label: 'Jams', color: 'text-violet-400', bgColor: 'rgba(167, 139, 250, 0.1)' },
   { type: 'SHOW', label: 'Shows', color: 'text-cyan-400', bgColor: 'rgba(34, 211, 238, 0.1)' },
   { type: 'RETREAT', label: 'Retreats', color: 'text-orange-400', bgColor: 'rgba(251, 146, 60, 0.1)' },
@@ -350,8 +350,8 @@ export default function HomeSchedule() {
       eventColor = 'text-pink-400'
       bgColor = 'rgba(244, 114, 182, 0.1)'
     } else if (event.type === 'EVENT') {
-      eventColor = 'text-purple-400'
-      bgColor = 'rgba(192, 132, 252, 0.1)'
+      eventColor = 'text-red-400'
+      bgColor = 'rgba(191, 53, 35, 0.15)'
     } else if (event.type === 'JAM') {
       eventColor = 'text-violet-400'
       bgColor = 'rgba(167, 139, 250, 0.1)'
