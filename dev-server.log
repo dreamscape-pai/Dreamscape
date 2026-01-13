@@ -205,3 +205,208 @@ prisma:query COMMIT
  GET /schedule 200 in 158ms (compile: 81ms, proxy.ts: 13ms, render: 64ms)
  GET /schedule/1-14-2026 200 in 51ms (compile: 14ms, proxy.ts: 4ms, render: 33ms)
 ✓ Compiled in 32ms
+prisma:error Error in PostgreSQL connection: Error { kind: Closed, cause: None }
+prisma:error Error in PostgreSQL connection: Error { kind: Closed, cause: None }
+prisma:error Error in PostgreSQL connection: Error { kind: Closed, cause: None }
+ GET /schedule 200 in 250ms (compile: 75ms, proxy.ts: 5ms, render: 170ms)
+ GET /api/auth/session 200 in 132ms (compile: 13ms, proxy.ts: 6ms, render: 113ms)
+ GET /api/auth/session 200 in 25ms (compile: 9ms, proxy.ts: 8ms, render: 8ms)
+ GET /api/auth/session 200 in 10ms (compile: 4ms, proxy.ts: 1825µs, render: 4ms)
+prisma:query BEGIN
+prisma:query DEALLOCATE ALL
+prisma:query SELECT "public"."Event"."id", "public"."Event"."title", "public"."Event"."originalTitle", "public"."Event"."slug", "public"."Event"."description", "public"."Event"."startTime", "public"."Event"."endTime", "public"."Event"."type"::text, "public"."Event"."published", "public"."Event"."canceled", "public"."Event"."capacity", "public"."Event"."isAllDay", "public"."Event"."isRecurring", "public"."Event"."recurringDays", "public"."Event"."displayStyle"::text, "public"."Event"."overridesOthers", "public"."Event"."spaceId", "public"."Event"."googleEventId", "public"."Event"."googleCalendarId", "public"."Event"."googleColorId", "public"."Event"."preserveManualEdits", "public"."Event"."createdAt", "public"."Event"."updatedAt" FROM "public"."Event" WHERE ("public"."Event"."published" = $1 AND "public"."Event"."canceled" = $2) ORDER BY "public"."Event"."startTime" ASC OFFSET $3
+prisma:query SELECT "public"."Space"."id", "public"."Space"."name", "public"."Space"."slug", "public"."Space"."description", "public"."Space"."capacity", "public"."Space"."images", "public"."Space"."color", "public"."Space"."published", "public"."Space"."createdAt", "public"."Space"."updatedAt" FROM "public"."Space" WHERE "public"."Space"."id" IN ($1,$2,$3,$4,$5) OFFSET $6
+prisma:query COMMIT
+prisma:query BEGIN
+prisma:query DEALLOCATE ALL
+prisma:query SELECT "public"."DailyEvent"."id", "public"."DailyEvent"."title", "public"."DailyEvent"."description", "public"."DailyEvent"."startTime", "public"."DailyEvent"."endTime", "public"."DailyEvent"."daysOfWeek", "public"."DailyEvent"."type"::text, "public"."DailyEvent"."displayStyle"::text, "public"."DailyEvent"."overridesOthers", "public"."DailyEvent"."spaceId", "public"."DailyEvent"."isActive", "public"."DailyEvent"."published", "public"."DailyEvent"."showInCalendar", "public"."DailyEvent"."createdAt", "public"."DailyEvent"."updatedAt" FROM "public"."DailyEvent" WHERE "public"."DailyEvent"."published" = $1 OFFSET $2
+prisma:query SELECT "public"."Space"."id", "public"."Space"."name", "public"."Space"."slug", "public"."Space"."description", "public"."Space"."capacity", "public"."Space"."images", "public"."Space"."color", "public"."Space"."published", "public"."Space"."createdAt", "public"."Space"."updatedAt" FROM "public"."Space" WHERE "public"."Space"."id" IN ($1,$2) OFFSET $3
+prisma:query COMMIT
+ GET /api/events?start=2026-01-04T17:00:00.000Z&end=2026-01-25T16:59:59.999Z 200 in 9.1s (compile: 107ms, proxy.ts: 5ms, render: 9.0s)
+ GET /schedule/1-17-2026 200 in 63ms (compile: 20ms, proxy.ts: 5ms, render: 38ms)
+prisma:query SELECT 1
+prisma:query BEGIN
+prisma:query DEALLOCATE ALL
+prisma:query SELECT "public"."Event"."id", "public"."Event"."title", "public"."Event"."originalTitle", "public"."Event"."slug", "public"."Event"."description", "public"."Event"."startTime", "public"."Event"."endTime", "public"."Event"."type"::text, "public"."Event"."published", "public"."Event"."canceled", "public"."Event"."capacity", "public"."Event"."isAllDay", "public"."Event"."isRecurring", "public"."Event"."recurringDays", "public"."Event"."displayStyle"::text, "public"."Event"."overridesOthers", "public"."Event"."spaceId", "public"."Event"."googleEventId", "public"."Event"."googleCalendarId", "public"."Event"."googleColorId", "public"."Event"."preserveManualEdits", "public"."Event"."createdAt", "public"."Event"."updatedAt" FROM "public"."Event" WHERE ("public"."Event"."published" = $1 AND "public"."Event"."canceled" = $2) ORDER BY "public"."Event"."startTime" ASC OFFSET $3
+prisma:query BEGIN
+prisma:query DEALLOCATE ALL
+prisma:query SELECT "public"."Space"."id", "public"."Space"."name", "public"."Space"."slug", "public"."Space"."description", "public"."Space"."capacity", "public"."Space"."images", "public"."Space"."color", "public"."Space"."published", "public"."Space"."createdAt", "public"."Space"."updatedAt" FROM "public"."Space" WHERE "public"."Space"."id" IN ($1,$2,$3,$4,$5) OFFSET $6
+prisma:query COMMIT
+prisma:query SELECT "public"."Space"."id", "public"."Space"."name", "public"."Space"."slug", "public"."Space"."description", "public"."Space"."capacity", "public"."Space"."images", "public"."Space"."color", "public"."Space"."published", "public"."Space"."createdAt", "public"."Space"."updatedAt" FROM "public"."Space" WHERE 1=1 ORDER BY "public"."Space"."createdAt" DESC OFFSET $1
+prisma:query BEGIN
+prisma:query DEALLOCATE ALL
+prisma:query COMMIT
+ GET /api/spaces 200 in 4.3s (compile: 21ms, proxy.ts: 7ms, render: 4.3s)
+prisma:query BEGIN
+prisma:query SELECT "public"."DailyEvent"."id", "public"."DailyEvent"."title", "public"."DailyEvent"."description", "public"."DailyEvent"."startTime", "public"."DailyEvent"."endTime", "public"."DailyEvent"."daysOfWeek", "public"."DailyEvent"."type"::text, "public"."DailyEvent"."displayStyle"::text, "public"."DailyEvent"."overridesOthers", "public"."DailyEvent"."spaceId", "public"."DailyEvent"."isActive", "public"."DailyEvent"."published", "public"."DailyEvent"."showInCalendar", "public"."DailyEvent"."createdAt", "public"."DailyEvent"."updatedAt" FROM "public"."DailyEvent" WHERE "public"."DailyEvent"."published" = $1 OFFSET $2
+prisma:query DEALLOCATE ALL
+prisma:query SELECT "public"."Space"."id", "public"."Space"."name", "public"."Space"."slug", "public"."Space"."description", "public"."Space"."capacity", "public"."Space"."images", "public"."Space"."color", "public"."Space"."published", "public"."Space"."createdAt", "public"."Space"."updatedAt" FROM "public"."Space" WHERE "public"."Space"."id" IN ($1,$2) OFFSET $3
+prisma:query SELECT "public"."Space"."id", "public"."Space"."name", "public"."Space"."slug", "public"."Space"."description", "public"."Space"."capacity", "public"."Space"."images", "public"."Space"."color", "public"."Space"."published", "public"."Space"."createdAt", "public"."Space"."updatedAt" FROM "public"."Space" WHERE 1=1 ORDER BY "public"."Space"."createdAt" DESC OFFSET $1
+prisma:query COMMIT
+ GET /api/events?start=2026-01-04T17:00:00.000Z&end=2026-01-25T16:59:59.999Z 200 in 5.8s (compile: 9ms, proxy.ts: 11ms, render: 5.7s)
+prisma:query COMMIT
+ GET /api/spaces 200 in 1502ms (compile: 4ms, proxy.ts: 4ms, render: 1495ms)
+prisma:query BEGIN
+prisma:query DEALLOCATE ALL
+prisma:query SELECT "public"."Event"."id", "public"."Event"."title", "public"."Event"."originalTitle", "public"."Event"."slug", "public"."Event"."description", "public"."Event"."startTime", "public"."Event"."endTime", "public"."Event"."type"::text, "public"."Event"."published", "public"."Event"."canceled", "public"."Event"."capacity", "public"."Event"."isAllDay", "public"."Event"."isRecurring", "public"."Event"."recurringDays", "public"."Event"."displayStyle"::text, "public"."Event"."overridesOthers", "public"."Event"."spaceId", "public"."Event"."googleEventId", "public"."Event"."googleCalendarId", "public"."Event"."googleColorId", "public"."Event"."preserveManualEdits", "public"."Event"."createdAt", "public"."Event"."updatedAt" FROM "public"."Event" WHERE ("public"."Event"."published" = $1 AND "public"."Event"."canceled" = $2) ORDER BY "public"."Event"."startTime" ASC OFFSET $3
+prisma:query SELECT "public"."Space"."id", "public"."Space"."name", "public"."Space"."slug", "public"."Space"."description", "public"."Space"."capacity", "public"."Space"."images", "public"."Space"."color", "public"."Space"."published", "public"."Space"."createdAt", "public"."Space"."updatedAt" FROM "public"."Space" WHERE "public"."Space"."id" IN ($1,$2,$3,$4,$5) OFFSET $6
+prisma:query COMMIT
+prisma:query BEGIN
+prisma:query DEALLOCATE ALL
+prisma:query SELECT "public"."DailyEvent"."id", "public"."DailyEvent"."title", "public"."DailyEvent"."description", "public"."DailyEvent"."startTime", "public"."DailyEvent"."endTime", "public"."DailyEvent"."daysOfWeek", "public"."DailyEvent"."type"::text, "public"."DailyEvent"."displayStyle"::text, "public"."DailyEvent"."overridesOthers", "public"."DailyEvent"."spaceId", "public"."DailyEvent"."isActive", "public"."DailyEvent"."published", "public"."DailyEvent"."showInCalendar", "public"."DailyEvent"."createdAt", "public"."DailyEvent"."updatedAt" FROM "public"."DailyEvent" WHERE "public"."DailyEvent"."published" = $1 OFFSET $2
+prisma:query SELECT "public"."Space"."id", "public"."Space"."name", "public"."Space"."slug", "public"."Space"."description", "public"."Space"."capacity", "public"."Space"."images", "public"."Space"."color", "public"."Space"."published", "public"."Space"."createdAt", "public"."Space"."updatedAt" FROM "public"."Space" WHERE "public"."Space"."id" IN ($1,$2) OFFSET $3
+prisma:query COMMIT
+ GET /api/events?start=2026-01-04T17:00:00.000Z&end=2026-01-25T16:59:59.999Z 200 in 4.4s (compile: 3ms, proxy.ts: 3ms, render: 4.4s)
+prisma:query BEGIN
+prisma:query DEALLOCATE ALL
+prisma:query SELECT "public"."Event"."id", "public"."Event"."title", "public"."Event"."originalTitle", "public"."Event"."slug", "public"."Event"."description", "public"."Event"."startTime", "public"."Event"."endTime", "public"."Event"."type"::text, "public"."Event"."published", "public"."Event"."canceled", "public"."Event"."capacity", "public"."Event"."isAllDay", "public"."Event"."isRecurring", "public"."Event"."recurringDays", "public"."Event"."displayStyle"::text, "public"."Event"."overridesOthers", "public"."Event"."spaceId", "public"."Event"."googleEventId", "public"."Event"."googleCalendarId", "public"."Event"."googleColorId", "public"."Event"."preserveManualEdits", "public"."Event"."createdAt", "public"."Event"."updatedAt" FROM "public"."Event" WHERE ("public"."Event"."published" = $1 AND "public"."Event"."canceled" = $2) ORDER BY "public"."Event"."startTime" ASC OFFSET $3
+prisma:query SELECT "public"."Space"."id", "public"."Space"."name", "public"."Space"."slug", "public"."Space"."description", "public"."Space"."capacity", "public"."Space"."images", "public"."Space"."color", "public"."Space"."published", "public"."Space"."createdAt", "public"."Space"."updatedAt" FROM "public"."Space" WHERE "public"."Space"."id" IN ($1,$2,$3,$4,$5) OFFSET $6
+prisma:query COMMIT
+prisma:query BEGIN
+prisma:query DEALLOCATE ALL
+prisma:query SELECT "public"."DailyEvent"."id", "public"."DailyEvent"."title", "public"."DailyEvent"."description", "public"."DailyEvent"."startTime", "public"."DailyEvent"."endTime", "public"."DailyEvent"."daysOfWeek", "public"."DailyEvent"."type"::text, "public"."DailyEvent"."displayStyle"::text, "public"."DailyEvent"."overridesOthers", "public"."DailyEvent"."spaceId", "public"."DailyEvent"."isActive", "public"."DailyEvent"."published", "public"."DailyEvent"."showInCalendar", "public"."DailyEvent"."createdAt", "public"."DailyEvent"."updatedAt" FROM "public"."DailyEvent" WHERE "public"."DailyEvent"."published" = $1 OFFSET $2
+prisma:query SELECT "public"."Space"."id", "public"."Space"."name", "public"."Space"."slug", "public"."Space"."description", "public"."Space"."capacity", "public"."Space"."images", "public"."Space"."color", "public"."Space"."published", "public"."Space"."createdAt", "public"."Space"."updatedAt" FROM "public"."Space" WHERE "public"."Space"."id" IN ($1,$2) OFFSET $3
+prisma:query COMMIT
+ GET /api/events?start=2026-01-04T17:00:00.000Z&end=2026-01-25T16:59:59.999Z 200 in 5.0s (compile: 3ms, proxy.ts: 2ms, render: 5.0s)
+prisma:query BEGIN
+prisma:query DEALLOCATE ALL
+prisma:query SELECT "public"."Event"."id", "public"."Event"."title", "public"."Event"."originalTitle", "public"."Event"."slug", "public"."Event"."description", "public"."Event"."startTime", "public"."Event"."endTime", "public"."Event"."type"::text, "public"."Event"."published", "public"."Event"."canceled", "public"."Event"."capacity", "public"."Event"."isAllDay", "public"."Event"."isRecurring", "public"."Event"."recurringDays", "public"."Event"."displayStyle"::text, "public"."Event"."overridesOthers", "public"."Event"."spaceId", "public"."Event"."googleEventId", "public"."Event"."googleCalendarId", "public"."Event"."googleColorId", "public"."Event"."preserveManualEdits", "public"."Event"."createdAt", "public"."Event"."updatedAt" FROM "public"."Event" WHERE ("public"."Event"."published" = $1 AND "public"."Event"."canceled" = $2) ORDER BY "public"."Event"."startTime" ASC OFFSET $3
+prisma:query SELECT "public"."Space"."id", "public"."Space"."name", "public"."Space"."slug", "public"."Space"."description", "public"."Space"."capacity", "public"."Space"."images", "public"."Space"."color", "public"."Space"."published", "public"."Space"."createdAt", "public"."Space"."updatedAt" FROM "public"."Space" WHERE "public"."Space"."id" IN ($1,$2,$3,$4,$5) OFFSET $6
+prisma:query COMMIT
+prisma:query SELECT 1
+prisma:query BEGIN
+prisma:query DEALLOCATE ALL
+prisma:query SELECT "public"."DailyEvent"."id", "public"."DailyEvent"."title", "public"."DailyEvent"."description", "public"."DailyEvent"."startTime", "public"."DailyEvent"."endTime", "public"."DailyEvent"."daysOfWeek", "public"."DailyEvent"."type"::text, "public"."DailyEvent"."displayStyle"::text, "public"."DailyEvent"."overridesOthers", "public"."DailyEvent"."spaceId", "public"."DailyEvent"."isActive", "public"."DailyEvent"."published", "public"."DailyEvent"."showInCalendar", "public"."DailyEvent"."createdAt", "public"."DailyEvent"."updatedAt" FROM "public"."DailyEvent" WHERE "public"."DailyEvent"."published" = $1 OFFSET $2
+prisma:query SELECT "public"."Space"."id", "public"."Space"."name", "public"."Space"."slug", "public"."Space"."description", "public"."Space"."capacity", "public"."Space"."images", "public"."Space"."color", "public"."Space"."published", "public"."Space"."createdAt", "public"."Space"."updatedAt" FROM "public"."Space" WHERE "public"."Space"."id" IN ($1,$2) OFFSET $3
+prisma:query COMMIT
+ GET /api/events?start=2026-01-04T17:00:00.000Z&end=2026-01-25T16:59:59.999Z 200 in 4.4s (compile: 3ms, proxy.ts: 3ms, render: 4.4s)
+✓ Compiled in 52ms
+ GET /schedule/1-18-2026 200 in 26ms (compile: 8ms, proxy.ts: 3ms, render: 16ms)
+prisma:query SELECT 1
+prisma:query SELECT 1
+prisma:query BEGIN
+prisma:query BEGIN
+prisma:query DEALLOCATE ALL
+prisma:query DEALLOCATE ALL
+prisma:query SELECT "public"."Space"."id", "public"."Space"."name", "public"."Space"."slug", "public"."Space"."description", "public"."Space"."capacity", "public"."Space"."images", "public"."Space"."color", "public"."Space"."published", "public"."Space"."createdAt", "public"."Space"."updatedAt" FROM "public"."Space" WHERE 1=1 ORDER BY "public"."Space"."createdAt" DESC OFFSET $1
+prisma:query COMMIT
+ GET /api/spaces 200 in 2.0s (compile: 8ms, proxy.ts: 4ms, render: 2.0s)
+prisma:query SELECT "public"."Event"."id", "public"."Event"."title", "public"."Event"."originalTitle", "public"."Event"."slug", "public"."Event"."description", "public"."Event"."startTime", "public"."Event"."endTime", "public"."Event"."type"::text, "public"."Event"."published", "public"."Event"."canceled", "public"."Event"."capacity", "public"."Event"."isAllDay", "public"."Event"."isRecurring", "public"."Event"."recurringDays", "public"."Event"."displayStyle"::text, "public"."Event"."overridesOthers", "public"."Event"."spaceId", "public"."Event"."googleEventId", "public"."Event"."googleCalendarId", "public"."Event"."googleColorId", "public"."Event"."preserveManualEdits", "public"."Event"."createdAt", "public"."Event"."updatedAt" FROM "public"."Event" WHERE ("public"."Event"."published" = $1 AND "public"."Event"."canceled" = $2) ORDER BY "public"."Event"."startTime" ASC OFFSET $3
+prisma:query BEGIN
+prisma:query SELECT "public"."Space"."id", "public"."Space"."name", "public"."Space"."slug", "public"."Space"."description", "public"."Space"."capacity", "public"."Space"."images", "public"."Space"."color", "public"."Space"."published", "public"."Space"."createdAt", "public"."Space"."updatedAt" FROM "public"."Space" WHERE "public"."Space"."id" IN ($1,$2,$3,$4,$5) OFFSET $6
+prisma:query DEALLOCATE ALL
+prisma:query COMMIT
+prisma:query BEGIN
+prisma:query SELECT "public"."Space"."id", "public"."Space"."name", "public"."Space"."slug", "public"."Space"."description", "public"."Space"."capacity", "public"."Space"."images", "public"."Space"."color", "public"."Space"."published", "public"."Space"."createdAt", "public"."Space"."updatedAt" FROM "public"."Space" WHERE 1=1 ORDER BY "public"."Space"."createdAt" DESC OFFSET $1
+prisma:query DEALLOCATE ALL
+prisma:query COMMIT
+ GET /api/spaces 200 in 1491ms (compile: 3ms, proxy.ts: 3ms, render: 1485ms)
+prisma:query SELECT "public"."DailyEvent"."id", "public"."DailyEvent"."title", "public"."DailyEvent"."description", "public"."DailyEvent"."startTime", "public"."DailyEvent"."endTime", "public"."DailyEvent"."daysOfWeek", "public"."DailyEvent"."type"::text, "public"."DailyEvent"."displayStyle"::text, "public"."DailyEvent"."overridesOthers", "public"."DailyEvent"."spaceId", "public"."DailyEvent"."isActive", "public"."DailyEvent"."published", "public"."DailyEvent"."showInCalendar", "public"."DailyEvent"."createdAt", "public"."DailyEvent"."updatedAt" FROM "public"."DailyEvent" WHERE "public"."DailyEvent"."published" = $1 OFFSET $2
+prisma:query SELECT "public"."Space"."id", "public"."Space"."name", "public"."Space"."slug", "public"."Space"."description", "public"."Space"."capacity", "public"."Space"."images", "public"."Space"."color", "public"."Space"."published", "public"."Space"."createdAt", "public"."Space"."updatedAt" FROM "public"."Space" WHERE "public"."Space"."id" IN ($1,$2) OFFSET $3
+prisma:query COMMIT
+ GET /api/events?start=2026-01-04T17:00:00.000Z&end=2026-01-25T16:59:59.999Z 200 in 5.0s (compile: 4ms, proxy.ts: 4ms, render: 5.0s)
+prisma:query BEGIN
+prisma:query DEALLOCATE ALL
+prisma:query SELECT "public"."Event"."id", "public"."Event"."title", "public"."Event"."originalTitle", "public"."Event"."slug", "public"."Event"."description", "public"."Event"."startTime", "public"."Event"."endTime", "public"."Event"."type"::text, "public"."Event"."published", "public"."Event"."canceled", "public"."Event"."capacity", "public"."Event"."isAllDay", "public"."Event"."isRecurring", "public"."Event"."recurringDays", "public"."Event"."displayStyle"::text, "public"."Event"."overridesOthers", "public"."Event"."spaceId", "public"."Event"."googleEventId", "public"."Event"."googleCalendarId", "public"."Event"."googleColorId", "public"."Event"."preserveManualEdits", "public"."Event"."createdAt", "public"."Event"."updatedAt" FROM "public"."Event" WHERE ("public"."Event"."published" = $1 AND "public"."Event"."canceled" = $2) ORDER BY "public"."Event"."startTime" ASC OFFSET $3
+prisma:query SELECT "public"."Space"."id", "public"."Space"."name", "public"."Space"."slug", "public"."Space"."description", "public"."Space"."capacity", "public"."Space"."images", "public"."Space"."color", "public"."Space"."published", "public"."Space"."createdAt", "public"."Space"."updatedAt" FROM "public"."Space" WHERE "public"."Space"."id" IN ($1,$2,$3,$4,$5) OFFSET $6
+prisma:query COMMIT
+prisma:query BEGIN
+prisma:query DEALLOCATE ALL
+prisma:query SELECT "public"."DailyEvent"."id", "public"."DailyEvent"."title", "public"."DailyEvent"."description", "public"."DailyEvent"."startTime", "public"."DailyEvent"."endTime", "public"."DailyEvent"."daysOfWeek", "public"."DailyEvent"."type"::text, "public"."DailyEvent"."displayStyle"::text, "public"."DailyEvent"."overridesOthers", "public"."DailyEvent"."spaceId", "public"."DailyEvent"."isActive", "public"."DailyEvent"."published", "public"."DailyEvent"."showInCalendar", "public"."DailyEvent"."createdAt", "public"."DailyEvent"."updatedAt" FROM "public"."DailyEvent" WHERE "public"."DailyEvent"."published" = $1 OFFSET $2
+✓ Compiled in 72ms
+prisma:query SELECT "public"."Space"."id", "public"."Space"."name", "public"."Space"."slug", "public"."Space"."description", "public"."Space"."capacity", "public"."Space"."images", "public"."Space"."color", "public"."Space"."published", "public"."Space"."createdAt", "public"."Space"."updatedAt" FROM "public"."Space" WHERE "public"."Space"."id" IN ($1,$2) OFFSET $3
+prisma:query COMMIT
+ GET /api/events?start=2026-01-04T17:00:00.000Z&end=2026-01-25T16:59:59.999Z 200 in 4.4s (compile: 3ms, proxy.ts: 2ms, render: 4.4s)
+prisma:query BEGIN
+prisma:query DEALLOCATE ALL
+prisma:query SELECT "public"."Event"."id", "public"."Event"."title", "public"."Event"."originalTitle", "public"."Event"."slug", "public"."Event"."description", "public"."Event"."startTime", "public"."Event"."endTime", "public"."Event"."type"::text, "public"."Event"."published", "public"."Event"."canceled", "public"."Event"."capacity", "public"."Event"."isAllDay", "public"."Event"."isRecurring", "public"."Event"."recurringDays", "public"."Event"."displayStyle"::text, "public"."Event"."overridesOthers", "public"."Event"."spaceId", "public"."Event"."googleEventId", "public"."Event"."googleCalendarId", "public"."Event"."googleColorId", "public"."Event"."preserveManualEdits", "public"."Event"."createdAt", "public"."Event"."updatedAt" FROM "public"."Event" WHERE ("public"."Event"."published" = $1 AND "public"."Event"."canceled" = $2) ORDER BY "public"."Event"."startTime" ASC OFFSET $3
+prisma:query SELECT "public"."Space"."id", "public"."Space"."name", "public"."Space"."slug", "public"."Space"."description", "public"."Space"."capacity", "public"."Space"."images", "public"."Space"."color", "public"."Space"."published", "public"."Space"."createdAt", "public"."Space"."updatedAt" FROM "public"."Space" WHERE "public"."Space"."id" IN ($1,$2,$3,$4,$5) OFFSET $6
+prisma:query COMMIT
+prisma:query BEGIN
+prisma:query DEALLOCATE ALL
+prisma:query SELECT "public"."DailyEvent"."id", "public"."DailyEvent"."title", "public"."DailyEvent"."description", "public"."DailyEvent"."startTime", "public"."DailyEvent"."endTime", "public"."DailyEvent"."daysOfWeek", "public"."DailyEvent"."type"::text, "public"."DailyEvent"."displayStyle"::text, "public"."DailyEvent"."overridesOthers", "public"."DailyEvent"."spaceId", "public"."DailyEvent"."isActive", "public"."DailyEvent"."published", "public"."DailyEvent"."showInCalendar", "public"."DailyEvent"."createdAt", "public"."DailyEvent"."updatedAt" FROM "public"."DailyEvent" WHERE "public"."DailyEvent"."published" = $1 OFFSET $2
+prisma:query SELECT "public"."Space"."id", "public"."Space"."name", "public"."Space"."slug", "public"."Space"."description", "public"."Space"."capacity", "public"."Space"."images", "public"."Space"."color", "public"."Space"."published", "public"."Space"."createdAt", "public"."Space"."updatedAt" FROM "public"."Space" WHERE "public"."Space"."id" IN ($1,$2) OFFSET $3
+prisma:query COMMIT
+ GET /api/events?start=2026-01-04T17:00:00.000Z&end=2026-01-25T16:59:59.999Z 200 in 4.7s (compile: 2ms, proxy.ts: 2ms, render: 4.7s)
+prisma:query BEGIN
+prisma:query DEALLOCATE ALL
+prisma:query SELECT "public"."Event"."id", "public"."Event"."title", "public"."Event"."originalTitle", "public"."Event"."slug", "public"."Event"."description", "public"."Event"."startTime", "public"."Event"."endTime", "public"."Event"."type"::text, "public"."Event"."published", "public"."Event"."canceled", "public"."Event"."capacity", "public"."Event"."isAllDay", "public"."Event"."isRecurring", "public"."Event"."recurringDays", "public"."Event"."displayStyle"::text, "public"."Event"."overridesOthers", "public"."Event"."spaceId", "public"."Event"."googleEventId", "public"."Event"."googleCalendarId", "public"."Event"."googleColorId", "public"."Event"."preserveManualEdits", "public"."Event"."createdAt", "public"."Event"."updatedAt" FROM "public"."Event" WHERE ("public"."Event"."published" = $1 AND "public"."Event"."canceled" = $2) ORDER BY "public"."Event"."startTime" ASC OFFSET $3
+prisma:query SELECT "public"."Space"."id", "public"."Space"."name", "public"."Space"."slug", "public"."Space"."description", "public"."Space"."capacity", "public"."Space"."images", "public"."Space"."color", "public"."Space"."published", "public"."Space"."createdAt", "public"."Space"."updatedAt" FROM "public"."Space" WHERE "public"."Space"."id" IN ($1,$2,$3,$4,$5) OFFSET $6
+prisma:query COMMIT
+prisma:query SELECT 1
+prisma:query BEGIN
+prisma:query DEALLOCATE ALL
+prisma:query SELECT "public"."DailyEvent"."id", "public"."DailyEvent"."title", "public"."DailyEvent"."description", "public"."DailyEvent"."startTime", "public"."DailyEvent"."endTime", "public"."DailyEvent"."daysOfWeek", "public"."DailyEvent"."type"::text, "public"."DailyEvent"."displayStyle"::text, "public"."DailyEvent"."overridesOthers", "public"."DailyEvent"."spaceId", "public"."DailyEvent"."isActive", "public"."DailyEvent"."published", "public"."DailyEvent"."showInCalendar", "public"."DailyEvent"."createdAt", "public"."DailyEvent"."updatedAt" FROM "public"."DailyEvent" WHERE "public"."DailyEvent"."published" = $1 OFFSET $2
+prisma:query SELECT "public"."Space"."id", "public"."Space"."name", "public"."Space"."slug", "public"."Space"."description", "public"."Space"."capacity", "public"."Space"."images", "public"."Space"."color", "public"."Space"."published", "public"."Space"."createdAt", "public"."Space"."updatedAt" FROM "public"."Space" WHERE "public"."Space"."id" IN ($1,$2) OFFSET $3
+prisma:query COMMIT
+ GET /api/events?start=2026-01-04T17:00:00.000Z&end=2026-01-25T16:59:59.999Z 200 in 4.6s (compile: 3ms, proxy.ts: 3ms, render: 4.6s)
+✓ Compiled in 28ms
+✓ Compiled in 38ms
+⨯ ./components/home-schedule.tsx:713:13
+Parsing ecmascript source code failed
+[0m [90m 711 |[39m                 [33m<[39m[33m/[39m[33mdiv[39m[33m>[39m
+ [90m 712 |[39m               [33m<[39m[33m/[39m[33mLink[39m[33m>[39m
+[31m[1m>[22m[39m[90m 713 |[39m             )
+ [90m     |[39m             [31m[1m^[22m[39m
+ [90m 714 |[39m           })}
+ [90m 715 |[39m         [33m<[39m[33m/[39m[33mdiv[39m[33m>[39m
+ [90m 716 |[39m[0m
+
+Expected '</', got ')'
+
+Import trace:
+  Server Component:
+    ./components/home-schedule.tsx
+    ./app/schedule/page.tsx
+
+
+ GET /schedule 500 in 1098ms (compile: 985ms, proxy.ts: 2ms, render: 111ms)
+⨯ ./components/home-schedule.tsx:713:13
+Parsing ecmascript source code failed
+[0m [90m 711 |[39m                 [33m<[39m[33m/[39m[33mdiv[39m[33m>[39m
+ [90m 712 |[39m               [33m<[39m[33m/[39m[33mLink[39m[33m>[39m
+[31m[1m>[22m[39m[90m 713 |[39m             )
+ [90m     |[39m             [31m[1m^[22m[39m
+ [90m 714 |[39m           })}
+ [90m 715 |[39m         [33m<[39m[33m/[39m[33mdiv[39m[33m>[39m
+ [90m 716 |[39m[0m
+
+Expected '</', got ')'
+
+Import trace:
+  Server Component:
+    ./components/home-schedule.tsx
+    ./app/schedule/page.tsx
+
+
+ GET /schedule 500 in 43ms (compile: 28ms, proxy.ts: 5ms, render: 11ms)
+✓ Compiled in 37ms
+ GET /auth/signin?callbackUrl=%2Fadmin%2Fspaces 200 in 448ms (compile: 28ms, proxy.ts: 11ms, render: 409ms)
+ GET /auth/signin?callbackUrl=%2Fadmin%2Fspaces 200 in 188ms (compile: 108ms, proxy.ts: 9ms, render: 70ms)
+ GET /schedule/1-14-2026 200 in 471ms (compile: 337ms, proxy.ts: 2ms, render: 132ms)
+ GET /schedule 200 in 496ms (compile: 141ms, proxy.ts: 12ms, render: 343ms)
+ GET /schedule/1-14-2026 200 in 86ms (compile: 17ms, proxy.ts: 4ms, render: 66ms)
+ GET /api/auth/session 200 in 56ms (compile: 38ms, proxy.ts: 5ms, render: 14ms)
+ GET /api/auth/session 200 in 21ms (compile: 11ms, proxy.ts: 3ms, render: 7ms)
+ GET /api/auth/session 200 in 14ms (compile: 7ms, proxy.ts: 2ms, render: 4ms)
+prisma:query SELECT 1
+prisma:query BEGIN
+prisma:query DEALLOCATE ALL
+prisma:query SELECT "public"."Event"."id", "public"."Event"."title", "public"."Event"."originalTitle", "public"."Event"."slug", "public"."Event"."description", "public"."Event"."startTime", "public"."Event"."endTime", "public"."Event"."type"::text, "public"."Event"."published", "public"."Event"."canceled", "public"."Event"."capacity", "public"."Event"."isAllDay", "public"."Event"."isRecurring", "public"."Event"."recurringDays", "public"."Event"."displayStyle"::text, "public"."Event"."overridesOthers", "public"."Event"."spaceId", "public"."Event"."googleEventId", "public"."Event"."googleCalendarId", "public"."Event"."googleColorId", "public"."Event"."preserveManualEdits", "public"."Event"."createdAt", "public"."Event"."updatedAt" FROM "public"."Event" WHERE ("public"."Event"."published" = $1 AND "public"."Event"."canceled" = $2) ORDER BY "public"."Event"."startTime" ASC OFFSET $3
+prisma:query SELECT "public"."Space"."id", "public"."Space"."name", "public"."Space"."slug", "public"."Space"."description", "public"."Space"."capacity", "public"."Space"."images", "public"."Space"."color", "public"."Space"."published", "public"."Space"."createdAt", "public"."Space"."updatedAt" FROM "public"."Space" WHERE "public"."Space"."id" IN ($1,$2,$3,$4,$5) OFFSET $6
+prisma:query COMMIT
+prisma:query BEGIN
+prisma:query DEALLOCATE ALL
+prisma:query SELECT "public"."DailyEvent"."id", "public"."DailyEvent"."title", "public"."DailyEvent"."description", "public"."DailyEvent"."startTime", "public"."DailyEvent"."endTime", "public"."DailyEvent"."daysOfWeek", "public"."DailyEvent"."type"::text, "public"."DailyEvent"."displayStyle"::text, "public"."DailyEvent"."overridesOthers", "public"."DailyEvent"."spaceId", "public"."DailyEvent"."isActive", "public"."DailyEvent"."published", "public"."DailyEvent"."showInCalendar", "public"."DailyEvent"."createdAt", "public"."DailyEvent"."updatedAt" FROM "public"."DailyEvent" WHERE "public"."DailyEvent"."published" = $1 OFFSET $2
+prisma:query SELECT "public"."Space"."id", "public"."Space"."name", "public"."Space"."slug", "public"."Space"."description", "public"."Space"."capacity", "public"."Space"."images", "public"."Space"."color", "public"."Space"."published", "public"."Space"."createdAt", "public"."Space"."updatedAt" FROM "public"."Space" WHERE "public"."Space"."id" IN ($1,$2) OFFSET $3
+prisma:query COMMIT
+ GET /api/events?start=2026-01-04T17:00:00.000Z&end=2026-01-25T16:59:59.999Z 200 in 5.9s (compile: 7ms, proxy.ts: 5ms, render: 5.8s)
+✓ Compiled in 34ms
+ GET /auth/signin?callbackUrl=%2Fadmin%2Fspaces 200 in 237ms (compile: 7ms, proxy.ts: 4ms, render: 226ms)
+ GET /schedule 200 in 258ms (compile: 97ms, proxy.ts: 3ms, render: 158ms)
+ GET /auth/signin?callbackUrl=%2Fadmin%2Fspaces 200 in 111ms (compile: 28ms, proxy.ts: 3ms, render: 80ms)
+ GET /schedule/1-14-2026 200 in 272ms (compile: 162ms, proxy.ts: 5ms, render: 105ms)
+ GET /schedule 200 in 115ms (compile: 24ms, proxy.ts: 24ms, render: 67ms)
+ GET /schedule/1-14-2026 200 in 81ms (compile: 30ms, proxy.ts: 4ms, render: 47ms)
+✓ Compiled in 31ms
+✓ Compiled in 44ms

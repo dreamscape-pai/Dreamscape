@@ -599,22 +599,42 @@ export default function HomeSchedule() {
 
         {/* Header row - Desktop: 7 days, Mobile: 3 days */}
         <div className="hidden md:grid grid-cols-7 gap-1 mb-2 bg-gradient-to-b from-purple-900/60 to-purple-950/40 rounded-lg p-2 border-b-2 border-black/20 backdrop-blur-md">
-          {allDaysOfWeek.map(day => (
-            <div key={day} className="text-center">
-              <p className="text-cream font-bold text-base" style={{ textShadow: '0 2px 6px rgba(0,0,0,0.6)' }}>
-                {day}
-              </p>
-            </div>
-          ))}
+          {allDaysOfWeek.map(day => {
+            // Calculate the date for this day
+            const dayIndex = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'].indexOf(day)
+            const weekStart = startOfWeek(currentDate, { weekStartsOn: 1 })
+            const adjustedDayIndex = dayIndex === 0 ? 6 : dayIndex - 1 // Adjust for Monday start
+            const dayDate = new Date(weekStart)
+            dayDate.setDate(weekStart.getDate() + adjustedDayIndex)
+            const dateStr = `${dayDate.getMonth() + 1}-${dayDate.getDate()}-${dayDate.getFullYear()}`
+
+            return (
+              <Link key={day} href={`/schedule/${dateStr}`} className="text-center group">
+                <p className="text-cream font-bold text-base group-hover:text-yellow-300 transition-colors cursor-pointer"
+                   style={{ textShadow: '0 2px 6px rgba(0,0,0,0.6)' }}>
+                  {day}
+                </p>
+              </Link>
+            )
+          })}
         </div>
         <div className="grid md:hidden grid-cols-3 gap-1 mb-2 bg-gradient-to-b from-purple-900/60 to-purple-950/40 rounded-lg p-2 border-b-2 border-black/20 backdrop-blur-md">
-          {mobileDaysToShow.map(day => (
-            <div key={day} className="text-center">
-              <p className="text-cream font-bold text-sm" style={{ textShadow: '0 2px 6px rgba(0,0,0,0.6)' }}>
-                {day}
-              </p>
-            </div>
-          ))}
+          {mobileDaysToShow.map(day => {
+            // Calculate the date for this day in mobile view
+            const mobileDayOffset = mobileDaysToShow.indexOf(day)
+            const dayDate = new Date(currentDate)
+            dayDate.setDate(currentDate.getDate() + mobileDayOffset)
+            const dateStr = `${dayDate.getMonth() + 1}-${dayDate.getDate()}-${dayDate.getFullYear()}`
+
+            return (
+              <Link key={day} href={`/schedule/${dateStr}`} className="text-center group">
+                <p className="text-cream font-bold text-sm group-hover:text-yellow-300 transition-colors"
+                   style={{ textShadow: '0 2px 6px rgba(0,0,0,0.6)' }}>
+                  {day}
+                </p>
+              </Link>
+            )
+          })}
         </div>
 
         {/* Day columns grid - Desktop: 7 days */}
@@ -631,21 +651,14 @@ export default function HomeSchedule() {
             )
             const shouldHideOthers = closedEvent?.overridesOthers
 
-            // Calculate the date for this day
-            const dayIndex = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'].indexOf(day)
-            const weekStart = startOfWeek(currentDate, { weekStartsOn: 1 })
-            const adjustedDayIndex = dayIndex === 0 ? 6 : dayIndex - 1 // Adjust for Monday start
-            const dayDate = new Date(weekStart)
-            dayDate.setDate(weekStart.getDate() + adjustedDayIndex)
-            const dateStr = `${dayDate.getMonth() + 1}-${dayDate.getDate()}-${dayDate.getFullYear()}`
-
             return (
-              <Link
+              <div
                 key={day}
-                href={`/schedule/${dateStr}`}
-                className="rounded-lg relative block hover:ring-2 hover:ring-cream/30 transition-all"
+                className="rounded-lg relative"
                 style={{
-                  backgroundColor: closedEvent ? 'rgba(220, 38, 38, 0.15)' : 'color-mix(in oklab, #000000 70%, transparent)',
+                  backgroundColor: closedEvent
+                    ? 'color-mix(in oklab, #000000 70%, rgba(220, 38, 38, 0.2))'
+                    : 'color-mix(in oklab, #000000 70%, transparent)',
                   boxShadow: 'inset 0 0 20px rgba(0, 0, 0, 0.3), 0 0 15px rgba(0, 0, 0, 0.2)',
                   minHeight: '55vh'
                 }}
@@ -688,7 +701,7 @@ export default function HomeSchedule() {
                     )
                   })}
                 </div>
-              </Link>
+              </div>
             )
           })}
         </div>
@@ -705,20 +718,14 @@ export default function HomeSchedule() {
             )
             const shouldHideOthers = closedEvent?.overridesOthers
 
-            // Calculate the date for this day in mobile view
-            const dayIndex = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'].indexOf(day)
-            const mobileDayOffset = mobileDaysToShow.indexOf(day)
-            const dayDate = new Date(currentDate)
-            dayDate.setDate(currentDate.getDate() + mobileDayOffset)
-            const dateStr = `${dayDate.getMonth() + 1}-${dayDate.getDate()}-${dayDate.getFullYear()}`
-
             return (
-              <Link
+              <div
                 key={day}
-                href={`/schedule/${dateStr}`}
-                className="rounded-lg block hover:ring-2 hover:ring-cream/30 transition-all relative"
+                className="rounded-lg relative"
                 style={{
-                  backgroundColor: closedEvent ? 'rgba(220, 38, 38, 0.15)' : 'color-mix(in oklab, #000000 70%, transparent)',
+                  backgroundColor: closedEvent
+                    ? 'color-mix(in oklab, #000000 70%, rgba(220, 38, 38, 0.2))'
+                    : 'color-mix(in oklab, #000000 70%, transparent)',
                   boxShadow: 'inset 0 0 20px rgba(0, 0, 0, 0.3), 0 0 15px rgba(0, 0, 0, 0.2)',
                   minHeight: '55vh'
                 }}
@@ -761,7 +768,7 @@ export default function HomeSchedule() {
                     })}
                   </>
                 ) : null}
-              </Link>
+              </div>
             )
           })}
         </div>
