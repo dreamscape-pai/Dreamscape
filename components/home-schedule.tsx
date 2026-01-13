@@ -614,9 +614,18 @@ export default function HomeSchedule() {
           {allDaysOfWeek.map((day) => {
             const dayEvents = eventsByDayAndPeriod[day] || { morning: [], midday: [], evening: [] }
 
-            // Check for CLOSED events on this day
+            // Check for CLOSED events on this day (including daily recurring CLOSED)
             const allDayEvents = [...dayEvents.morning, ...dayEvents.midday, ...dayEvents.evening]
-            const closedEvent = allDayEvents.find(e => e.type === 'CLOSED' && e.displayStyle === 'VERTICAL')
+
+            // Also check for daily CLOSED events for this day of week
+            const dayOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'].indexOf(day)
+            const dailyClosedEvent = allEvents.find(e =>
+              typeof e.id === 'string' &&
+              e.id.startsWith('daily-closed-') &&
+              e.displayStyle === 'VERTICAL'
+            )
+
+            const closedEvent = allDayEvents.find(e => e.type === 'CLOSED' && e.displayStyle === 'VERTICAL') || dailyClosedEvent
             const shouldHideOthers = closedEvent?.overridesOthers
 
             return (

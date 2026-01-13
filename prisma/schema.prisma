@@ -147,6 +147,8 @@ model Event {
   canceled         Boolean             @default(false) // Simple boolean for cancellation
   capacity         Int?
   isAllDay         Boolean             @default(false) // For all-day events like CLOSED
+  isRecurring      Boolean             @default(false) // For recurring events (e.g., closed every Sunday)
+  recurringDays    Int[]               @default([]) // Days of week (0=Sunday, 6=Saturday) for recurring events
   displayStyle     EventDisplayStyle   @default(NORMAL) // How to display the event (normal or vertical text)
   overridesOthers  Boolean             @default(false) // If true, hides other events (for CLOSED days)
   spaceId          Int?                // Direct space relationship - determined by Google Calendar color
@@ -212,15 +214,25 @@ model Order {
 }
 
 model DailyEvent {
-  id             Int      @id @default(autoincrement())
+  id             Int               @id @default(autoincrement())
   title          String
-  startTime      String   // Format: "HH:MM" e.g., "12:00"
-  endTime        String   // Format: "HH:MM" e.g., "20:00"
-  daysOfWeek     Int[]    // Array of days: 0=Sunday, 1=Monday, etc.
+  description    String?
+  startTime      String            // Format: "HH:MM" e.g., "12:00"
+  endTime        String            // Format: "HH:MM" e.g., "20:00"
+  daysOfWeek     Int[]             // Array of days: 0=Sunday, 1=Monday, etc.
+  type           DailyEventType    @default(FACILITY)
+  displayStyle   EventDisplayStyle @default(NORMAL)
+  overridesOthers Boolean          @default(false) // For CLOSED days - hides other events
   spaceId        Int?
-  space          Space?   @relation(fields: [spaceId], references: [id])
-  published      Boolean  @default(true)
-  showInCalendar Boolean  @default(true) // Whether to show in the calendar grid or above
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  space          Space?            @relation(fields: [spaceId], references: [id])
+  isActive       Boolean           @default(true)
+  published      Boolean           @default(true)
+  showInCalendar Boolean           @default(true) // Whether to show in the calendar grid or above
+  createdAt      DateTime          @default(now())
+  updatedAt      DateTime          @updatedAt
+}
+
+enum DailyEventType {
+  FACILITY  // Regular facility hours (cafe, sauna, etc)
+  CLOSED    // Venue closed
 }

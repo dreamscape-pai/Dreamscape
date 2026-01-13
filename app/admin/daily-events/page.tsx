@@ -12,10 +12,9 @@ export default async function DailyEventsPage() {
     ],
   })
 
-  // Format time for display
-  const formatTime = (time: Date) => {
-    const hours = time.getHours()
-    const minutes = time.getMinutes()
+  // Format time for display (time is stored as string like "08:00")
+  const formatTime = (timeStr: string) => {
+    const [hours, minutes] = timeStr.split(':').map(Number)
     const ampm = hours >= 12 ? 'PM' : 'AM'
     const displayHours = hours === 0 ? 12 : hours > 12 ? hours - 12 : hours
     const displayMinutes = minutes.toString().padStart(2, '0')
@@ -69,7 +68,11 @@ export default async function DailyEventsPage() {
                 <div className="flex-1">
                   <div className="flex items-center gap-3 mb-2">
                     <h3 className="text-lg font-bold text-cream">{event.title}</h3>
-                    {event.space && (
+                    {event.type === 'CLOSED' ? (
+                      <span className="px-2 py-1 bg-red-500/30 rounded text-xs text-red-400 font-bold">
+                        VENUE CLOSED
+                      </span>
+                    ) : event.space && (
                       <span className="px-2 py-1 bg-white/10 rounded text-xs text-cream/80">
                         {event.space.name}
                       </span>
@@ -81,13 +84,15 @@ export default async function DailyEventsPage() {
                   )}
 
                   <div className="flex flex-wrap gap-4 text-sm text-cream/60">
-                    <span className="flex items-center gap-1">
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                              d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                      </svg>
-                      {formatTime(event.startTime)} - {formatTime(event.endTime)}
-                    </span>
+                    {event.type !== 'CLOSED' && (
+                      <span className="flex items-center gap-1">
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        {formatTime(event.startTime)} - {formatTime(event.endTime)}
+                      </span>
+                    )}
 
                     <span className="flex items-center gap-1">
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

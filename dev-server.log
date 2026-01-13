@@ -1672,3 +1672,197 @@ prisma:query COMMIT
 prisma:query COMMIT
 prisma:query COMMIT
  GET /admin/events/new 200 in 1527ms (compile: 2ms, proxy.ts: 2ms, render: 1523ms)
+ GET /api/auth/session 200 in 170ms (compile: 111ms, proxy.ts: 17ms, render: 43ms)
+ GET /api/auth/session 200 in 27ms (compile: 13ms, proxy.ts: 1792µs, render: 12ms)
+prisma:query SELECT 1
+prisma:query SELECT 1
+prisma:query BEGIN
+prisma:query BEGIN
+prisma:query DEALLOCATE ALL
+prisma:query DEALLOCATE ALL
+prisma:query SELECT "public"."User"."id", "public"."User"."name", "public"."User"."email", "public"."User"."emailVerified", "public"."User"."image", "public"."User"."password", "public"."User"."role"::text, "public"."User"."createdAt", "public"."User"."updatedAt" FROM "public"."User" WHERE ("public"."User"."id" = $1 AND 1=1) LIMIT $2 OFFSET $3
+prisma:query COMMIT
+prisma:query SELECT "public"."Space"."id", "public"."Space"."name", "public"."Space"."slug", "public"."Space"."description", "public"."Space"."capacity", "public"."Space"."images", "public"."Space"."color", "public"."Space"."published", "public"."Space"."createdAt", "public"."Space"."updatedAt" FROM "public"."Space" WHERE 1=1 ORDER BY "public"."Space"."name" ASC OFFSET $1
+ GET /api/auth/session 200 in 40ms (compile: 17ms, proxy.ts: 7ms, render: 16ms)
+ GET /api/auth/session 200 in 17ms (compile: 4ms, proxy.ts: 3ms, render: 10ms)
+prisma:query COMMIT
+ GET /admin/events/new 200 in 2.5s (compile: 4ms, proxy.ts: 4ms, render: 2.5s)
+prisma:query SELECT 1
+prisma:query BEGIN
+prisma:query DEALLOCATE ALL
+prisma:query SELECT "public"."DailyEvent"."id", "public"."DailyEvent"."title", "public"."DailyEvent"."startTime", "public"."DailyEvent"."endTime", "public"."DailyEvent"."daysOfWeek", "public"."DailyEvent"."spaceId", "public"."DailyEvent"."published", "public"."DailyEvent"."showInCalendar", "public"."DailyEvent"."createdAt", "public"."DailyEvent"."updatedAt" FROM "public"."DailyEvent" LEFT JOIN "public"."Space" AS "orderby_1" ON ("orderby_1"."id") = ("public"."DailyEvent"."spaceId") WHERE 1=1 ORDER BY "orderby_1"."name" ASC, "public"."DailyEvent"."startTime" ASC OFFSET $1
+prisma:query SELECT "public"."Space"."id", "public"."Space"."name", "public"."Space"."slug", "public"."Space"."description", "public"."Space"."capacity", "public"."Space"."images", "public"."Space"."color", "public"."Space"."published", "public"."Space"."createdAt", "public"."Space"."updatedAt" FROM "public"."Space" WHERE "public"."Space"."id" IN ($1,$2) OFFSET $3
+prisma:query COMMIT
+⨯ TypeError: time.getHours is not a function
+    at formatTime (app/admin/daily-events/page.tsx:17:24)
+    at <unknown> (app/admin/daily-events/page.tsx:89:24)
+    at Array.map (<anonymous>)
+    at DailyEventsPage (app/admin/daily-events/page.tsx:63:23)
+  15 |   // Format time for display
+  16 |   const formatTime = (time: Date) => {
+> 17 |     const hours = time.getHours()
+     |                        ^
+  18 |     const minutes = time.getMinutes()
+  19 |     const ampm = hours >= 12 ? 'PM' : 'AM'
+  20 |     const displayHours = hours === 0 ? 12 : hours > 12 ? hours - 12 : hours {
+  digest: '1078121201'
+}
+ GET /admin/daily-events 200 in 3.0s (compile: 440ms, proxy.ts: 5ms, render: 2.5s)
+prisma:query SELECT 1
+prisma:query BEGIN
+prisma:query BEGIN
+prisma:query DEALLOCATE ALL
+prisma:query DEALLOCATE ALL
+prisma:query SELECT "public"."DailyEvent"."id", "public"."DailyEvent"."title", "public"."DailyEvent"."startTime", "public"."DailyEvent"."endTime", "public"."DailyEvent"."daysOfWeek", "public"."DailyEvent"."spaceId", "public"."DailyEvent"."published", "public"."DailyEvent"."showInCalendar", "public"."DailyEvent"."createdAt", "public"."DailyEvent"."updatedAt" FROM "public"."DailyEvent" LEFT JOIN "public"."Space" AS "orderby_1" ON ("orderby_1"."id") = ("public"."DailyEvent"."spaceId") WHERE 1=1 ORDER BY "orderby_1"."name" ASC, "public"."DailyEvent"."startTime" ASC OFFSET $1
+prisma:query SELECT "public"."User"."id", "public"."User"."name", "public"."User"."email", "public"."User"."emailVerified", "public"."User"."image", "public"."User"."password", "public"."User"."role"::text, "public"."User"."createdAt", "public"."User"."updatedAt" FROM "public"."User" WHERE ("public"."User"."id" = $1 AND 1=1) LIMIT $2 OFFSET $3
+prisma:query COMMIT
+prisma:query SELECT "public"."Space"."id", "public"."Space"."name", "public"."Space"."slug", "public"."Space"."description", "public"."Space"."capacity", "public"."Space"."images", "public"."Space"."color", "public"."Space"."published", "public"."Space"."createdAt", "public"."Space"."updatedAt" FROM "public"."Space" WHERE "public"."Space"."id" IN ($1,$2) OFFSET $3
+ GET /api/auth/session 200 in 23ms (compile: 8ms, proxy.ts: 4ms, render: 10ms)
+ GET /api/auth/session 200 in 18ms (compile: 4ms, proxy.ts: 3ms, render: 11ms)
+prisma:query COMMIT
+⨯ TypeError: time.getHours is not a function
+    at formatTime (app/admin/daily-events/page.tsx:17:24)
+    at <unknown> (app/admin/daily-events/page.tsx:89:24)
+    at Array.map (<anonymous>)
+    at DailyEventsPage (app/admin/daily-events/page.tsx:63:23)
+  15 |   // Format time for display
+  16 |   const formatTime = (time: Date) => {
+> 17 |     const hours = time.getHours()
+     |                        ^
+  18 |     const minutes = time.getMinutes()
+  19 |     const ampm = hours >= 12 ? 'PM' : 'AM'
+  20 |     const displayHours = hours === 0 ? 12 : hours > 12 ? hours - 12 : hours {
+  digest: '1078121201'
+}
+ GET /admin/daily-events 200 in 2.5s (compile: 5ms, proxy.ts: 4ms, render: 2.5s)
+ GET /auth/signin?callbackUrl=%2Fadmin%2Fspaces 200 in 376ms (compile: 322ms, proxy.ts: 3ms, render: 51ms)
+ GET /schedule 200 in 380ms (compile: 6ms, proxy.ts: 5ms, render: 369ms)
+prisma:query BEGIN
+prisma:query BEGIN
+prisma:query DEALLOCATE ALL
+prisma:query DEALLOCATE ALL
+prisma:query SELECT "public"."DailyEvent"."id", "public"."DailyEvent"."title", "public"."DailyEvent"."startTime", "public"."DailyEvent"."endTime", "public"."DailyEvent"."daysOfWeek", "public"."DailyEvent"."spaceId", "public"."DailyEvent"."published", "public"."DailyEvent"."showInCalendar", "public"."DailyEvent"."createdAt", "public"."DailyEvent"."updatedAt" FROM "public"."DailyEvent" LEFT JOIN "public"."Space" AS "orderby_1" ON ("orderby_1"."id") = ("public"."DailyEvent"."spaceId") WHERE 1=1 ORDER BY "orderby_1"."name" ASC, "public"."DailyEvent"."startTime" ASC OFFSET $1
+prisma:query SELECT "public"."User"."id", "public"."User"."name", "public"."User"."email", "public"."User"."emailVerified", "public"."User"."image", "public"."User"."password", "public"."User"."role"::text, "public"."User"."createdAt", "public"."User"."updatedAt" FROM "public"."User" WHERE ("public"."User"."id" = $1 AND 1=1) LIMIT $2 OFFSET $3
+prisma:query COMMIT
+⨯ Error: Module [project]/node_modules/next/dist/esm/lib/framework/boundary-components.js [app-ssr] (ecmascript) was instantiated because it was required from module [project]/node_modules/next/dist/esm/build/templates/app-page.js?page=/auth/signin/page { GLOBAL_ERROR_MODULE => "[project]/node_modules/next/dist/client/components/builtin/global-error.js [app-rsc] (ecmascript, Next.js Server Component)", METADATA_0 => "[project]/app/favicon.ico.mjs { IMAGE => \"[project]/app/favicon.ico (static in ecmascript, tag client)\" } [app-rsc] (structured image object, ecmascript, Next.js Server Component)", MODULE_1 => "[project]/app/layout.tsx [app-rsc] (ecmascript, Next.js Server Component)", MODULE_2 => "[project]/node_modules/next/dist/client/components/builtin/not-found.js [app-rsc] (ecmascript, Next.js Server Component)", MODULE_3 => "[project]/node_modules/next/dist/client/components/builtin/forbidden.js [app-rsc] (ecmascript, Next.js Server Component)", MODULE_4 => "[project]/node_modules/next/dist/client/components/builtin/unauthorized.js [app-rsc] (ecmascript, Next.js Server Component)", MODULE_5 => "[project]/node_modules/next/dist/client/components/builtin/global-error.js [app-rsc] (ecmascript, Next.js Server Component)", MODULE_6 => "[project]/app/auth/signin/page.tsx [app-rsc] (ecmascript, Next.js Server Component)" } [app-rsc] (ecmascript) <locals>, but the module factory is not available.
+    at ignore-listed frames {
+  digest: '3474476266'
+}
+prisma:query SELECT "public"."Space"."id", "public"."Space"."name", "public"."Space"."slug", "public"."Space"."description", "public"."Space"."capacity", "public"."Space"."images", "public"."Space"."color", "public"."Space"."published", "public"."Space"."createdAt", "public"."Space"."updatedAt" FROM "public"."Space" WHERE "public"."Space"."id" IN ($1,$2) OFFSET $3
+prisma:query COMMIT
+ GET /admin/daily-events 200 in 4.6s (compile: 163ms, proxy.ts: 3ms, render: 4.4s)
+ GET /api/auth/session 200 in 788ms (compile: 11ms, proxy.ts: 7ms, render: 770ms)
+ GET /api/auth/session 200 in 30ms (compile: 15ms, proxy.ts: 3ms, render: 12ms)
+ GET /admin/daily-events/new 404 in 117ms (compile: 67ms, proxy.ts: 11ms, render: 39ms)
+ GET /admin/daily-events/new 404 in 76ms (compile: 11ms, proxy.ts: 3ms, render: 62ms)
+ GET /api/auth/session 200 in 73ms (compile: 22ms, proxy.ts: 5ms, render: 46ms)
+ GET /api/auth/session 200 in 52ms (compile: 10ms, proxy.ts: 8ms, render: 34ms)
+ GET /admin/daily-events/new 404 in 54ms (compile: 7ms, proxy.ts: 2ms, render: 45ms)
+ GET /api/auth/session 200 in 25ms (compile: 7ms, proxy.ts: 3ms, render: 15ms)
+ GET /api/auth/session 200 in 14ms (compile: 3ms, proxy.ts: 2ms, render: 9ms)
+✓ Compiled in 85ms
+✓ Compiled in 112ms
+ GET /schedule 404 in 743ms (compile: 164ms, proxy.ts: 24ms, render: 555ms)
+ GET /admin/daily-events/new 404 in 726ms (compile: 207ms, proxy.ts: 17ms, render: 503ms)
+ GET /auth/signin?callbackUrl=%2Fadmin%2Fspaces 404 in 753ms (compile: 209ms, proxy.ts: 21ms, render: 523ms)
+ GET /schedule 200 in 523ms (compile: 63ms, proxy.ts: 38ms, render: 422ms)
+ GET /auth/signin?callbackUrl=%2Fadmin%2Fspaces 200 in 620ms (compile: 115ms, proxy.ts: 41ms, render: 465ms)
+ GET /auth/signin?callbackUrl=%2Fadmin%2Fspaces 200 in 164ms (compile: 58ms, proxy.ts: 9ms, render: 97ms)
+ GET /auth/signin?callbackUrl=%2Fadmin%2Fspaces 200 in 54ms (compile: 6ms, proxy.ts: 3ms, render: 45ms)
+ GET /schedule 200 in 473ms (compile: 23ms, proxy.ts: 14ms, render: 436ms)
+ GET /auth/signin?callbackUrl=%2Fadmin%2Fspaces 200 in 212ms (compile: 24ms, proxy.ts: 15ms, render: 173ms)
+ GET /api/auth/session 200 in 158ms (compile: 128ms, proxy.ts: 5ms, render: 25ms)
+prisma:query SELECT 1
+prisma:query SELECT 1
+ GET /api/auth/session 200 in 77ms (compile: 56ms, proxy.ts: 12ms, render: 9ms)
+ GET /api/auth/session 200 in 44ms (compile: 34ms, proxy.ts: 4ms, render: 6ms)
+ GET /api/auth/session 200 in 17ms (compile: 7ms, proxy.ts: 2ms, render: 8ms)
+ GET /api/auth/session 200 in 11ms (compile: 3ms, proxy.ts: 1957µs, render: 5ms)
+ GET /api/auth/session 200 in 11ms (compile: 3ms, proxy.ts: 2ms, render: 5ms)
+prisma:query BEGIN
+prisma:query BEGIN
+prisma:query DEALLOCATE ALL
+prisma:query DEALLOCATE ALL
+prisma:query SELECT "public"."Space"."id", "public"."Space"."name", "public"."Space"."slug", "public"."Space"."description", "public"."Space"."capacity", "public"."Space"."images", "public"."Space"."color", "public"."Space"."published", "public"."Space"."createdAt", "public"."Space"."updatedAt" FROM "public"."Space" WHERE 1=1 ORDER BY "public"."Space"."name" ASC OFFSET $1
+prisma:query COMMIT
+prisma:query SELECT "public"."Space"."id", "public"."Space"."name", "public"."Space"."slug", "public"."Space"."description", "public"."Space"."capacity", "public"."Space"."images", "public"."Space"."color", "public"."Space"."published", "public"."Space"."createdAt", "public"."Space"."updatedAt" FROM "public"."Space" WHERE 1=1 ORDER BY "public"."Space"."name" ASC OFFSET $1
+prisma:query COMMIT
+prisma:query BEGIN
+prisma:query BEGIN
+prisma:query BEGIN
+prisma:query BEGIN
+prisma:query BEGIN
+prisma:query BEGIN
+prisma:query BEGIN
+prisma:query BEGIN
+prisma:query BEGIN
+prisma:query BEGIN
+prisma:query BEGIN
+prisma:query DEALLOCATE ALL
+prisma:query DEALLOCATE ALL
+prisma:query DEALLOCATE ALL
+prisma:query DEALLOCATE ALL
+prisma:query DEALLOCATE ALL
+prisma:query DEALLOCATE ALL
+prisma:query DEALLOCATE ALL
+prisma:query DEALLOCATE ALL
+prisma:query DEALLOCATE ALL
+prisma:query DEALLOCATE ALL
+prisma:query DEALLOCATE ALL
+prisma:query SELECT "public"."User"."id", "public"."User"."name", "public"."User"."email", "public"."User"."emailVerified", "public"."User"."image", "public"."User"."password", "public"."User"."role"::text, "public"."User"."createdAt", "public"."User"."updatedAt" FROM "public"."User" WHERE ("public"."User"."id" = $1 AND 1=1) LIMIT $2 OFFSET $3
+prisma:query SELECT "public"."Space"."id", "public"."Space"."name", "public"."Space"."slug", "public"."Space"."description", "public"."Space"."capacity", "public"."Space"."images", "public"."Space"."color", "public"."Space"."published", "public"."Space"."createdAt", "public"."Space"."updatedAt" FROM "public"."Space" WHERE 1=1 ORDER BY "public"."Space"."name" ASC OFFSET $1
+prisma:query SELECT "public"."Space"."id", "public"."Space"."name", "public"."Space"."slug", "public"."Space"."description", "public"."Space"."capacity", "public"."Space"."images", "public"."Space"."color", "public"."Space"."published", "public"."Space"."createdAt", "public"."Space"."updatedAt" FROM "public"."Space" WHERE 1=1 ORDER BY "public"."Space"."name" ASC OFFSET $1
+prisma:query SELECT "public"."Space"."id", "public"."Space"."name", "public"."Space"."slug", "public"."Space"."description", "public"."Space"."capacity", "public"."Space"."images", "public"."Space"."color", "public"."Space"."published", "public"."Space"."createdAt", "public"."Space"."updatedAt" FROM "public"."Space" WHERE 1=1 ORDER BY "public"."Space"."name" ASC OFFSET $1
+prisma:query SELECT "public"."User"."id", "public"."User"."name", "public"."User"."email", "public"."User"."emailVerified", "public"."User"."image", "public"."User"."password", "public"."User"."role"::text, "public"."User"."createdAt", "public"."User"."updatedAt" FROM "public"."User" WHERE ("public"."User"."id" = $1 AND 1=1) LIMIT $2 OFFSET $3
+prisma:query SELECT "public"."User"."id", "public"."User"."name", "public"."User"."email", "public"."User"."emailVerified", "public"."User"."image", "public"."User"."password", "public"."User"."role"::text, "public"."User"."createdAt", "public"."User"."updatedAt" FROM "public"."User" WHERE ("public"."User"."id" = $1 AND 1=1) LIMIT $2 OFFSET $3
+prisma:query SELECT "public"."User"."id", "public"."User"."name", "public"."User"."email", "public"."User"."emailVerified", "public"."User"."image", "public"."User"."password", "public"."User"."role"::text, "public"."User"."createdAt", "public"."User"."updatedAt" FROM "public"."User" WHERE ("public"."User"."id" = $1 AND 1=1) LIMIT $2 OFFSET $3
+prisma:query SELECT "public"."Space"."id", "public"."Space"."name", "public"."Space"."slug", "public"."Space"."description", "public"."Space"."capacity", "public"."Space"."images", "public"."Space"."color", "public"."Space"."published", "public"."Space"."createdAt", "public"."Space"."updatedAt" FROM "public"."Space" WHERE 1=1 ORDER BY "public"."Space"."name" ASC OFFSET $1
+prisma:query SELECT "public"."User"."id", "public"."User"."name", "public"."User"."email", "public"."User"."emailVerified", "public"."User"."image", "public"."User"."password", "public"."User"."role"::text, "public"."User"."createdAt", "public"."User"."updatedAt" FROM "public"."User" WHERE ("public"."User"."id" = $1 AND 1=1) LIMIT $2 OFFSET $3
+prisma:query SELECT "public"."User"."id", "public"."User"."name", "public"."User"."email", "public"."User"."emailVerified", "public"."User"."image", "public"."User"."password", "public"."User"."role"::text, "public"."User"."createdAt", "public"."User"."updatedAt" FROM "public"."User" WHERE ("public"."User"."id" = $1 AND 1=1) LIMIT $2 OFFSET $3
+prisma:query COMMIT
+prisma:query COMMIT
+ GET /admin/daily-events/new 200 in 3.5s (compile: 12ms, proxy.ts: 6ms, render: 3.5s)
+ GET /admin/daily-events/new 200 in 3.8s (compile: 10ms, proxy.ts: 5ms, render: 3.8s)
+ GET /admin/daily-events/new 200 in 3.5s (compile: 23ms, proxy.ts: 7ms, render: 3.5s)
+ GET /admin/daily-events/new 200 in 3.7s (compile: 107ms, proxy.ts: 4ms, render: 3.6s)
+ GET /admin/daily-events/new 200 in 4.7s (compile: 885ms, proxy.ts: 4ms, render: 3.8s)
+ GET /admin/daily-events/new 200 in 4.6s (compile: 615ms, proxy.ts: 17ms, render: 3.9s)
+prisma:query SELECT "public"."Event"."id", "public"."Event"."title", "public"."Event"."originalTitle", "public"."Event"."slug", "public"."Event"."description", "public"."Event"."startTime", "public"."Event"."endTime", "public"."Event"."type"::text, "public"."Event"."published", "public"."Event"."canceled", "public"."Event"."capacity", "public"."Event"."spaceId", "public"."Event"."googleEventId", "public"."Event"."googleCalendarId", "public"."Event"."googleColorId", "public"."Event"."preserveManualEdits", "public"."Event"."createdAt", "public"."Event"."updatedAt" FROM "public"."Event" WHERE ("public"."Event"."published" = $1 AND "public"."Event"."canceled" = $2) ORDER BY "public"."Event"."startTime" ASC OFFSET $3
+prisma:query COMMIT
+prisma:query COMMIT
+prisma:query COMMIT
+prisma:query COMMIT
+ GET /api/auth/session 200 in 42ms (compile: 19ms, proxy.ts: 2ms, render: 21ms)
+prisma:query COMMIT
+prisma:query COMMIT
+prisma:query COMMIT
+ GET /api/auth/session 200 in 17ms (compile: 4ms, proxy.ts: 2ms, render: 10ms)
+prisma:query COMMIT
+prisma:query SELECT "public"."Space"."id", "public"."Space"."name", "public"."Space"."slug", "public"."Space"."description", "public"."Space"."capacity", "public"."Space"."images", "public"."Space"."color", "public"."Space"."published", "public"."Space"."createdAt", "public"."Space"."updatedAt" FROM "public"."Space" WHERE "public"."Space"."id" IN ($1,$2,$3,$4,$5) OFFSET $6
+prisma:query COMMIT
+prisma:query BEGIN
+prisma:query DEALLOCATE ALL
+prisma:query SELECT "public"."DailyEvent"."id", "public"."DailyEvent"."title", "public"."DailyEvent"."startTime", "public"."DailyEvent"."endTime", "public"."DailyEvent"."daysOfWeek", "public"."DailyEvent"."spaceId", "public"."DailyEvent"."published", "public"."DailyEvent"."showInCalendar", "public"."DailyEvent"."createdAt", "public"."DailyEvent"."updatedAt" FROM "public"."DailyEvent" WHERE "public"."DailyEvent"."published" = $1 OFFSET $2
+prisma:query SELECT "public"."Space"."id", "public"."Space"."name", "public"."Space"."slug", "public"."Space"."description", "public"."Space"."capacity", "public"."Space"."images", "public"."Space"."color", "public"."Space"."published", "public"."Space"."createdAt", "public"."Space"."updatedAt" FROM "public"."Space" WHERE "public"."Space"."id" IN ($1,$2) OFFSET $3
+prisma:query COMMIT
+ GET /api/events?start=2026-01-04T17:00:00.000Z&end=2026-01-25T16:59:59.999Z 200 in 6.7s (compile: 151ms, proxy.ts: 6ms, render: 6.6s)
+✓ Compiled in 36ms
+ GET /api/auth/session 200 in 72ms (compile: 34ms, proxy.ts: 9ms, render: 29ms)
+ GET /api/auth/session 200 in 23ms (compile: 6ms, proxy.ts: 3ms, render: 14ms)
+✓ Compiled in 66ms
+ GET /auth/signin?callbackUrl=%2Fadmin%2Fspaces 200 in 198ms (compile: 166ms, proxy.ts: 6ms, render: 26ms)
+ GET /schedule 200 in 202ms (compile: 133ms, proxy.ts: 4ms, render: 65ms)
+prisma:query SELECT 1
+prisma:query SELECT 1
+ POST /api/daily-events 404 in 93ms (compile: 10ms, proxy.ts: 5ms, render: 77ms)
+prisma:query BEGIN
+prisma:query BEGIN
+prisma:query DEALLOCATE ALL
+prisma:query DEALLOCATE ALL
+prisma:query SELECT "public"."Space"."id", "public"."Space"."name", "public"."Space"."slug", "public"."Space"."description", "public"."Space"."capacity", "public"."Space"."images", "public"."Space"."color", "public"."Space"."published", "public"."Space"."createdAt", "public"."Space"."updatedAt" FROM "public"."Space" WHERE 1=1 ORDER BY "public"."Space"."name" ASC OFFSET $1
+prisma:query SELECT "public"."User"."id", "public"."User"."name", "public"."User"."email", "public"."User"."emailVerified", "public"."User"."image", "public"."User"."password", "public"."User"."role"::text, "public"."User"."createdAt", "public"."User"."updatedAt" FROM "public"."User" WHERE ("public"."User"."id" = $1 AND 1=1) LIMIT $2 OFFSET $3
+prisma:query COMMIT
+prisma:query COMMIT
+ GET /admin/daily-events/new 200 in 2.3s (compile: 10ms, proxy.ts: 10ms, render: 2.3s)
+ POST /api/daily-events 404 in 72ms (compile: 18ms, proxy.ts: 9ms, render: 44ms)
+ POST /api/daily-events 404 in 47ms (compile: 9ms, proxy.ts: 3ms, render: 35ms)

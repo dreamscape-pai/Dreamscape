@@ -23,6 +23,8 @@ export function EventForm({ event, spaces }: EventFormProps) {
     event?.spaceId?.toString() || ''
   )
   const [isAllDay, setIsAllDay] = useState(event?.isAllDay || false)
+  const [isRecurring, setIsRecurring] = useState(event?.isRecurring || false)
+  const [recurringDays, setRecurringDays] = useState<number[]>(event?.recurringDays || [])
   const [displayStyle, setDisplayStyle] = useState<EventDisplayStyle>(
     event?.displayStyle || 'NORMAL'
   )
@@ -65,6 +67,8 @@ export function EventForm({ event, spaces }: EventFormProps) {
       capacity: formData.get('capacity'),
       published: formData.get('published') === 'on',
       isAllDay,
+      isRecurring,
+      recurringDays,
       displayStyle,
       overridesOthers,
       spaceId: selectedSpaceId ? parseInt(selectedSpaceId) : null,
