@@ -410,3 +410,5 @@ prisma:query COMMIT
  GET /schedule/1-14-2026 200 in 81ms (compile: 30ms, proxy.ts: 4ms, render: 47ms)
 ✓ Compiled in 31ms
 ✓ Compiled in 44ms
+✓ Compiled in 33ms
+✓ Compiled in 29ms

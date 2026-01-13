@@ -656,9 +656,7 @@ export default function HomeSchedule() {
                 key={day}
                 className="rounded-lg relative"
                 style={{
-                  backgroundColor: closedEvent
-                    ? 'color-mix(in oklab, #000000 70%, rgba(220, 38, 38, 0.2))'
-                    : 'color-mix(in oklab, #000000 70%, transparent)',
+                  backgroundColor: 'color-mix(in oklab, #000000 70%, transparent)',
                   boxShadow: 'inset 0 0 20px rgba(0, 0, 0, 0.3), 0 0 15px rgba(0, 0, 0, 0.2)',
                   minHeight: '55vh'
                 }}
@@ -666,12 +664,12 @@ export default function HomeSchedule() {
                 {closedEvent && closedEvent.displayStyle === 'VERTICAL' ? (
                   // Render vertical CLOSED text
                   <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="text-red-500 font-bold text-2xl tracking-[0.5em] rotate-0"
+                    <div className="text-cream font-bold text-2xl tracking-[0.5em] rotate-0"
                          style={{
+                           fontFamily: 'var(--font-serif)',
                            writingMode: 'vertical-lr',
                            textOrientation: 'upright',
-                           letterSpacing: '0.3em',
-                           textShadow: '0 2px 8px rgba(220, 38, 38, 0.5)'
+                           letterSpacing: '0.3em'
                          }}>
                       {closedEvent.title}
                     </div>
@@ -723,9 +721,7 @@ export default function HomeSchedule() {
                 key={day}
                 className="rounded-lg relative"
                 style={{
-                  backgroundColor: closedEvent
-                    ? 'color-mix(in oklab, #000000 70%, rgba(220, 38, 38, 0.2))'
-                    : 'color-mix(in oklab, #000000 70%, transparent)',
+                  backgroundColor: 'color-mix(in oklab, #000000 70%, transparent)',
                   boxShadow: 'inset 0 0 20px rgba(0, 0, 0, 0.3), 0 0 15px rgba(0, 0, 0, 0.2)',
                   minHeight: '55vh'
                 }}
@@ -733,12 +729,12 @@ export default function HomeSchedule() {
                 {closedEvent && closedEvent.displayStyle === 'VERTICAL' ? (
                   // Render vertical CLOSED text for mobile
                   <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="text-red-500 font-bold text-xl tracking-[0.4em] rotate-0"
+                    <div className="text-cream font-bold text-xl tracking-[0.4em] rotate-0"
                          style={{
+                           fontFamily: 'var(--font-serif)',
                            writingMode: 'vertical-lr',
                            textOrientation: 'upright',
-                           letterSpacing: '0.25em',
-                           textShadow: '0 2px 8px rgba(220, 38, 38, 0.5)'
+                           letterSpacing: '0.25em'
                          }}>
                       {closedEvent.title}
                     </div>
