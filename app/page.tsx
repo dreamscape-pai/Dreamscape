@@ -114,7 +114,7 @@ export default async function Home() {
 
           <HomeSchedule />
 
-          <div className="text-center">
+          <div className="text-center mt-8">
             <Link
               href="/schedule"
               className="inline-block px-8 py-3 rounded-lg bg-white/10 border border-cream/20 text-cream hover:bg-white/20 hover:border-cream/30 transition-all"
