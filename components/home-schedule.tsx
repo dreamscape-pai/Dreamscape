@@ -427,8 +427,8 @@ export default function HomeSchedule() {
           {event.endTime && ` - ${format(new Date(event.endTime), 'h:mm a')}`}
         </p>
         {event.space && (
-          <p className="text-cream/50 text-xs mt-0.5">
-            @{event.space.name.toLowerCase()}
+          <p className="text-white font-bold text-xs mt-0.5">
+            {event.space.name.toUpperCase()}
           </p>
         )}
       </div>
