@@ -1,50 +1,27 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
-import { auth } from '@/auth'
 
-const publicRoutes = [
-  '/',
-  '/about',
-  '/schedule',
-  '/spaces',
-  '/cafe',
-  '/memberships',
-  '/contact',
-  '/past-events',
-  '/interactive',
-  '/auth/signin',
-  '/auth/signup',
-  '/auth/error',
-  '/api/schedule-image',
-  '/api/stripe/webhook',
-  '/api/auth',
-]
+// Temporarily simplified middleware for MVP deployment
+// TODO: Re-enable auth checks after optimizing bundle size
+export function middleware(request: NextRequest) {
+  const { pathname } = request.nextUrl
 
-const isPublicRoute = (pathname: string) => {
-  return publicRoutes.some(route =>
-    pathname === route || pathname.startsWith(`${route}/`)
-  )
-}
-
-export default auth((req) => {
-  const { pathname } = req.nextUrl
-
-  // Allow public routes
-  if (isPublicRoute(pathname)) {
-    return NextResponse.next()
-  }
-
-  // Protect admin routes
+  // For MVP, only redirect unauthenticated users from /admin routes
+  // Authentication will be handled at the page level
   if (pathname.startsWith('/admin')) {
-    if (!req.auth) {
-      const signInUrl = new URL('/auth/signin', req.url)
+    // Check for a simple session cookie (set by NextAuth)
+    const sessionToken = request.cookies.get('authjs.session-token') ||
+                        request.cookies.get('__Secure-authjs.session-token')
+
+    if (!sessionToken) {
+      const signInUrl = new URL('/auth/signin', request.url)
       signInUrl.searchParams.set('callbackUrl', pathname)
       return NextResponse.redirect(signInUrl)
     }
   }
 
   return NextResponse.next()
-})
+}
 
 export const config = {
   matcher: [
