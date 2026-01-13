@@ -3,7 +3,8 @@ import { db } from '@/lib/db'
 import { startOfWeek, endOfWeek, format, eachDayOfInterval, isSameDay } from 'date-fns'
 import { ImageResponse } from 'next/og'
 
-export const runtime = 'edge'
+// Removed Edge Runtime due to size constraints with Prisma
+// Uses Node.js runtime instead
 
 export async function GET(request: Request) {
   try {
