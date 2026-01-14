@@ -423,8 +423,8 @@ export default function HomeSchedule() {
           {event.title}
         </p>
         <p className="text-cream/60 text-xs mt-0.5">
-          {format(new Date(event.startTime), 'h:mm a')}
-          {event.endTime && ` - ${format(new Date(event.endTime), 'h:mm a')}`}
+          {format(new Date(event.startTime), 'h:mma').toLowerCase()}
+          {event.endTime && ` - ${format(new Date(event.endTime), 'h:mma').toLowerCase()}`}
         </p>
         {event.space && (
           <p className="text-white font-bold text-xs mt-0.5">

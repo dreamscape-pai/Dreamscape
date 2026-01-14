@@ -944,3 +944,9 @@ prisma:query COMMIT
 prisma:query COMMIT
  GET /api/events?start=2026-01-04T17:00:00.000Z&end=2026-01-25T16:59:59.999Z 200 in 6.3s (compile: 9ms, proxy.ts: 6ms, render: 6.3s)
 ✓ Compiled in 31ms
+prisma:error Error in PostgreSQL connection: Error { kind: Closed, cause: None }
+prisma:error Error in PostgreSQL connection: Error { kind: Closed, cause: None }
+prisma:error Error in PostgreSQL connection: Error { kind: Closed, cause: None }
+prisma:error Error in PostgreSQL connection: Error { kind: Closed, cause: None }
+✓ Compiled in 36ms
+✓ Compiled in 32ms

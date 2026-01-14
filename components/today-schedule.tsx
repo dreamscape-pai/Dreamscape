@@ -361,8 +361,8 @@ export default function TodaySchedule({ initialDate }: { initialDate?: Date }) {
           </p>
           {position.height > 35 && (
             <p className={`${isDaily ? 'text-gray-300' : 'text-cream/60'} text-xs mt-0.5`} style={{ fontSize: '12px' }}>
-              {format(new Date(event.startTime), 'h:mm a')}
-              {event.endTime && position.height > 50 && ` - ${format(new Date(event.endTime), 'h:mm a')}`}
+              {format(new Date(event.startTime), 'h:mma').toLowerCase()}
+              {event.endTime && position.height > 50 && ` - ${format(new Date(event.endTime), 'h:mma').toLowerCase()}`}
             </p>
           )}
         </div>
@@ -458,7 +458,7 @@ export default function TodaySchedule({ initialDate }: { initialDate?: Date }) {
     time.setHours(hour, 0, 0, 0)
     timeLabels.push({
       hour,
-      label: format(time, 'h a')
+      label: format(time, 'ha').toLowerCase()
     })
   }
 

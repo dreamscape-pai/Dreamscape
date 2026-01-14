@@ -181,7 +181,7 @@ function DayView({ events, date }: { events: EventWithDetails[]; date: Date }) {
                   <div className="flex-1">
                     <h3 className={`text-lg font-semibold ${isDaily ? 'text-white' : ''}`}>{event.title}</h3>
                     <p className={`text-sm ${isDaily ? 'text-gray-300' : 'text-gray-600'}`}>
-                      {format(new Date(event.startTime), 'h:mm a')} - {format(new Date(event.endTime), 'h:mm a')}
+                      {format(new Date(event.startTime), 'h:mma').toLowerCase()} - {format(new Date(event.endTime), 'h:mma').toLowerCase()}
                     </p>
                     {event.space && (
                       <div className="mt-2">
@@ -254,7 +254,7 @@ function WeekView({ events, weekStart }: { events: EventWithDetails[]; weekStart
                         </Link>
                       )}
                       <div className={`font-medium truncate ${isDaily ? 'text-white' : ''}`}>{event.title}</div>
-                      <div className={isDaily ? 'text-gray-300' : 'text-gray-600'}>{format(new Date(event.startTime), 'h:mm a')}</div>
+                      <div className={isDaily ? 'text-gray-300' : 'text-gray-600'}>{format(new Date(event.startTime), 'h:mma').toLowerCase()}</div>
                       {event.space && (
                         <div className={`text-xs font-medium ${isDaily ? 'text-gray-300' : colorClasses.text}`}>
                           {event.space.name}
