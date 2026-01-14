@@ -162,9 +162,11 @@ export default function TodaySchedule({ initialDate }: { initialDate?: Date }) {
   const unassignedEvents: Event[] = []
 
   // Initialize with empty arrays for all spaces
-  spaces.forEach(space => {
-    eventsBySpace[space.slug] = []
-  })
+  if (spaces && spaces.length > 0) {
+    spaces.forEach(space => {
+      eventsBySpace[space.slug] = []
+    })
+  }
 
   // Sort events into spaces
   events.forEach(event => {

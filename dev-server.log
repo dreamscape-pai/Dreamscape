@@ -448,3 +448,295 @@ prisma:query SELECT "public"."Space"."id", "public"."Space"."name", "public"."Sp
 prisma:query COMMIT
  GET /api/events?start=2026-01-04T17:00:00.000Z&end=2026-01-25T16:59:59.999Z 200 in 4.9s (compile: 2ms, proxy.ts: 2ms, render: 4.9s)
 ✓ Compiled in 32ms
+prisma:error Error in PostgreSQL connection: Error { kind: Closed, cause: None }
+prisma:error Error in PostgreSQL connection: Error { kind: Closed, cause: None }
+ GET /schedule/1-17-2026 200 in 305ms (compile: 123ms, proxy.ts: 84ms, render: 99ms)
+prisma:error 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["db"].space.findMany()` invocation in
+/Users/neil/Projects/dreamscape/website/.next/dev/server/chunks/[root-of-the-server]__a8327c0d._.js:279:150
+
+  276 ;
+  277 async function GET() {
+  278     try {
+→ 279         const spaces = await __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["db"].space.findMany(
+Can't reach database server at `ep-delicate-glitter-ahvt5bgn-pooler.c-3.us-east-1.aws.neon.tech:5432`
+
+Please make sure your database server is running at `ep-delicate-glitter-ahvt5bgn-pooler.c-3.us-east-1.aws.neon.tech:5432`.
+ GET /api/spaces 500 in 106ms (compile: 28ms, proxy.ts: 5ms, render: 73ms)
+prisma:error 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["db"].event.findMany()` invocation in
+/Users/neil/Projects/dreamscape/website/.next/dev/server/chunks/[root-of-the-server]__d6077d0a._.js:299:153
+
+  296 const end = new Date(endParam);
+  297 // Fetch all published events including member events
+  298 // Frontend will handle filtering based on user preferences
+→ 299 const allEvents = await __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["db"].event.findMany(
+Can't reach database server at `ep-delicate-glitter-ahvt5bgn-pooler.c-3.us-east-1.aws.neon.tech:5432`
+
+Please make sure your database server is running at `ep-delicate-glitter-ahvt5bgn-pooler.c-3.us-east-1.aws.neon.tech:5432`.
+Error fetching events: Error [PrismaClientKnownRequestError]: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["db"].event.findMany()` invocation in
+/Users/neil/Projects/dreamscape/website/.next/dev/server/chunks/[root-of-the-server]__d6077d0a._.js:299:153
+
+  296 const end = new Date(endParam);
+  297 // Fetch all published events including member events
+  298 // Frontend will handle filtering based on user preferences
+→ 299 const allEvents = await __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["db"].event.findMany(
+Can't reach database server at `ep-delicate-glitter-ahvt5bgn-pooler.c-3.us-east-1.aws.neon.tech:5432`
+
+Please make sure your database server is running at `ep-delicate-glitter-ahvt5bgn-pooler.c-3.us-east-1.aws.neon.tech:5432`.
+    at <unknown> (app/api/events/route.ts:28:38)
+    at async GET (app/api/events/route.ts:28:23)
+  26 |     // Fetch all published events including member events
+  27 |     // Frontend will handle filtering based on user preferences
+> 28 |     const allEvents = await db.event.findMany({
+     |                                      ^
+  29 |       where: {
+  30 |         published: true,
+  31 |         canceled: false, // Exclude canceled events {
+  code: 'P1001',
+  meta: [Object],
+  clientVersion: '6.19.1'
+}
+ GET /api/events?start=2026-01-04T17:00:00.000Z&end=2026-01-25T16:59:59.999Z 500 in 494ms (compile: 12ms, proxy.ts: 3ms, render: 478ms)
+prisma:error 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["db"].space.findMany()` invocation in
+/Users/neil/Projects/dreamscape/website/.next/dev/server/chunks/[root-of-the-server]__a8327c0d._.js:279:150
+
+  276 ;
+  277 async function GET() {
+  278     try {
+→ 279         const spaces = await __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["db"].space.findMany(
+Can't reach database server at `ep-delicate-glitter-ahvt5bgn-pooler.c-3.us-east-1.aws.neon.tech:5432`
+
+Please make sure your database server is running at `ep-delicate-glitter-ahvt5bgn-pooler.c-3.us-east-1.aws.neon.tech:5432`.
+ GET /api/spaces 500 in 106ms (compile: 71ms, proxy.ts: 10ms, render: 25ms)
+prisma:error 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["db"].event.findMany()` invocation in
+/Users/neil/Projects/dreamscape/website/.next/dev/server/chunks/[root-of-the-server]__d6077d0a._.js:299:153
+
+  296 const end = new Date(endParam);
+  297 // Fetch all published events including member events
+  298 // Frontend will handle filtering based on user preferences
+→ 299 const allEvents = await __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["db"].event.findMany(
+Can't reach database server at `ep-delicate-glitter-ahvt5bgn-pooler.c-3.us-east-1.aws.neon.tech:5432`
+
+Please make sure your database server is running at `ep-delicate-glitter-ahvt5bgn-pooler.c-3.us-east-1.aws.neon.tech:5432`.
+Error fetching events: Error [PrismaClientKnownRequestError]: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["db"].event.findMany()` invocation in
+/Users/neil/Projects/dreamscape/website/.next/dev/server/chunks/[root-of-the-server]__d6077d0a._.js:299:153
+
+  296 const end = new Date(endParam);
+  297 // Fetch all published events including member events
+  298 // Frontend will handle filtering based on user preferences
+→ 299 const allEvents = await __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["db"].event.findMany(
+Can't reach database server at `ep-delicate-glitter-ahvt5bgn-pooler.c-3.us-east-1.aws.neon.tech:5432`
+
+Please make sure your database server is running at `ep-delicate-glitter-ahvt5bgn-pooler.c-3.us-east-1.aws.neon.tech:5432`.
+    at <unknown> (app/api/events/route.ts:28:38)
+    at async GET (app/api/events/route.ts:28:23)
+  26 |     // Fetch all published events including member events
+  27 |     // Frontend will handle filtering based on user preferences
+> 28 |     const allEvents = await db.event.findMany({
+     |                                      ^
+  29 |       where: {
+  30 |         published: true,
+  31 |         canceled: false, // Exclude canceled events {
+  code: 'P1001',
+  meta: [Object],
+  clientVersion: '6.19.1'
+}
+ GET /api/events?start=2026-01-04T17:00:00.000Z&end=2026-01-25T16:59:59.999Z 500 in 216ms (compile: 72ms, proxy.ts: 15ms, render: 129ms)
+ GET /schedule/1-17-2026 200 in 90ms (compile: 14ms, proxy.ts: 3ms, render: 73ms)
+prisma:error 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["db"].event.findMany()` invocation in
+/Users/neil/Projects/dreamscape/website/.next/dev/server/chunks/[root-of-the-server]__d6077d0a._.js:299:153
+
+  296 const end = new Date(endParam);
+  297 // Fetch all published events including member events
+  298 // Frontend will handle filtering based on user preferences
+→ 299 const allEvents = await __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["db"].event.findMany(
+Can't reach database server at `ep-delicate-glitter-ahvt5bgn-pooler.c-3.us-east-1.aws.neon.tech:5432`
+
+Please make sure your database server is running at `ep-delicate-glitter-ahvt5bgn-pooler.c-3.us-east-1.aws.neon.tech:5432`.
+Error fetching events: Error [PrismaClientKnownRequestError]: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["db"].event.findMany()` invocation in
+/Users/neil/Projects/dreamscape/website/.next/dev/server/chunks/[root-of-the-server]__d6077d0a._.js:299:153
+
+  296 const end = new Date(endParam);
+  297 // Fetch all published events including member events
+  298 // Frontend will handle filtering based on user preferences
+→ 299 const allEvents = await __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["db"].event.findMany(
+Can't reach database server at `ep-delicate-glitter-ahvt5bgn-pooler.c-3.us-east-1.aws.neon.tech:5432`
+
+Please make sure your database server is running at `ep-delicate-glitter-ahvt5bgn-pooler.c-3.us-east-1.aws.neon.tech:5432`.
+    at <unknown> (app/api/events/route.ts:28:38)
+    at async GET (app/api/events/route.ts:28:23)
+  26 |     // Fetch all published events including member events
+  27 |     // Frontend will handle filtering based on user preferences
+> 28 |     const allEvents = await db.event.findMany({
+     |                                      ^
+  29 |       where: {
+  30 |         published: true,
+  31 |         canceled: false, // Exclude canceled events {
+  code: 'P1001',
+  meta: [Object],
+  clientVersion: '6.19.1'
+}
+ GET /api/events?start=2026-01-04T17:00:00.000Z&end=2026-01-25T16:59:59.999Z 500 in 126ms (compile: 6ms, proxy.ts: 5ms, render: 114ms)
+prisma:error 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["db"].space.findMany()` invocation in
+/Users/neil/Projects/dreamscape/website/.next/dev/server/chunks/[root-of-the-server]__a8327c0d._.js:279:150
+
+  276 ;
+  277 async function GET() {
+  278     try {
+→ 279         const spaces = await __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["db"].space.findMany(
+Can't reach database server at `ep-delicate-glitter-ahvt5bgn-pooler.c-3.us-east-1.aws.neon.tech:5432`
+
+Please make sure your database server is running at `ep-delicate-glitter-ahvt5bgn-pooler.c-3.us-east-1.aws.neon.tech:5432`.
+ GET /api/spaces 500 in 126ms (compile: 8ms, proxy.ts: 5ms, render: 113ms)
+ GET /api/auth/session 200 in 165ms (compile: 141ms, proxy.ts: 5ms, render: 19ms)
+ GET /api/auth/session 200 in 61ms (compile: 45ms, proxy.ts: 5ms, render: 11ms)
+ GET /schedule/1-17-2026 200 in 65ms (compile: 12ms, proxy.ts: 4ms, render: 49ms)
+prisma:error 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["db"].event.findMany()` invocation in
+/Users/neil/Projects/dreamscape/website/.next/dev/server/chunks/[root-of-the-server]__d6077d0a._.js:299:153
+
+  296 const end = new Date(endParam);
+  297 // Fetch all published events including member events
+  298 // Frontend will handle filtering based on user preferences
+→ 299 const allEvents = await __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["db"].event.findMany(
+Can't reach database server at `ep-delicate-glitter-ahvt5bgn-pooler.c-3.us-east-1.aws.neon.tech:5432`
+
+Please make sure your database server is running at `ep-delicate-glitter-ahvt5bgn-pooler.c-3.us-east-1.aws.neon.tech:5432`.
+Error fetching events: Error [PrismaClientKnownRequestError]: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["db"].event.findMany()` invocation in
+/Users/neil/Projects/dreamscape/website/.next/dev/server/chunks/[root-of-the-server]__d6077d0a._.js:299:153
+
+  296 const end = new Date(endParam);
+  297 // Fetch all published events including member events
+  298 // Frontend will handle filtering based on user preferences
+→ 299 const allEvents = await __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["db"].event.findMany(
+Can't reach database server at `ep-delicate-glitter-ahvt5bgn-pooler.c-3.us-east-1.aws.neon.tech:5432`
+
+Please make sure your database server is running at `ep-delicate-glitter-ahvt5bgn-pooler.c-3.us-east-1.aws.neon.tech:5432`.
+    at <unknown> (app/api/events/route.ts:28:38)
+    at async GET (app/api/events/route.ts:28:23)
+  26 |     // Fetch all published events including member events
+  27 |     // Frontend will handle filtering based on user preferences
+> 28 |     const allEvents = await db.event.findMany({
+     |                                      ^
+  29 |       where: {
+  30 |         published: true,
+  31 |         canceled: false, // Exclude canceled events {
+  code: 'P1001',
+  meta: [Object],
+  clientVersion: '6.19.1'
+}
+ GET /api/events?start=2026-01-04T17:00:00.000Z&end=2026-01-25T16:59:59.999Z 500 in 145ms (compile: 8ms, proxy.ts: 8ms, render: 130ms)
+prisma:error 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["db"].space.findMany()` invocation in
+/Users/neil/Projects/dreamscape/website/.next/dev/server/chunks/[root-of-the-server]__a8327c0d._.js:279:150
+
+  276 ;
+  277 async function GET() {
+  278     try {
+→ 279         const spaces = await __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$db$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["db"].space.findMany(
+Can't reach database server at `ep-delicate-glitter-ahvt5bgn-pooler.c-3.us-east-1.aws.neon.tech:5432`
+
+Please make sure your database server is running at `ep-delicate-glitter-ahvt5bgn-pooler.c-3.us-east-1.aws.neon.tech:5432`.
+ GET /api/spaces 500 in 146ms (compile: 12ms, proxy.ts: 7ms, render: 127ms)
+ GET /api/auth/session 200 in 161ms (compile: 146ms, proxy.ts: 8ms, render: 7ms)
+ GET /api/auth/session 200 in 12ms (compile: 5ms, proxy.ts: 3ms, render: 4ms)
+ GET /schedule/1-16-2026 200 in 77ms (compile: 26ms, proxy.ts: 15ms, render: 36ms)
+ GET /schedule/1-16-2026 200 in 94ms (compile: 7ms, proxy.ts: 3ms, render: 83ms)
+ GET /api/auth/session 200 in 41ms (compile: 25ms, proxy.ts: 7ms, render: 9ms)
+ GET /api/auth/session 200 in 19ms (compile: 9ms, proxy.ts: 4ms, render: 6ms)
+ GET /api/auth/session 200 in 15ms (compile: 6ms, proxy.ts: 3ms, render: 6ms)
+prisma:query BEGIN
+prisma:query BEGIN
+prisma:query DEALLOCATE ALL
+prisma:query DEALLOCATE ALL
+prisma:query SELECT "public"."Space"."id", "public"."Space"."name", "public"."Space"."slug", "public"."Space"."description", "public"."Space"."capacity", "public"."Space"."images", "public"."Space"."color", "public"."Space"."published", "public"."Space"."createdAt", "public"."Space"."updatedAt" FROM "public"."Space" WHERE 1=1 ORDER BY "public"."Space"."createdAt" DESC OFFSET $1
+prisma:query COMMIT
+ GET /api/spaces 200 in 4.5s (compile: 18ms, proxy.ts: 7ms, render: 4.4s)
+prisma:query SELECT "public"."Event"."id", "public"."Event"."title", "public"."Event"."originalTitle", "public"."Event"."slug", "public"."Event"."description", "public"."Event"."startTime", "public"."Event"."endTime", "public"."Event"."type"::text, "public"."Event"."published", "public"."Event"."canceled", "public"."Event"."capacity", "public"."Event"."isAllDay", "public"."Event"."isRecurring", "public"."Event"."recurringDays", "public"."Event"."displayStyle"::text, "public"."Event"."overridesOthers", "public"."Event"."spaceId", "public"."Event"."googleEventId", "public"."Event"."googleCalendarId", "public"."Event"."googleColorId", "public"."Event"."preserveManualEdits", "public"."Event"."createdAt", "public"."Event"."updatedAt" FROM "public"."Event" WHERE ("public"."Event"."published" = $1 AND "public"."Event"."canceled" = $2) ORDER BY "public"."Event"."startTime" ASC OFFSET $3
+prisma:query SELECT "public"."Space"."id", "public"."Space"."name", "public"."Space"."slug", "public"."Space"."description", "public"."Space"."capacity", "public"."Space"."images", "public"."Space"."color", "public"."Space"."published", "public"."Space"."createdAt", "public"."Space"."updatedAt" FROM "public"."Space" WHERE "public"."Space"."id" IN ($1,$2,$3,$4,$5) OFFSET $6
+prisma:query COMMIT
+prisma:query BEGIN
+prisma:query DEALLOCATE ALL
+prisma:query SELECT "public"."DailyEvent"."id", "public"."DailyEvent"."title", "public"."DailyEvent"."description", "public"."DailyEvent"."startTime", "public"."DailyEvent"."endTime", "public"."DailyEvent"."daysOfWeek", "public"."DailyEvent"."type"::text, "public"."DailyEvent"."displayStyle"::text, "public"."DailyEvent"."overridesOthers", "public"."DailyEvent"."spaceId", "public"."DailyEvent"."isActive", "public"."DailyEvent"."published", "public"."DailyEvent"."showInCalendar", "public"."DailyEvent"."createdAt", "public"."DailyEvent"."updatedAt" FROM "public"."DailyEvent" WHERE "public"."DailyEvent"."published" = $1 OFFSET $2
+prisma:query SELECT "public"."Space"."id", "public"."Space"."name", "public"."Space"."slug", "public"."Space"."description", "public"."Space"."capacity", "public"."Space"."images", "public"."Space"."color", "public"."Space"."published", "public"."Space"."createdAt", "public"."Space"."updatedAt" FROM "public"."Space" WHERE "public"."Space"."id" IN ($1,$2) OFFSET $3
+prisma:query COMMIT
+ GET /api/events?start=2026-01-04T17:00:00.000Z&end=2026-01-25T16:59:59.999Z 200 in 8.0s (compile: 11ms, proxy.ts: 5ms, render: 8.0s)
+ GET /schedule/1-17-2026 200 in 29ms (compile: 9ms, proxy.ts: 3ms, render: 17ms)
+prisma:query BEGIN
+prisma:query BEGIN
+prisma:query DEALLOCATE ALL
+prisma:query DEALLOCATE ALL
+prisma:query SELECT "public"."Space"."id", "public"."Space"."name", "public"."Space"."slug", "public"."Space"."description", "public"."Space"."capacity", "public"."Space"."images", "public"."Space"."color", "public"."Space"."published", "public"."Space"."createdAt", "public"."Space"."updatedAt" FROM "public"."Space" WHERE 1=1 ORDER BY "public"."Space"."createdAt" DESC OFFSET $1
+prisma:query COMMIT
+ GET /api/spaces 200 in 1514ms (compile: 13ms, proxy.ts: 3ms, render: 1498ms)
+prisma:query BEGIN
+prisma:query SELECT "public"."Event"."id", "public"."Event"."title", "public"."Event"."originalTitle", "public"."Event"."slug", "public"."Event"."description", "public"."Event"."startTime", "public"."Event"."endTime", "public"."Event"."type"::text, "public"."Event"."published", "public"."Event"."canceled", "public"."Event"."capacity", "public"."Event"."isAllDay", "public"."Event"."isRecurring", "public"."Event"."recurringDays", "public"."Event"."displayStyle"::text, "public"."Event"."overridesOthers", "public"."Event"."spaceId", "public"."Event"."googleEventId", "public"."Event"."googleCalendarId", "public"."Event"."googleColorId", "public"."Event"."preserveManualEdits", "public"."Event"."createdAt", "public"."Event"."updatedAt" FROM "public"."Event" WHERE ("public"."Event"."published" = $1 AND "public"."Event"."canceled" = $2) ORDER BY "public"."Event"."startTime" ASC OFFSET $3
+prisma:query DEALLOCATE ALL
+prisma:query SELECT "public"."Space"."id", "public"."Space"."name", "public"."Space"."slug", "public"."Space"."description", "public"."Space"."capacity", "public"."Space"."images", "public"."Space"."color", "public"."Space"."published", "public"."Space"."createdAt", "public"."Space"."updatedAt" FROM "public"."Space" WHERE "public"."Space"."id" IN ($1,$2,$3,$4,$5) OFFSET $6
+prisma:query SELECT "public"."Space"."id", "public"."Space"."name", "public"."Space"."slug", "public"."Space"."description", "public"."Space"."capacity", "public"."Space"."images", "public"."Space"."color", "public"."Space"."published", "public"."Space"."createdAt", "public"."Space"."updatedAt" FROM "public"."Space" WHERE 1=1 ORDER BY "public"."Space"."createdAt" DESC OFFSET $1
+prisma:query COMMIT
+prisma:query COMMIT
+ GET /api/spaces 200 in 1585ms (compile: 3ms, proxy.ts: 3ms, render: 1580ms)
+prisma:query BEGIN
+prisma:query DEALLOCATE ALL
+prisma:query SELECT "public"."DailyEvent"."id", "public"."DailyEvent"."title", "public"."DailyEvent"."description", "public"."DailyEvent"."startTime", "public"."DailyEvent"."endTime", "public"."DailyEvent"."daysOfWeek", "public"."DailyEvent"."type"::text, "public"."DailyEvent"."displayStyle"::text, "public"."DailyEvent"."overridesOthers", "public"."DailyEvent"."spaceId", "public"."DailyEvent"."isActive", "public"."DailyEvent"."published", "public"."DailyEvent"."showInCalendar", "public"."DailyEvent"."createdAt", "public"."DailyEvent"."updatedAt" FROM "public"."DailyEvent" WHERE "public"."DailyEvent"."published" = $1 OFFSET $2
+prisma:query SELECT "public"."Space"."id", "public"."Space"."name", "public"."Space"."slug", "public"."Space"."description", "public"."Space"."capacity", "public"."Space"."images", "public"."Space"."color", "public"."Space"."published", "public"."Space"."createdAt", "public"."Space"."updatedAt" FROM "public"."Space" WHERE "public"."Space"."id" IN ($1,$2) OFFSET $3
+prisma:query COMMIT
+ GET /api/events?start=2026-01-04T17:00:00.000Z&end=2026-01-25T16:59:59.999Z 200 in 5.3s (compile: 8ms, proxy.ts: 2ms, render: 5.3s)
+prisma:query SELECT 1
+prisma:query BEGIN
+prisma:query DEALLOCATE ALL
+prisma:query SELECT "public"."Event"."id", "public"."Event"."title", "public"."Event"."originalTitle", "public"."Event"."slug", "public"."Event"."description", "public"."Event"."startTime", "public"."Event"."endTime", "public"."Event"."type"::text, "public"."Event"."published", "public"."Event"."canceled", "public"."Event"."capacity", "public"."Event"."isAllDay", "public"."Event"."isRecurring", "public"."Event"."recurringDays", "public"."Event"."displayStyle"::text, "public"."Event"."overridesOthers", "public"."Event"."spaceId", "public"."Event"."googleEventId", "public"."Event"."googleCalendarId", "public"."Event"."googleColorId", "public"."Event"."preserveManualEdits", "public"."Event"."createdAt", "public"."Event"."updatedAt" FROM "public"."Event" WHERE ("public"."Event"."published" = $1 AND "public"."Event"."canceled" = $2) ORDER BY "public"."Event"."startTime" ASC OFFSET $3
+prisma:query SELECT "public"."Space"."id", "public"."Space"."name", "public"."Space"."slug", "public"."Space"."description", "public"."Space"."capacity", "public"."Space"."images", "public"."Space"."color", "public"."Space"."published", "public"."Space"."createdAt", "public"."Space"."updatedAt" FROM "public"."Space" WHERE "public"."Space"."id" IN ($1,$2,$3,$4,$5) OFFSET $6
+prisma:query COMMIT
+prisma:query BEGIN
+prisma:query DEALLOCATE ALL
+prisma:query SELECT "public"."DailyEvent"."id", "public"."DailyEvent"."title", "public"."DailyEvent"."description", "public"."DailyEvent"."startTime", "public"."DailyEvent"."endTime", "public"."DailyEvent"."daysOfWeek", "public"."DailyEvent"."type"::text, "public"."DailyEvent"."displayStyle"::text, "public"."DailyEvent"."overridesOthers", "public"."DailyEvent"."spaceId", "public"."DailyEvent"."isActive", "public"."DailyEvent"."published", "public"."DailyEvent"."showInCalendar", "public"."DailyEvent"."createdAt", "public"."DailyEvent"."updatedAt" FROM "public"."DailyEvent" WHERE "public"."DailyEvent"."published" = $1 OFFSET $2
+prisma:query SELECT "public"."Space"."id", "public"."Space"."name", "public"."Space"."slug", "public"."Space"."description", "public"."Space"."capacity", "public"."Space"."images", "public"."Space"."color", "public"."Space"."published", "public"."Space"."createdAt", "public"."Space"."updatedAt" FROM "public"."Space" WHERE "public"."Space"."id" IN ($1,$2) OFFSET $3
+prisma:query COMMIT
+ GET /api/events?start=2026-01-04T17:00:00.000Z&end=2026-01-25T16:59:59.999Z 200 in 5.6s (compile: 4ms, proxy.ts: 4ms, render: 5.6s)
+✓ Compiled in 115ms
+ GET /schedule/1-18-2026 200 in 136ms (compile: 83ms, proxy.ts: 3ms, render: 50ms)
+prisma:query SELECT 1
+prisma:query SELECT 1
+prisma:query BEGIN
+prisma:query BEGIN
+prisma:query DEALLOCATE ALL
+prisma:query DEALLOCATE ALL
+prisma:query SELECT "public"."Space"."id", "public"."Space"."name", "public"."Space"."slug", "public"."Space"."description", "public"."Space"."capacity", "public"."Space"."images", "public"."Space"."color", "public"."Space"."published", "public"."Space"."createdAt", "public"."Space"."updatedAt" FROM "public"."Space" WHERE 1=1 ORDER BY "public"."Space"."createdAt" DESC OFFSET $1
+prisma:query COMMIT
+ GET /api/spaces 200 in 1931ms (compile: 15ms, proxy.ts: 1655µs, render: 1914ms)
+prisma:query BEGIN
+prisma:query SELECT "public"."Event"."id", "public"."Event"."title", "public"."Event"."originalTitle", "public"."Event"."slug", "public"."Event"."description", "public"."Event"."startTime", "public"."Event"."endTime", "public"."Event"."type"::text, "public"."Event"."published", "public"."Event"."canceled", "public"."Event"."capacity", "public"."Event"."isAllDay", "public"."Event"."isRecurring", "public"."Event"."recurringDays", "public"."Event"."displayStyle"::text, "public"."Event"."overridesOthers", "public"."Event"."spaceId", "public"."Event"."googleEventId", "public"."Event"."googleCalendarId", "public"."Event"."googleColorId", "public"."Event"."preserveManualEdits", "public"."Event"."createdAt", "public"."Event"."updatedAt" FROM "public"."Event" WHERE ("public"."Event"."published" = $1 AND "public"."Event"."canceled" = $2) ORDER BY "public"."Event"."startTime" ASC OFFSET $3
+prisma:query DEALLOCATE ALL
+prisma:query SELECT "public"."Space"."id", "public"."Space"."name", "public"."Space"."slug", "public"."Space"."description", "public"."Space"."capacity", "public"."Space"."images", "public"."Space"."color", "public"."Space"."published", "public"."Space"."createdAt", "public"."Space"."updatedAt" FROM "public"."Space" WHERE "public"."Space"."id" IN ($1,$2,$3,$4,$5) OFFSET $6
+prisma:query SELECT "public"."Space"."id", "public"."Space"."name", "public"."Space"."slug", "public"."Space"."description", "public"."Space"."capacity", "public"."Space"."images", "public"."Space"."color", "public"."Space"."published", "public"."Space"."createdAt", "public"."Space"."updatedAt" FROM "public"."Space" WHERE 1=1 ORDER BY "public"."Space"."createdAt" DESC OFFSET $1
+prisma:query COMMIT
+prisma:query COMMIT
+ GET /api/spaces 200 in 1454ms (compile: 2ms, proxy.ts: 2ms, render: 1449ms)
+prisma:query BEGIN
+prisma:query DEALLOCATE ALL
+prisma:query SELECT "public"."DailyEvent"."id", "public"."DailyEvent"."title", "public"."DailyEvent"."description", "public"."DailyEvent"."startTime", "public"."DailyEvent"."endTime", "public"."DailyEvent"."daysOfWeek", "public"."DailyEvent"."type"::text, "public"."DailyEvent"."displayStyle"::text, "public"."DailyEvent"."overridesOthers", "public"."DailyEvent"."spaceId", "public"."DailyEvent"."isActive", "public"."DailyEvent"."published", "public"."DailyEvent"."showInCalendar", "public"."DailyEvent"."createdAt", "public"."DailyEvent"."updatedAt" FROM "public"."DailyEvent" WHERE "public"."DailyEvent"."published" = $1 OFFSET $2
+prisma:query SELECT "public"."Space"."id", "public"."Space"."name", "public"."Space"."slug", "public"."Space"."description", "public"."Space"."capacity", "public"."Space"."images", "public"."Space"."color", "public"."Space"."published", "public"."Space"."createdAt", "public"."Space"."updatedAt" FROM "public"."Space" WHERE "public"."Space"."id" IN ($1,$2) OFFSET $3
+prisma:query COMMIT
+ GET /api/events?start=2026-01-04T17:00:00.000Z&end=2026-01-25T16:59:59.999Z 200 in 5.3s (compile: 9ms, proxy.ts: 6ms, render: 5.3s)
+prisma:query BEGIN
+prisma:query DEALLOCATE ALL
+prisma:query SELECT "public"."Event"."id", "public"."Event"."title", "public"."Event"."originalTitle", "public"."Event"."slug", "public"."Event"."description", "public"."Event"."startTime", "public"."Event"."endTime", "public"."Event"."type"::text, "public"."Event"."published", "public"."Event"."canceled", "public"."Event"."capacity", "public"."Event"."isAllDay", "public"."Event"."isRecurring", "public"."Event"."recurringDays", "public"."Event"."displayStyle"::text, "public"."Event"."overridesOthers", "public"."Event"."spaceId", "public"."Event"."googleEventId", "public"."Event"."googleCalendarId", "public"."Event"."googleColorId", "public"."Event"."preserveManualEdits", "public"."Event"."createdAt", "public"."Event"."updatedAt" FROM "public"."Event" WHERE ("public"."Event"."published" = $1 AND "public"."Event"."canceled" = $2) ORDER BY "public"."Event"."startTime" ASC OFFSET $3
+prisma:query SELECT "public"."Space"."id", "public"."Space"."name", "public"."Space"."slug", "public"."Space"."description", "public"."Space"."capacity", "public"."Space"."images", "public"."Space"."color", "public"."Space"."published", "public"."Space"."createdAt", "public"."Space"."updatedAt" FROM "public"."Space" WHERE "public"."Space"."id" IN ($1,$2,$3,$4,$5) OFFSET $6
+prisma:query COMMIT
+prisma:query BEGIN
+prisma:query DEALLOCATE ALL
+prisma:query SELECT "public"."DailyEvent"."id", "public"."DailyEvent"."title", "public"."DailyEvent"."description", "public"."DailyEvent"."startTime", "public"."DailyEvent"."endTime", "public"."DailyEvent"."daysOfWeek", "public"."DailyEvent"."type"::text, "public"."DailyEvent"."displayStyle"::text, "public"."DailyEvent"."overridesOthers", "public"."DailyEvent"."spaceId", "public"."DailyEvent"."isActive", "public"."DailyEvent"."published", "public"."DailyEvent"."showInCalendar", "public"."DailyEvent"."createdAt", "public"."DailyEvent"."updatedAt" FROM "public"."DailyEvent" WHERE "public"."DailyEvent"."published" = $1 OFFSET $2
+prisma:query SELECT "public"."Space"."id", "public"."Space"."name", "public"."Space"."slug", "public"."Space"."description", "public"."Space"."capacity", "public"."Space"."images", "public"."Space"."color", "public"."Space"."published", "public"."Space"."createdAt", "public"."Space"."updatedAt" FROM "public"."Space" WHERE "public"."Space"."id" IN ($1,$2) OFFSET $3
+prisma:query COMMIT
+ GET /api/events?start=2026-01-04T17:00:00.000Z&end=2026-01-25T16:59:59.999Z 200 in 4.9s (compile: 3ms, proxy.ts: 3ms, render: 4.9s)
