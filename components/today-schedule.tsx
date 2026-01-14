@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { format, addDays, subDays, startOfWeek, endOfWeek, addWeeks, subWeeks, isSameDay } from 'date-fns'
 import Image from 'next/image'
 import Link from 'next/link'
@@ -38,6 +38,7 @@ const GRID_HOURS = GRID_END_HOUR - GRID_START_HOUR
 export default function TodaySchedule({ initialDate }: { initialDate?: Date }) {
   const router = useRouter()
   const pathname = usePathname()
+  const scheduleRef = useRef<HTMLDivElement>(null)
   const [currentDate, setCurrentDate] = useState(() => {
     const date = initialDate || new Date()
     date.setHours(12, 0, 0, 0) // Normalize to noon
@@ -47,6 +48,7 @@ export default function TodaySchedule({ initialDate }: { initialDate?: Date }) {
   const [loadedRange, setLoadedRange] = useState<{ start: Date; end: Date } | null>(null) // Track loaded date range
   const [spaces, setSpaces] = useState<Space[]>([])
   const [loading, setLoading] = useState(true)
+  const [parallaxOffset, setParallaxOffset] = useState(0) // For parallax effect
   const { data: session } = useSession()
   const isAdmin = session?.user?.role === 'ADMIN'
   const isMember = session?.user?.role === 'MEMBER'
@@ -93,6 +95,41 @@ export default function TodaySchedule({ initialDate }: { initialDate?: Date }) {
     const twoWeeksAgo = subDays(new Date(), 14)
     return currentDate > twoWeeksAgo
   }
+
+  // Add parallax effect on scroll relative to component position
+  useEffect(() => {
+    let ticking = false
+    const handleScroll = () => {
+      if (!ticking && scheduleRef.current) {
+        window.requestAnimationFrame(() => {
+          const rect = scheduleRef.current?.getBoundingClientRect()
+          if (rect) {
+            // Calculate the center of the viewport and the component
+            const windowCenter = window.innerHeight / 2
+            const componentCenter = rect.top + (rect.height / 2)
+
+            // Calculate offset from center - this gives us a "zero" when component is centered
+            const centerOffset = windowCenter - componentCenter
+
+            // Only apply parallax when component is in view
+            if (rect.top < window.innerHeight && rect.bottom > 0) {
+              // Scale the offset for a subtle effect
+              // Positive when scrolling down (component moving up), negative when scrolling up
+              setParallaxOffset(centerOffset * 0.15) // Subtle parallax factor
+            }
+          }
+          ticking = false
+        })
+        ticking = true
+      }
+    }
+
+    // Initial calculation
+    handleScroll()
+
+    window.addEventListener('scroll', handleScroll)
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [])
 
   useEffect(() => {
     async function fetchData() {
@@ -146,16 +183,8 @@ export default function TodaySchedule({ initialDate }: { initialDate?: Date }) {
     return true
   })
 
-  // Separate daily events (cafe, sauna, etc) from regular events
-  const events = dayEvents.filter(event => {
-    const isDaily = typeof event.id === 'string' && event.id.startsWith('daily-')
-    return !isDaily || event.showInCalendar !== false
-  })
-
-  const dailyEvents = dayEvents.filter(event => {
-    const isDaily = typeof event.id === 'string' && event.id.startsWith('daily-')
-    return isDaily && event.showInCalendar === false
-  })
+  // Include all events (both daily and regular) for display in columns
+  const events = dayEvents
 
   // Group events by space
   const eventsBySpace: Record<string, Event[]> = {}
@@ -345,18 +374,69 @@ export default function TodaySchedule({ initialDate }: { initialDate?: Date }) {
   const dateTitle = format(currentDate, 'EEEE, MMMM do')
   const isToday = format(currentDate, 'yyyy-MM-dd') === format(new Date(), 'yyyy-MM-dd')
 
+  // Define minimum required spaces
+  const minimumSpaces = ['dome', 'stage', 'cafe', 'sauna-lounge']
+
   // Get spaces that have events on this day
   const spacesWithEvents = spaces.filter(space =>
     eventsBySpace[space.slug] && eventsBySpace[space.slug].length > 0
   )
 
-  // Always show spaces with events, sorted by priority
+  // Build the list of spaces to display
+  let spacesToDisplay: Space[] = []
+
+  // First, add minimum required spaces that exist
+  minimumSpaces.forEach(slug => {
+    const space = spaces.find(s => s.slug === slug)
+    if (space) {
+      spacesToDisplay.push(space)
+    }
+  })
+
+  // If stage has no events and there are other spaces with events not in minimum list, replace stage
+  const stageSpace = spacesToDisplay.find(s => s.slug === 'stage')
+  const stageHasEvents = stageSpace && eventsBySpace['stage'] && eventsBySpace['stage'].length > 0
+
+  if (stageSpace && !stageHasEvents) {
+    // Find a space with events that's not already in our list
+    const replacementSpace = spacesWithEvents.find(space =>
+      !minimumSpaces.includes(space.slug) &&
+      !spacesToDisplay.some(s => s.slug === space.slug)
+    )
+
+    if (replacementSpace) {
+      // Replace stage with the space that has events
+      spacesToDisplay = spacesToDisplay.map(s =>
+        s.slug === 'stage' ? replacementSpace : s
+      )
+    }
+  }
+
+  // Add any additional spaces with events that aren't already included
+  spacesWithEvents.forEach(space => {
+    if (!spacesToDisplay.some(s => s.slug === space.slug)) {
+      spacesToDisplay.push(space)
+    }
+  })
+
+  // Ensure we have at least 4 spaces
+  if (spacesToDisplay.length < 4) {
+    // Add any remaining spaces up to 4
+    spaces.forEach(space => {
+      if (spacesToDisplay.length >= 4) return
+      if (!spacesToDisplay.some(s => s.slug === space.slug)) {
+        spacesToDisplay.push(space)
+      }
+    })
+  }
+
+  // Sort by priority order
   const spaceOrder = [
     'dome', 'stage', 'cafe', 'sauna-lounge', 'pole-studio',
     'bamboo-shala', 'dance-studio', 'aerial-shala'
   ]
 
-  const sortedSpacesToDisplay = spacesWithEvents.sort((a, b) => {
+  const sortedSpacesToDisplay = spacesToDisplay.sort((a, b) => {
     const aIndex = spaceOrder.indexOf(a.slug)
     const bIndex = spaceOrder.indexOf(b.slug)
 
@@ -383,9 +463,18 @@ export default function TodaySchedule({ initialDate }: { initialDate?: Date }) {
   }
 
   return (
-    <div className="relative overflow-hidden rounded-xl" style={{ minHeight: '75vh' }}>
-      {/* Background image */}
-      <div className="absolute inset-0">
+    <div ref={scheduleRef} className="relative overflow-hidden rounded-xl" style={{ minHeight: '75vh' }}>
+      {/* Background image with parallax */}
+      <div
+        className="absolute inset-0"
+        style={{
+          transform: `translateY(${parallaxOffset}px)`,
+          // Buffer for parallax movement
+          top: '-10%',
+          height: '120%',
+          willChange: 'transform'
+        }}
+      >
         <Image
           src="/assets/clouds.png"
           alt="Clouds background"
@@ -594,46 +683,6 @@ export default function TodaySchedule({ initialDate }: { initialDate?: Date }) {
           </div>
         </div>
 
-        {/* Daily events section */}
-        {dailyEvents.length > 0 && (
-          <div className="mt-6">
-            <h3 className="text-cream font-semibold text-lg mb-3" style={{ fontFamily: 'var(--font-serif)' }}>
-              Daily Facilities
-            </h3>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-              {dailyEvents.map(event => {
-                const formatTime = (date: Date) => {
-                  const hour = date.getHours()
-                  const minute = date.getMinutes()
-                  const period = hour >= 12 ? 'pm' : 'am'
-                  const displayHour = hour === 0 ? 12 : hour > 12 ? hour - 12 : hour
-
-                  if (minute === 0) {
-                    return `${displayHour}${period}`
-                  } else {
-                    return `${displayHour}:${minute.toString().padStart(2, '0')}${period}`
-                  }
-                }
-
-                return (
-                  <div
-                    key={event.id}
-                    className="flex-1 text-center text-cream/80 px-4 py-3 rounded-lg border border-cream/30 bg-black/40 backdrop-blur-sm"
-                  >
-                    <div className="font-bold text-white">{event.title}</div>
-                    <div className="mt-1 text-sm">
-                      {event.startTime && formatTime(new Date(event.startTime))}
-                      {event.endTime && ` - ${formatTime(new Date(event.endTime))}`}
-                    </div>
-                    {event.space && (
-                      <div className="text-cream/60 text-sm mt-1">@{event.space.name.toLowerCase()}</div>
-                    )}
-                  </div>
-                )
-              })}
-            </div>
-          </div>
-        )}
 
         {/* Link to weekly view */}
         <div className="text-center mt-8">
