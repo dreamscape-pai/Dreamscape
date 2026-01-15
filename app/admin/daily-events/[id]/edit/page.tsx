@@ -8,7 +8,7 @@ type PageProps = {
 
 export default async function EditDailyEventPage({ params }: PageProps) {
   const { id } = await params
-  const [event, spaces] = await Promise.all([
+  const [dailyEvent, spaces] = await Promise.all([
     db.dailyEvent.findUnique({
       where: { id: parseInt(id) },
       include: {
@@ -18,9 +18,11 @@ export default async function EditDailyEventPage({ params }: PageProps) {
     db.space.findMany({ orderBy: { name: 'asc' } }),
   ])
 
-  if (!event) {
+  if (!dailyEvent) {
     notFound()
   }
+
+  const event = dailyEvent
 
   return (
     <div>
