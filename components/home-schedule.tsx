@@ -349,7 +349,7 @@ export default function HomeSchedule() {
   maxEventsByPeriod.evening = Math.max(1, maxEventsByPeriod.evening)
 
   const renderEventItem = (event: Event) => {
-    let eventColor = 'text-cream/90'
+    let eventColor = 'text-white'
     let bgColor = 'rgba(246, 216, 157, 0.1)'
 
     if (event.type === 'EVERYDAY') {
@@ -427,7 +427,7 @@ export default function HomeSchedule() {
           {event.endTime && ` - ${format(new Date(event.endTime), 'h:mma').toLowerCase().replace(':00', '')}`}
         </p>
         {event.space && (
-          <p className="text-white font-bold text-xs mt-0.5">
+          <p className="text-cream/60 font-bold mt-0.5" style={{ fontSize: '10px' }}>
             {event.space.name.toUpperCase()}
           </p>
         )}
@@ -609,8 +609,8 @@ export default function HomeSchedule() {
             const dateStr = `${dayDate.getMonth() + 1}-${dayDate.getDate()}-${dayDate.getFullYear()}`
 
             return (
-              <Link key={day} href={`/schedule/${dateStr}`} className="text-center group">
-                <p className="text-cream font-bold text-base group-hover:text-yellow-300 transition-colors cursor-pointer"
+              <Link key={day} href={`/schedule/${dateStr}`} className="text-center group block py-1 px-2 rounded hover:bg-white/10 transition-all">
+                <p className="text-cream font-bold text-base transition-colors cursor-pointer"
                    style={{ textShadow: '0 2px 6px rgba(0,0,0,0.6)' }}>
                   {day}
                 </p>
@@ -627,8 +627,8 @@ export default function HomeSchedule() {
             const dateStr = `${dayDate.getMonth() + 1}-${dayDate.getDate()}-${dayDate.getFullYear()}`
 
             return (
-              <Link key={day} href={`/schedule/${dateStr}`} className="text-center group">
-                <p className="text-cream font-bold text-sm group-hover:text-yellow-300 transition-colors"
+              <Link key={day} href={`/schedule/${dateStr}`} className="text-center group block py-1 px-2 rounded hover:bg-white/10 transition-all">
+                <p className="text-cream font-bold text-sm transition-colors"
                    style={{ textShadow: '0 2px 6px rgba(0,0,0,0.6)' }}>
                   {day}
                 </p>

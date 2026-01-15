@@ -1,6 +1,7 @@
 import Image from 'next/image'
 import TodaySchedule from '@/components/today-schedule'
 import Header from '@/components/header'
+import ScheduleHeader from '@/components/schedule-header'
 import { redirect } from 'next/navigation'
 
 type PageProps = {
@@ -64,12 +65,8 @@ export default async function ScheduleDatePage({ params }: PageProps) {
         {/* Content */}
         <section className="relative z-10 min-h-screen pt-32 pb-16">
           <div className="max-w-7xl mx-auto px-4">
-            <h2
-              className="text-4xl md:text-5xl font-bold text-cream mb-4 text-center"
-              style={{ fontFamily: 'var(--font-decorative)' }}
-            >
-              {isToday ? "Today at Dreamscape" : "Dreamscape Schedule"}
-            </h2>
+            <ScheduleHeader currentView="day" currentDate={scheduleDate} />
+
             <p className="text-cream/80 text-center mb-8 text-lg" style={{ fontFamily: 'var(--font-serif)' }}>
               {displayDate}
             </p>

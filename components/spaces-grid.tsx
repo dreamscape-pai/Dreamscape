@@ -19,10 +19,11 @@ interface SpacesGridProps {
   showViewAll?: boolean
 }
 
-function SpaceRow({ space }: { space: Space }) {
+function SpaceRow({ space, index }: { space: Space; index: number }) {
   const [currentImageIndex, setCurrentImageIndex] = useState(0)
   const hasImages = space.images && space.images.length > 0
   const hasMultipleImages = space.images && space.images.length > 1
+  const isEvenRow = index % 2 === 1 // 0-indexed, so index 1 is the second row
 
   const goToPreviousImage = (e: React.MouseEvent) => {
     e.preventDefault()
@@ -46,7 +47,7 @@ function SpaceRow({ space }: { space: Space }) {
 
   return (
     <div
-      className="flex flex-col md:flex-row bg-white/5 backdrop-blur-sm rounded-lg overflow-hidden border border-cream/10 hover:bg-white/10 hover:border-cream/20 transition-all group cursor-default"
+      className={`flex flex-col ${isEvenRow ? 'md:flex-row-reverse' : 'md:flex-row'} bg-white/5 backdrop-blur-sm rounded-lg overflow-hidden border border-cream/10 hover:bg-white/10 hover:border-cream/20 transition-all group cursor-default`}
     >
       {/* Image Gallery Section */}
       <div className="relative w-full md:w-[300px] h-64 md:h-[300px] flex-shrink-0">
@@ -147,8 +148,8 @@ export default function SpacesGrid({ spaces, showViewAll = false }: SpacesGridPr
   return (
     <>
       <div className="space-y-6 mb-8">
-        {spaces.map((space) => (
-          <SpaceRow key={space.id} space={space} />
+        {spaces.map((space, index) => (
+          <SpaceRow key={space.id} space={space} index={index} />
         ))}
       </div>
 

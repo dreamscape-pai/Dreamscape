@@ -1,10 +1,9 @@
-import Link from 'next/link'
 import Image from 'next/image'
-import HomeSchedule from '@/components/home-schedule'
 import Header from '@/components/header'
+import MonthlySchedule from '@/components/monthly-schedule'
 import ScheduleHeader from '@/components/schedule-header'
 
-export default function SchedulePage() {
+export default function MonthlySchedulePage() {
   return (
     <>
       <Header isHomePage={false} />
@@ -25,9 +24,13 @@ export default function SchedulePage() {
         {/* Content */}
         <section className="relative z-10 min-h-screen pt-32 pb-16">
           <div className="max-w-7xl mx-auto px-4">
-            <ScheduleHeader currentView="week" />
+            <ScheduleHeader currentView="month" />
 
-            <HomeSchedule />
+            <p className="text-cream/80 text-center mb-8 text-lg" style={{ fontFamily: 'var(--font-serif)' }}>
+              Festivals, Intensives & Retreats
+            </p>
+
+            <MonthlySchedule />
           </div>
         </section>
       </div>

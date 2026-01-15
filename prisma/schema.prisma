@@ -236,3 +236,45 @@ enum DailyEventType {
   FACILITY  // Regular facility hours (cafe, sauna, etc)
   CLOSED    // Venue closed
 }
+
+model MultiDayEvent {
+  id               Int                      @id @default(autoincrement())
+  title            String
+  slug             String                   @unique
+  description      String?                  @db.Text
+  startDate        DateTime
+  endDate          DateTime
+  posterImage      String?                  // URL to poster image
+  type             MultiDayEventType        @default(FESTIVAL)
+  websiteUrl       String?
+  facebookUrl      String?
+  instagramUrl     String?
+  published        Boolean                  @default(false)
+  featured         Boolean                  @default(false) // Show on home page
+  sections         MultiDayEventSection[]
+  createdAt        DateTime                 @default(now())
+  updatedAt        DateTime                 @updatedAt
+
+  @@index([slug])
+  @@index([startDate, endDate])
+}
+
+model MultiDayEventSection {
+  id               Int            @id @default(autoincrement())
+  multiDayEventId  Int
+  multiDayEvent    MultiDayEvent  @relation(fields: [multiDayEventId], references: [id], onDelete: Cascade)
+  title            String
+  description      String?        @db.Text
+  imageUrl         String?
+  order            Int            @default(0) // For sorting sections
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+
+  @@index([multiDayEventId])
+}
+
+enum MultiDayEventType {
+  FESTIVAL
+  INTENSIVE
+  RETREAT
+}

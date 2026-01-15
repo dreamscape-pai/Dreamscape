@@ -267,7 +267,7 @@ export default function TodaySchedule({ initialDate }: { initialDate?: Date }) {
 
   // Calculate overlapping event positions
   const getEventLayout = (events: Event[]) => {
-    const layout: Map<string, { left: number; width: number }> = new Map()
+    const layout: Map<string, { left: number; width: number; heightAdjust: number }> = new Map()
     const sortedEvents = [...events].sort((a, b) =>
       new Date(a.startTime).getTime() - new Date(b.startTime).getTime()
     )
@@ -296,15 +296,20 @@ export default function TodaySchedule({ initialDate }: { initialDate?: Date }) {
 
       if (groupEvents.length === 1) {
         // Single event: full width
-        layout.set(groupEvents[0].id, { left: 0, width: 100 })
+        layout.set(groupEvents[0].id, { left: 0, width: 100, heightAdjust: 0 })
       } else if (groupEvents.length === 2) {
         // Two overlapping events: first is 100%, second is 50% offset
-        layout.set(groupEvents[0].id, { left: 0, width: 100 })
-        layout.set(groupEvents[1].id, { left: 50, width: 50 })
+        // Check if they have the same end time - if so, reduce height of first event
+        const end1 = groupEvents[0].endTime ? new Date(groupEvents[0].endTime).getTime() : 0
+        const end2 = groupEvents[1].endTime ? new Date(groupEvents[1].endTime).getTime() : 0
+        const sameEndTime = end1 === end2 && end1 !== 0
+
+        layout.set(groupEvents[0].id, { left: 0, width: 100, heightAdjust: 0})
+        layout.set(groupEvents[1].id, { left: 40, width: 56, heightAdjust: sameEndTime ? -10 : 0  })
       } else {
         // Three or more: all are 50% width with offsets
         groupEvents.forEach((event, index) => {
-          layout.set(event.id, { left: (index % 2) * 50, width: 50 })
+          layout.set(event.id, { left: (index % 2) * 50, width: 46, heightAdjust: 0 })
         })
       }
     })
@@ -312,10 +317,15 @@ export default function TodaySchedule({ initialDate }: { initialDate?: Date }) {
     return layout
   }
 
-  const renderEvent = (event: Event, layout?: { left: number; width: number }) => {
+  const renderEvent = (event: Event, layout?: { left: number; width: number; heightAdjust: number }) => {
     const colors = getEventColor(event.type)
     const isDaily = typeof event.id === 'string' && event.id.startsWith('daily-')
+    const isClosed = event.type === 'CLOSED'
     const position = getEventPosition(event)
+
+    // Add extra padding at the bottom for CLOSED events, and apply any height adjustment from layout
+    const layoutHeightAdjust = layout?.heightAdjust || 0
+    const adjustedHeight = (isClosed ? position.height - 10 : position.height) + layoutHeightAdjust
 
     return (
       <div
@@ -327,10 +337,10 @@ export default function TodaySchedule({ initialDate }: { initialDate?: Date }) {
           WebkitBackdropFilter: 'blur(4px)',
           border: '1px solid rgba(246, 216, 157, 0.1)',
           top: `${position.top}px`,
-          height: `${position.height}px`,
+          height: `${adjustedHeight}px`,
           left: layout ? `calc(${layout.left}% + 10px)` : '10px',
           width: layout ? `calc(${layout.width}% - 20px)` : 'calc(100% - 20px)',
-          zIndex: layout ? layout.left / 50 + 1 : 1,
+          zIndex: layout ? layout.left / 20 + 1 : 1,
           position: 'absolute',
           padding: '5px'
         }}
@@ -352,20 +362,38 @@ export default function TodaySchedule({ initialDate }: { initialDate?: Date }) {
           </Link>
         )}
 
-        <div className="h-full flex flex-col">
-          <p
-            className={`font-bold ${isDaily ? 'text-white' : colors.text} truncate`}
-            style={{ textShadow: '0 2px 6px rgba(0,0,0,0.6)', fontSize: '15px' }}
-          >
-            {event.title}
-          </p>
-          {position.height > 35 && (
-            <p className={`${isDaily ? 'text-gray-300' : 'text-cream/60'} text-xs mt-0.5`} style={{ fontSize: '12px' }}>
-              {format(new Date(event.startTime), 'h:mma').toLowerCase().replace(':00', '')}
-              {event.endTime && position.height > 50 && ` - ${format(new Date(event.endTime), 'h:mma').toLowerCase().replace(':00', '')}`}
+        {isClosed ? (
+          // CLOSED event with vertical text
+          <div className="h-full flex items-center justify-center">
+            <div
+              className="text-cream font-bold text-2xl tracking-[0.5em] rotate-0"
+              style={{
+                fontFamily: 'var(--font-serif)',
+                writingMode: 'vertical-lr',
+                textOrientation: 'upright',
+                letterSpacing: '0.3em'
+              }}
+            >
+              {event.title}
+            </div>
+          </div>
+        ) : (
+          // Regular event layout
+          <div className="h-full flex flex-col">
+            <p
+              className={`font-bold text-xs sm:text-sm md:text-[15px] ${isDaily ? 'text-white' : colors.text}`}
+              style={{ textShadow: '0 2px 6px rgba(0,0,0,0.6)' }}
+            >
+              {event.title}
             </p>
-          )}
-        </div>
+            {position.height > 35 && (
+              <p className={`${isDaily ? 'text-gray-300' : 'text-cream/60'} text-xs mt-0.5`} style={{ fontSize: '12px' }}>
+                {format(new Date(event.startTime), 'h:mma').toLowerCase().replace(':00', '')}
+                {event.endTime && position.height > 50 && ` - ${format(new Date(event.endTime), 'h:mma').toLowerCase().replace(':00', '')}`}
+              </p>
+            )}
+          </div>
+        )}
       </div>
     )
   }
@@ -544,25 +572,18 @@ export default function TodaySchedule({ initialDate }: { initialDate?: Date }) {
             </button>
           </div>
 
-          {!isToday && (
-            <button
-              onClick={() => setCurrentDate(new Date())}
-              className="text-sm px-3 py-1 rounded-lg bg-white/10 border border-cream/20 text-cream hover:bg-white/20 hover:border-cream/30 transition-all"
-            >
-              Go to Today
-            </button>
-          )}
         </div>
 
         {/* Scrollable container */}
         <div className="overflow-x-auto overflow-y-hidden">
           <div className="flex gap-2" style={{ minWidth: 'max-content' }}>
             {/* Time labels column */}
-            <div className="flex-shrink-0 sticky left-0 z-20" style={{ width: '70px' }}>
+            <div className="flex-shrink-0 sticky left-0 z-20" style={{ width: '50px'}}>
               <div className="h-10 mb-2" /> {/* Spacer for headers */}
               <div
                 className="relative rounded-lg"
                 style={{
+                  justifyItems: 'anchor-center',
                   height: `${GRID_HOURS * PIXELS_PER_HOUR}px`,
                   background: 'linear-gradient(to bottom, rgba(147, 51, 234, 0.3), rgba(126, 34, 206, 0.2))',
                   backdropFilter: 'blur(4px)',
@@ -601,7 +622,7 @@ export default function TodaySchedule({ initialDate }: { initialDate?: Date }) {
                 <div
                   key={space.id}
                   className="flex-shrink-0 flex-grow"
-                  style={{ minWidth: '150px', maxWidth: '250px' }}
+                  style={{ minWidth: '150px' }}
                 >
                   {/* Header */}
                   <div className="bg-gradient-to-b from-purple-900/60 to-purple-950/40 rounded-t-lg p-2 border-b-2 border-black/20 backdrop-blur-md mb-2 h-10">
@@ -647,7 +668,7 @@ export default function TodaySchedule({ initialDate }: { initialDate?: Date }) {
                 {/* Header */}
                 <div className="bg-gradient-to-b from-purple-900/60 to-purple-950/40 rounded-t-lg p-2 border-b-2 border-black/20 backdrop-blur-md mb-2 h-10">
                   <p className="text-cream/70 font-bold text-sm text-center truncate" style={{ textShadow: '0 2px 6px rgba(0,0,0,0.6)' }}>
-                    Other
+                    Full Space
                   </p>
                 </div>
 
@@ -684,16 +705,6 @@ export default function TodaySchedule({ initialDate }: { initialDate?: Date }) {
         </div>
 
 
-        {/* Link to weekly view */}
-        <div className="text-center mt-8">
-          <Link
-            href="/schedule"
-            className="inline-block px-6 py-2 rounded-lg bg-white/10 border border-cream/20 text-cream hover:bg-white/20 hover:border-cream/30 transition-all"
-            style={{ fontFamily: 'var(--font-serif)' }}
-          >
-            View Weekly Schedule →
-          </Link>
-        </div>
       </div>
     </div>
   )

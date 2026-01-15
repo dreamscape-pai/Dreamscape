@@ -86,6 +86,20 @@ export default async function AdminDashboard() {
               <div className="text-sm text-sand/60">Add tickets or merchandise</div>
             </div>
           </Link>
+          <Link href="/admin/multi-day-events" className="flex items-center gap-3 p-4 bg-forest/10 border border-sand/20 rounded-lg hover:border-sunset/50 hover:bg-forest/20 transition group">
+            <span className="text-2xl">🎪</span>
+            <div>
+              <div className="font-medium text-sand group-hover:text-sunset transition">Multi-Day Events</div>
+              <div className="text-sm text-sand/60">Festivals, Intensives & Retreats</div>
+            </div>
+          </Link>
+          <Link href="/admin/daily-events" className="flex items-center gap-3 p-4 bg-lavender/10 border border-sand/20 rounded-lg hover:border-sunset/50 hover:bg-lavender/20 transition group">
+            <span className="text-2xl">🔄</span>
+            <div>
+              <div className="font-medium text-sand group-hover:text-sunset transition">Daily Events</div>
+              <div className="text-sm text-sand/60">Recurring weekly schedules</div>
+            </div>
+          </Link>
         </div>
       </div>
     </div>
