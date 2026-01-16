@@ -1,10 +1,13 @@
 import { db } from '@/lib/db'
 import { DailyEventForm } from '@/components/daily-event-form'
 import { notFound } from 'next/navigation'
+import type { DailyEvent, Space } from '@prisma/client'
 
 type PageProps = {
   params: Promise<{ id: string }>
 }
+
+type DailyEventWithSpace = DailyEvent & { space: Space | null }
 
 export default async function EditDailyEventPage({ params }: PageProps) {
   const { id } = await params
@@ -14,7 +17,7 @@ export default async function EditDailyEventPage({ params }: PageProps) {
       include: {
         space: true,
       },
-    }),
+    }) as Promise<DailyEventWithSpace | null>,
     db.space.findMany({ orderBy: { name: 'asc' } }),
   ])
 
