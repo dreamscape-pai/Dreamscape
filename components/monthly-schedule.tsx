@@ -55,7 +55,7 @@ export default function MonthlySchedule() {
 
         const [multiDayResponse, eventsResponse] = await Promise.all([
           fetch('/api/multi-day-events'),
-          fetch(`/api/events?start=${monthStart.toISOString()}&end=${monthEnd.toISOString()}`)
+          fetch(`/api/events?start=${monthStart.toISOString()}&end=${monthEnd.toISOString()}&type=EVENT`)
         ])
 
         const multiDayData = await multiDayResponse.json()
@@ -135,7 +135,7 @@ export default function MonthlySchedule() {
   const getDayEvents = (day: Date) => {
     return events.filter(event => {
       const eventDate = new Date(event.startTime)
-      return isSameDay(eventDate, day) && event.type === 'EVENT'
+      return isSameDay(eventDate, day)
     })
   }
 

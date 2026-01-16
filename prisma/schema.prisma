@@ -165,6 +165,8 @@ model Event {
   @@index([startTime])
   @@index([googleEventId])
   @@index([spaceId])
+  @@index([type])
+  @@index([published, type, startTime])
 }
 
 

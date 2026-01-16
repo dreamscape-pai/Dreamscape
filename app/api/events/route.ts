@@ -7,10 +7,12 @@ export async function GET(request: NextRequest) {
     const searchParams = request.nextUrl.searchParams
     const startParam = searchParams.get('start')
     const endParam = searchParams.get('end')
+    const typeParam = searchParams.get('type') // Filter by event type (e.g., 'EVENT')
 
     // If no date range provided, return all events (original behavior)
     if (!startParam || !endParam) {
       const events = await db.event.findMany({
+        where: typeParam ? { type: typeParam as any } : undefined,
         include: {
           space: true,
         },
@@ -23,13 +25,18 @@ export async function GET(request: NextRequest) {
     const start = new Date(startParam)
     const end = new Date(endParam)
 
-    // Fetch all published events including member events
-    // Frontend will handle filtering based on user preferences
+    // Build where clause with optional type filter
+    const whereClause: any = {
+      published: true,
+      canceled: false,
+    }
+    if (typeParam) {
+      whereClause.type = typeParam
+    }
+
+    // Fetch published events, optionally filtered by type
     const allEvents = await db.event.findMany({
-      where: {
-        published: true,
-        canceled: false, // Exclude canceled events
-      },
+      where: whereClause,
       include: {
         space: true,
       },
