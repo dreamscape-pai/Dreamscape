@@ -1,8 +1,7 @@
 'use client'
 
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect } from 'react'
 import { format, startOfMonth, endOfMonth, eachDayOfInterval, getDay, isSameDay, isWithinInterval, addMonths, subMonths, isSameMonth } from 'date-fns'
-import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
 
@@ -17,16 +16,28 @@ type MultiDayEvent = {
   type: 'FESTIVAL' | 'INTENSIVE' | 'RETREAT'
 }
 
+type Event = {
+  id: string
+  title: string
+  slug: string
+  startTime: string
+  endTime: string
+  type: string
+  space?: {
+    name: string
+    slug: string
+  } | null
+}
+
 export default function MonthlySchedule() {
-  const router = useRouter()
   const [currentMonth, setCurrentMonth] = useState(() => {
     const date = new Date()
-    // Normalize to noon on the first of the month to avoid timezone issues
     date.setHours(12, 0, 0, 0)
     date.setDate(1)
     return date
   })
-  const [events, setEvents] = useState<MultiDayEvent[]>([])
+  const [multiDayEvents, setMultiDayEvents] = useState<MultiDayEvent[]>([])
+  const [events, setEvents] = useState<Event[]>([])
   const [loading, setLoading] = useState(true)
   const [todayDate, setTodayDate] = useState<Date | null>(null)
 
@@ -36,21 +47,31 @@ export default function MonthlySchedule() {
   }, [])
 
   useEffect(() => {
-    async function fetchEvents() {
+    async function fetchData() {
       setLoading(true)
       try {
-        const response = await fetch('/api/multi-day-events')
-        const data = await response.json()
-        setEvents(data || [])
+        const monthStart = startOfMonth(currentMonth)
+        const monthEnd = endOfMonth(currentMonth)
+
+        const [multiDayResponse, eventsResponse] = await Promise.all([
+          fetch('/api/multi-day-events'),
+          fetch(`/api/events?start=${monthStart.toISOString()}&end=${monthEnd.toISOString()}`)
+        ])
+
+        const multiDayData = await multiDayResponse.json()
+        const eventsData = await eventsResponse.json()
+
+        setMultiDayEvents(multiDayData || [])
+        setEvents(eventsData.events || [])
       } catch (error) {
-        console.error('Error fetching multi-day events:', error)
+        console.error('Error fetching events:', error)
       } finally {
         setLoading(false)
       }
     }
 
-    fetchEvents()
-  }, [])
+    fetchData()
+  }, [currentMonth])
 
   const monthStart = startOfMonth(currentMonth)
   const monthEnd = endOfMonth(currentMonth)
@@ -75,7 +96,7 @@ export default function MonthlySchedule() {
     }
   }
 
-  const getEventTypeColor = (type: string) => {
+  const getMultiDayEventTypeColor = (type: string) => {
     switch (type) {
       case 'FESTIVAL':
         return 'bg-purple-500/20 border-purple-400 text-purple-300'
@@ -88,11 +109,33 @@ export default function MonthlySchedule() {
     }
   }
 
-  const getDayEvents = (day: Date) => {
-    return events.filter(event => {
+  const getEventTypeColor = (type: string) => {
+    switch (type) {
+      case 'WORKSHOP':
+        return 'bg-pink-500/20 border-pink-400 text-pink-300'
+      case 'EVENT':
+        return 'bg-red-500/20 border-red-400 text-red-300'
+      case 'JAM':
+        return 'bg-violet-500/20 border-violet-400 text-violet-300'
+      case 'SHOW':
+        return 'bg-cyan-500/20 border-cyan-400 text-cyan-300'
+      default:
+        return 'bg-cream/10 border-cream/30 text-cream/80'
+    }
+  }
+
+  const getDayMultiDayEvents = (day: Date) => {
+    return multiDayEvents.filter(event => {
       const eventStart = new Date(event.startDate)
       const eventEnd = new Date(event.endDate)
       return isWithinInterval(day, { start: eventStart, end: eventEnd })
+    })
+  }
+
+  const getDayEvents = (day: Date) => {
+    return events.filter(event => {
+      const eventDate = new Date(event.startTime)
+      return isSameDay(eventDate, day) && event.type === 'EVENT'
     })
   }
 
@@ -102,13 +145,6 @@ export default function MonthlySchedule() {
 
   const goToNextMonth = () => {
     setCurrentMonth(addMonths(currentMonth, 1))
-  }
-
-  const goToToday = () => {
-    const today = new Date()
-    today.setHours(12, 0, 0, 0)
-    today.setDate(1)
-    setCurrentMonth(today)
   }
 
   return (
@@ -156,7 +192,9 @@ export default function MonthlySchedule() {
               {/* Calendar days */}
               {weeks.map((week, weekIndex) => (
                 week.map((day, dayIndex) => {
+                  const dayMultiDayEvents = day ? getDayMultiDayEvents(day) : []
                   const dayEvents = day ? getDayEvents(day) : []
+                  const totalEvents = dayMultiDayEvents.length + dayEvents.length
                   const isToday = day && todayDate && isSameDay(day, todayDate)
                   const isCurrentMonth = day && isSameMonth(day, currentMonth)
 
@@ -170,27 +208,46 @@ export default function MonthlySchedule() {
                       {day && (
                         <>
                           <div className="flex justify-between items-start mb-1">
-                            <span className={`text-sm font-semibold ${isToday ? 'text-cream' : 'text-cream/70'}`}>
+                            <Link
+                              href={`/schedule/${format(day, 'M-d-yyyy')}`}
+                              className={`text-sm font-semibold hover:underline ${isToday ? 'text-cream' : 'text-cream/70'}`}
+                            >
                               {format(day, 'd')}
-                            </span>
-                            {dayEvents.length > 0 && (
+                            </Link>
+                            {totalEvents > 0 && (
                               <span className="text-xs bg-purple-500/30 text-purple-300 px-1 rounded">
-                                {dayEvents.length}
+                                {totalEvents}
                               </span>
                             )}
                           </div>
                           <div className="space-y-1">
-                            {dayEvents.slice(0, 2).map(event => (
+                            {/* Multi-day events first */}
+                            {dayMultiDayEvents.slice(0, 1).map(event => (
                               <Link
-                                key={event.id}
+                                key={`multi-${event.id}`}
                                 href={`/events/${event.slug}`}
+                                className={`block text-xs p-1 rounded border ${getMultiDayEventTypeColor(event.type)} hover:opacity-80 truncate`}
+                              >
+                                {event.title}
+                              </Link>
+                            ))}
+                            {/* Regular events */}
+                            {dayEvents.slice(0, dayMultiDayEvents.length > 0 ? 1 : 2).map(event => (
+                              <Link
+                                key={`event-${event.id}`}
+                                href={`/schedule/${format(day, 'M-d-yyyy')}`}
                                 className={`block text-xs p-1 rounded border ${getEventTypeColor(event.type)} hover:opacity-80 truncate`}
                               >
                                 {event.title}
                               </Link>
                             ))}
-                            {dayEvents.length > 2 && (
-                              <span className="text-xs text-cream/50">+{dayEvents.length - 2} more</span>
+                            {totalEvents > 2 && (
+                              <Link
+                                href={`/schedule/${format(day, 'M-d-yyyy')}`}
+                                className="text-xs text-cream/50 hover:text-cream/70"
+                              >
+                                +{totalEvents - 2} more
+                              </Link>
                             )}
                           </div>
                         </>
@@ -201,14 +258,14 @@ export default function MonthlySchedule() {
               ))}
             </div>
 
-            {/* Event list below calendar */}
-            {events.length > 0 && (
+            {/* Multi-day event list below calendar */}
+            {multiDayEvents.length > 0 && (
               <div className="mt-8">
                 <h4 className="text-xl font-bold text-cream mb-4" style={{ fontFamily: 'var(--font-serif)' }}>
-                  Upcoming Events
+                  Festivals & Intensives
                 </h4>
                 <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                  {events.map(event => (
+                  {multiDayEvents.map(event => (
                     <Link
                       key={event.id}
                       href={`/events/${event.slug}`}
@@ -221,11 +278,12 @@ export default function MonthlySchedule() {
                             alt={event.title}
                             fill
                             className="object-cover group-hover:scale-105 transition-transform duration-300"
+                            unoptimized
                           />
                         </div>
                       )}
                       <div className="p-4">
-                        <span className={`inline-block text-xs px-2 py-1 rounded ${getEventTypeColor(event.type)} mb-2`}>
+                        <span className={`inline-block text-xs px-2 py-1 rounded border ${getMultiDayEventTypeColor(event.type)} mb-2`}>
                           {event.type}
                         </span>
                         <h5 className="font-bold text-cream mb-2">{event.title}</h5>
@@ -242,9 +300,9 @@ export default function MonthlySchedule() {
               </div>
             )}
 
-            {events.length === 0 && (
+            {multiDayEvents.length === 0 && events.length === 0 && (
               <div className="text-center py-8">
-                <p className="text-cream/60">No festivals or intensives scheduled yet.</p>
+                <p className="text-cream/60">No events scheduled for this month.</p>
               </div>
             )}
           </>

@@ -13,7 +13,8 @@ type EventFormProps = {
   spaces: Space[]
 }
 
-const EVENT_TYPES = ['CLOSED', 'WORKSHOP', 'SHOW', 'JAM', 'EVENT', 'RETREAT', 'FESTIVAL', 'MEMBERSHIP_TRAINING', 'OTHER']
+const EVENT_TYPES = ['CLOSED', 'WORKSHOP', 'SHOW', 'JAM', 'EVENT', 'RETREAT', 'FESTIVAL', 'MEMBERSHIP_TRAINING', 'OTHER'] as const
+type EventTypeValue = typeof EVENT_TYPES[number]
 
 export function EventForm({ event, spaces }: EventFormProps) {
   const router = useRouter()
@@ -29,7 +30,7 @@ export function EventForm({ event, spaces }: EventFormProps) {
     event?.displayStyle || 'NORMAL'
   )
   const [overridesOthers, setOverridesOthers] = useState(event?.overridesOthers || false)
-  const [eventType, setEventType] = useState(event?.type || 'OTHER')
+  const [eventType, setEventType] = useState<EventTypeValue>((event?.type as EventTypeValue) || 'OTHER')
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
@@ -288,7 +289,7 @@ export function EventForm({ event, spaces }: EventFormProps) {
           id="type"
           value={eventType}
           onChange={(e) => {
-            setEventType(e.target.value)
+            setEventType(e.target.value as EventTypeValue)
             // Auto-enable all-day for CLOSED events
             if (e.target.value === 'CLOSED') {
               setIsAllDay(true)
